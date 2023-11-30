@@ -75,10 +75,10 @@ const Holder = styled.div`
   }
 
   .sell-button {
-    background-color: ${colorD.red};
+    background-color: ${colorD.orange};
     &:hover {
       border-color: ${colorD.bg};
-      outline: 0.5em solid ${colorD.red};
+      outline: 0.5em solid ${colorD.orange};
     }
   }
 `;
