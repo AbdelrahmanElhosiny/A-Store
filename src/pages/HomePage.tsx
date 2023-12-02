@@ -6,7 +6,7 @@ import buyImage from "../assets/buy.jpg";
 import font from "../styles/font";
 
 // -----------------
-// TSX
+// JSX
 // -----------------
 const HomePage = () => {
   return (

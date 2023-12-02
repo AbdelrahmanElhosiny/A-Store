@@ -7,7 +7,7 @@ interface InitialState {
   description: string;
   estDeliveryTime: number;
   unitsNum: number;
-  inStoke: boolean;
+  isInStoke: boolean;
   image?: File;
 }
 
@@ -18,7 +18,7 @@ const initialState: InitialState = {
   description: "",
   estDeliveryTime: 0,
   unitsNum: 0,
-  inStoke: false,
+  isInStoke: false,
 };
 
 const itemSlice = createSlice({

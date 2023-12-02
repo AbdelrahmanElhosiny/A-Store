@@ -1,17 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface InitialState {
-  ordered: boolean;
-  shipped: boolean;
-  outForDelivery: boolean;
-  delivered: boolean;
+  isOrdered: boolean;
+  isShipped: boolean;
+  isOutForDelivery: boolean;
+  isDelivered: boolean;
 }
 
 const initialState: InitialState = {
-  ordered: false,
-  shipped: false,
-  outForDelivery: false,
-  delivered: false,
+  isOrdered: false,
+  isShipped: false,
+  isOutForDelivery: false,
+  isDelivered: false,
 };
 
 const deliverySlice = createSlice({
