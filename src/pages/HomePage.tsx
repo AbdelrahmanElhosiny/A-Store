@@ -5,6 +5,9 @@ import sellImage from "../assets/sell.jpg";
 import buyImage from "../assets/buy.jpg";
 import font from "../styles/font";
 
+// -----------------
+// TSX
+// -----------------
 const HomePage = () => {
   return (
     <Holder>
@@ -22,6 +25,9 @@ const HomePage = () => {
   );
 };
 
+// -----------------
+// Styled component
+// -----------------
 const Holder = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -29,6 +35,7 @@ const Holder = styled.div`
   overflow: hidden;
   background-color: ${colorD.bg};
 
+  /* main style of the sides */
   .sell-section,
   .buy-section {
     display: flex;
@@ -43,6 +50,7 @@ const Holder = styled.div`
     }
   }
 
+  /* add background images to the sides */
   .sell-section {
     background-image: url(${sellImage});
   }
@@ -50,7 +58,9 @@ const Holder = styled.div`
     background-image: url(${buyImage});
   }
 
+  /* shared buttons style */
   button {
+    scale: 150%;
     ${font.ItalicBold}
     cursor: pointer;
     color: ${colorD.bg};
@@ -66,6 +76,7 @@ const Holder = styled.div`
     }
   }
 
+  /* buttons separated style to specify colors */
   .buy-button {
     background-color: ${colorD.blue};
     &:hover {
@@ -73,7 +84,6 @@ const Holder = styled.div`
       outline: 0.5em solid ${colorD.blue};
     }
   }
-
   .sell-button {
     background-color: ${colorD.orange};
     &:hover {
