@@ -4,6 +4,7 @@ interface InitialState {
   id: number;
   name: string;
   price: number;
+  rating: number;
   description: string;
   estDeliveryTime: number;
   unitsNum: number;
@@ -15,6 +16,7 @@ const initialState: InitialState = {
   id: 0,
   name: "",
   price: 0,
+  rating: 0,
   description: "",
   estDeliveryTime: 0,
   unitsNum: 0,

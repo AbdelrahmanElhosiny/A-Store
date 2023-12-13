@@ -33,7 +33,6 @@ const Holder = styled.div`
   grid-template-columns: 1fr 1fr;
   height: 100vh;
   overflow: hidden;
-  background-color: ${colorD.bg};
 
   /* main style of the sides */
   .sell-section,

@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import SellNavbar from "../components/SellNavbar";
+import SellNavbar from "../components/navigation/SellNavbar";
 
 const SellLayout = () => {
   return (

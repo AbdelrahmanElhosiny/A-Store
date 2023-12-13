@@ -1,6 +1,4 @@
 import styled from "@emotion/styled";
-import SellNavbar from "../../components/SellNavbar";
-import RouterIndex from "../../routes/Index";
 
 const Sell = () => {
   return (
@@ -10,6 +8,8 @@ const Sell = () => {
   );
 };
 
-const Holder = styled.div``;
+const Holder = styled.div`
+  background-color: RED;
+`;
 
 export default Sell;
