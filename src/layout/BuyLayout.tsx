@@ -13,7 +13,7 @@ const BuyLayout = () => {
 
 const Holder = styled.div`
   display: grid;
-  grid-template-rows: 3em auto;
+  grid-template-rows: 4em auto;
 `;
 
 export default BuyLayout;
