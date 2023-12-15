@@ -1,40 +1,25 @@
-import { ROUTE_INDEX, SELL_ROUTE } from "../../constant/routeConstant";
-import styled from "@emotion/styled";
-import colorD from "../../styles/colorD";
 import { Link, NavLink } from "react-router-dom";
-import SVG from "../../assets/svg";
-import font from "../../styles/font";
+import { ROUTE_INDEX } from "../constant/routeConstant";
+import SVG from "../assets/svg";
+import styled from "@emotion/styled";
+import colorD from "../styles/colorD";
+import font from "../styles/font";
 
 interface LinkProp {
   path: string;
   label: string;
 }
-
-// -------------------
-// define links array
-// -------------------
-const navLinks: LinkProp[] = [
-  {
-    label: "Home",
-    path: ROUTE_INDEX.SELL,
-  },
-  {
-    label: "Add Item",
-    path: `${ROUTE_INDEX.SELL}/${SELL_ROUTE.ADD_ITEM}`,
-  },
-  {
-    label: "Track",
-    path: `${ROUTE_INDEX.SELL}/${SELL_ROUTE.TRACK_SOLD}`,
-  },
-];
-
+interface NavbarProps {
+  navLinks: LinkProp[];
+  className?: string;
+}
 // -----------------
 // JSX
 // -----------------
-const SellNavbar = () => {
+const NavBar = ({ navLinks, className }: NavbarProps) => {
   return (
-    <Holder>
-      <Link to={`${ROUTE_INDEX.HOME}`} className="logo">
+    <Holder className={` ${className || ""}`}>
+      <Link to={`${ROUTE_INDEX.HOME}`} className={"logo"}>
         <SVG.Icons.logo />
       </Link>
       {navLinks.map(({ path, label }) => (
@@ -54,6 +39,7 @@ const Holder = styled.div`
   align-items: center;
   padding: 0 3em;
   gap: 5%;
+  height: 100%;
 
   .logo svg {
     width: 3em;
@@ -70,7 +56,7 @@ const Holder = styled.div`
     color: var(--color);
     transition: all 0.3s;
     z-index: 3;
-    padding-inline: 0.5em;
+    padding-inline: 0.6em;
 
     &::after {
       content: "";
@@ -78,21 +64,24 @@ const Holder = styled.div`
       background-color: var(--color);
       height: 100%;
       width: 0.3em;
-      right: -0.4em;
+      /* right: 0em; */
+      inset: 0;
+      /* padding-inline: 0.2em; */
       transition: all 0.4s;
     }
+
     :hover {
       color: ${colorD.bg};
       &::after {
         z-index: -1;
-        width: 115%;
+        width: 100%;
       }
     }
 
     &.active {
-      --color: ${colorD.orange};
+      --color: var(--primary-color);
     }
   }
 `;
 
-export default SellNavbar;
+export default NavBar;
