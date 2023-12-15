@@ -16,14 +16,14 @@ interface NavbarProps {
 // -----------------
 // JSX
 // -----------------
-const NavBar = ({ navLinks, className }: NavbarProps) => {
+const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
   return (
     <Holder className={` ${className || ""}`}>
       <Link to={`${ROUTE_INDEX.HOME}`} className={"logo"}>
         <SVG.Icons.logo />
       </Link>
       {navLinks.map(({ path, label }) => (
-        <NavLink to={path} className="link" end={true}>
+        <NavLink to={path} className="link" end={true} key={label}>
           {label}
         </NavLink>
       ))}

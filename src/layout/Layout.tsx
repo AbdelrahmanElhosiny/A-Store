@@ -39,7 +39,7 @@ const Layout: React.FC<Props> = ({ NavBar, MainComponent, Theme }) => {
 // -----------------
 const Holder = styled.div`
   display: grid;
-  grid-template-rows: 4em auto 4em;
+  grid-template-rows: 3em auto 3em;
   min-height: 100vh;
   --padding-inline: 3em;
   ${font.Regular}
