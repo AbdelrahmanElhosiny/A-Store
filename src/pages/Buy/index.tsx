@@ -18,7 +18,7 @@ const navLinks = [
   },
   {
     label: "Checkout",
-    path: `${ROUTE_INDEX.BUY}/${BUY_ROUTE.CHECKOUT}`,
+    path: `${ROUTE_INDEX.BUY}/${BUY_ROUTE.CART}`,
   },
   {
     label: "Track Shipment",

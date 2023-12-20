@@ -5,7 +5,7 @@ const SELL_ROUTE = {
 
 const BUY_ROUTE = {
   ADD_USER: "add-user",
-  CHECKOUT: "checkout",
+  CART: "cart",
   TRACK_BOUGHT: "track-bought",
 };
 

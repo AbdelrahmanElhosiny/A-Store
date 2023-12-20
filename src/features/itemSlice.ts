@@ -1,32 +1,34 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-interface InitialState {
-  id: number;
+interface Item {
+  id: string;
   name: string;
   price: number;
-  rating: number;
   description: string;
-  estDeliveryTime: number;
   unitsNum: number;
-  isInStoke: boolean;
   image?: File;
 }
 
-const initialState: InitialState = {
-  id: 0,
-  name: "",
-  price: 0,
-  rating: 0,
-  description: "",
-  estDeliveryTime: 0,
-  unitsNum: 0,
-  isInStoke: false,
-};
+const initialState: Item[] = [
+  {
+    id: "",
+    name: "",
+    price: 0,
+    description: "",
+    unitsNum: 0,
+  },
+];
 
 const itemSlice = createSlice({
   name: "item",
   initialState,
-  reducers: {},
+  reducers: {
+    // addNewItem
+    // sellItem
+    // restockItem
+    // updateItem
+    // removeItem
+  },
 });
 
 export default itemSlice.reducer;
