@@ -3,20 +3,20 @@ import { createSlice } from "@reduxjs/toolkit";
 interface Item {
   id: string;
   name: string;
-  price: number;
   description: string;
-  unitsNum: number;
+  price: number;
+  stockNum: number;
   image?: File;
 }
 
 const initialState: Item[] = [
-  {
-    id: "",
-    name: "",
-    price: 0,
-    description: "",
-    unitsNum: 0,
-  },
+  // {
+  //   id: "",
+  //   name: "",
+  //   price: 0,
+  //   description: "",
+  //   stockNum: 0,
+  // },
 ];
 
 const itemSlice = createSlice({
@@ -24,6 +24,10 @@ const itemSlice = createSlice({
   initialState,
   reducers: {
     // addNewItem
+    addNewItem: (state, action) => {
+      state.push(action.payload);
+    },
+    // clearNewItemForm
     // sellItem
     // restockItem
     // updateItem
