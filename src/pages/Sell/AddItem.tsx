@@ -3,17 +3,9 @@ import * as yup from "yup";
 import TextFiled from "../../components/form/TextFiled";
 import { Button } from "@mui/material";
 import PriceField from "../../components/form/PriceField";
+import useSell, { AddItemFormFields } from "./useSell";
 
-interface FormFields {
-  id: string;
-  name: string;
-  description: string;
-  price: number | string;
-  stockNum: number | string;
-  image?: File;
-}
-const initialValues: FormFields = {
-  id: "",
+const initialValues: AddItemFormFields = {
   name: "",
   description: "",
   price: "",
@@ -32,16 +24,19 @@ const validationSchema = yup.object({
     .required("Required"),
 });
 
-const onSubmit = (values: FormFields) => console.log(values);
-
 //------------------
 // JSX
 //------------------
 const AddItem = () => {
-  const FormProps: FormikConfig<FormFields> = {
+  const { addNewItem } = useSell();
+
+  const handelSubmit = (values: AddItemFormFields) => {
+    addNewItem(values);
+  };
+  const FormProps: FormikConfig<AddItemFormFields> = {
     initialValues,
     validationSchema,
-    onSubmit,
+    onSubmit: handelSubmit,
   };
 
   return (
