@@ -1,4 +1,4 @@
-import { Form, Formik, FormikConfig } from "formik";
+import { Form, Formik, FormikConfig, FormikHelpers } from "formik";
 import * as yup from "yup";
 import TextFiled from "../../components/form/TextFiled";
 import { Button } from "@mui/material";
@@ -30,8 +30,12 @@ const validationSchema = yup.object({
 const AddItem = () => {
   const { addNewItem } = useSell();
 
-  const handelSubmit = (values: AddItemFormFields) => {
+  const handelSubmit = (
+    values: AddItemFormFields,
+    formikHelpers: FormikHelpers<AddItemFormFields>
+  ) => {
     addNewItem(values);
+    formikHelpers.resetForm();
   };
   const FormProps: FormikConfig<AddItemFormFields> = {
     initialValues,

@@ -1,6 +1,7 @@
-import { useDispatch } from "react-redux";
-import { addNewItem as addNewItemAction } from "../../features/itemSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { Item, addNewItem as addNewItemAction } from "../../features/itemSlice";
 import { v4 as uuid } from "uuid";
+import { AppDispatch, RootState } from "../../app/store";
 
 interface AddItemFormFields {
   name: string;
@@ -11,8 +12,12 @@ interface AddItemFormFields {
 }
 
 const useSell = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
+  const items = useSelector<RootState>((store) => store.items) as Item;
 
+  //------------------
+  // Handlers
+  //------------------
   const addNewItem = (input: AddItemFormFields) => {
     const { price, stockNum, ...rest } = input;
     dispatch(
@@ -27,6 +32,7 @@ const useSell = () => {
 
   return {
     addNewItem,
+    items,
   };
 };
 

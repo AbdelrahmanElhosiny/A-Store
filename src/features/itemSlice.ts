@@ -35,5 +35,6 @@ const itemSlice = createSlice({
   },
 });
 
+export type { Item };
 export const { addNewItem } = itemSlice.actions;
 export default itemSlice.reducer;
