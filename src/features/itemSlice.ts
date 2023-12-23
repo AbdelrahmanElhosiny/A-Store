@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 interface Item {
   id: string;
@@ -20,11 +20,11 @@ const initialState: Item[] = [
 ];
 
 const itemSlice = createSlice({
-  name: "item",
+  name: "items",
   initialState,
   reducers: {
     // addNewItem
-    addNewItem: (state, action) => {
+    addNewItem: (state, action: PayloadAction<Item>) => {
       state.push(action.payload);
     },
     // clearNewItemForm
@@ -35,4 +35,5 @@ const itemSlice = createSlice({
   },
 });
 
+export const { addNewItem } = itemSlice.actions;
 export default itemSlice.reducer;
