@@ -14,7 +14,7 @@ interface AddItemFormFields {
 
 const useSell = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const items = useSelector<RootState>((store) => store.items) as Item;
+  const items = useSelector<RootState>((store) => store.items) as Item[];
   const { showNotification } = useNotification();
 
   //------------------
