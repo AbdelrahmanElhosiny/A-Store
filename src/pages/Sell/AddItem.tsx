@@ -1,8 +1,8 @@
 import { Form, Formik, FormikConfig, FormikHelpers } from "formik";
 import * as yup from "yup";
 import TextFiled from "../../components/form/TextFiled";
-// import PriceField from "../../components/form/PriceField";
-import { Button } from "@mui/material";
+import PriceField from "../../components/form/PriceField";
+import { Button, InputAdornment } from "@mui/material";
 import useSell, { AddItemFormFields } from "./useSell";
 
 const initialValues: AddItemFormFields = {
@@ -55,12 +55,7 @@ const AddItem = () => {
             multiline
             minRows={2}
           />
-          <TextFiled
-            name="price"
-            label="Price"
-            InputProps={{ startAdornment: "$", type: "number" }}
-          />
-          {/* <PriceField name="price" label="Price2222" /> */}
+          <PriceField name="price" label="Price" />
           <TextFiled name="stockNum" label="Stock" type="number" />
           <div className="buttons">
             <Button
