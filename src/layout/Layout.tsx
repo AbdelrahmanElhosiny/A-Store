@@ -42,7 +42,6 @@ const Holder = styled.div`
   grid-template-rows: 3em auto 3em;
   min-height: 100vh;
   --padding-inline: 3em;
-  ${font.Regular}
 
   .main-component {
     padding-inline: var(--padding-inline);

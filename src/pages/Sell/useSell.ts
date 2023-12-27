@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Item, addNewItem as addNewItemAction } from "../../features/itemSlice";
 import { v4 as uuid } from "uuid";
 import { AppDispatch, RootState } from "../../app/store";
+import useNotification from "../../hooks/useNotification";
 
 interface AddItemFormFields {
   name: string;
@@ -14,6 +15,7 @@ interface AddItemFormFields {
 const useSell = () => {
   const dispatch = useDispatch<AppDispatch>();
   const items = useSelector<RootState>((store) => store.items) as Item;
+  const { showNotification } = useNotification();
 
   //------------------
   // Handlers
@@ -28,6 +30,7 @@ const useSell = () => {
         ...rest,
       })
     );
+    showNotification({ message: `${input.name} is added successfully!` });
   };
 
   return {

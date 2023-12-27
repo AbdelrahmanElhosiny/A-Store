@@ -2,18 +2,15 @@ import styled from "@emotion/styled";
 import colorD from "../../styles/colorD";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
-import React from "react";
+import useNotification from "../../hooks/useNotification";
 
-interface Props {
-  message: string;
-  onClose: () => void;
-}
+const SuccessMessage = () => {
+  const { hideNotification, notification } = useNotification();
 
-const SuccessMessage: React.FC<Props> = ({ message, onClose }) => {
   return (
     <Holder>
-      <div className="text">{message}</div>
-      <IconButton onClick={onClose}>
+      <div className="text">{notification.message}</div>
+      <IconButton onClick={hideNotification}>
         <DisabledByDefaultIcon />
       </IconButton>
     </Holder>
@@ -21,10 +18,16 @@ const SuccessMessage: React.FC<Props> = ({ message, onClose }) => {
 };
 
 const Holder = styled.div`
+  position: fixed;
+  top: 3em;
+  right: 0;
+  left: 0;
+  height: max-content;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background-color: ${colorD.yellow};
+  padding-inline: 3em;
 `;
 
 export default SuccessMessage;

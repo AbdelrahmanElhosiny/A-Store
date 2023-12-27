@@ -28,10 +28,10 @@ interface ItemStatus {
 const initialState: User[] = [
   {
     userName: "Mohammed Ali",
-    address: "abcdefg street",
+    address: "abc street",
     optAddress: "",
-    zipCode: 12345,
-    phoneNum: 0,
+    zipCode: 123,
+    phoneNum: 123,
     isActive: false,
     pillingInfo: [],
     items: [],
