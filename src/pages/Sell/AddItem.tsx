@@ -1,8 +1,10 @@
 import { Form, Formik, FormikConfig, FormikHelpers } from "formik";
 import * as yup from "yup";
 import TextFiled from "../../components/form/TextFiled";
+// import PriceField from "../../components/form/PriceField";
+import SuccessMessage from "../../components/form/SuccessMessage";
+import { useState } from "react";
 import { Button } from "@mui/material";
-import PriceField from "../../components/form/PriceField";
 import useSell, { AddItemFormFields } from "./useSell";
 
 const initialValues: AddItemFormFields = {
@@ -29,6 +31,7 @@ const validationSchema = yup.object({
 //------------------
 const AddItem = () => {
   const { addNewItem } = useSell();
+  const [isSuccessful, setIsSuccessful] = useState(false);
 
   const handelSubmit = (
     values: AddItemFormFields,
@@ -36,6 +39,7 @@ const AddItem = () => {
   ) => {
     addNewItem(values);
     formikHelpers.resetForm();
+    setIsSuccessful(true);
   };
   const FormProps: FormikConfig<AddItemFormFields> = {
     initialValues,
@@ -45,6 +49,12 @@ const AddItem = () => {
 
   return (
     <>
+      {isSuccessful && (
+        <SuccessMessage
+          message="Item added successfully"
+          onClose={() => setIsSuccessful(false)}
+        />
+      )}
       <h1>Add new item</h1>
       <Formik {...FormProps}>
         <Form>
