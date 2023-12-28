@@ -38,16 +38,22 @@ const Layout: React.FC<Props> = ({ NavBar, MainComponent, Theme }) => {
 // Styled component
 // -----------------
 const Holder = styled.div`
-  display: grid;
-  grid-template-rows: 3em auto 3em;
-  min-height: 100vh;
+  position: relative;
+  min-height: calc(100vh - 5em);
   --padding-inline: 3em;
+  padding: 4em 0em 1em;
 
   .main-component {
     padding-inline: var(--padding-inline);
+    padding-bottom: 3em;
   }
 
   .nav-bar {
+    position: fixed;
+    top: 0em;
+    width: 100%;
+    height: 3em;
+    z-index: 100;
   }
 
   footer {
@@ -57,6 +63,10 @@ const Holder = styled.div`
     padding-inline: var(--padding-inline);
     color: ${colorD.fg};
     ${font.Bold}
+    position: absolute;
+    width: calc(100% - 6em);
+    bottom: 0em;
+    height: 3em;
   }
 `;
 

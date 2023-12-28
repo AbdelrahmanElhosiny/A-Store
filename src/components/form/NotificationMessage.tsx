@@ -28,6 +28,7 @@ const Holder = styled.div`
   justify-content: space-between;
   background-color: ${colorD.yellow};
   padding-inline: 3em;
+  z-index: 100;
 `;
 
 export default SuccessMessage;
