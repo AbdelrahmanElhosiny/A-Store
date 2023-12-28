@@ -17,9 +17,6 @@ const useNotification = () => {
   //------------------
   const showNotification = (input: Omit<Notification, "isOpen">) => {
     dispatch(showNotificationAction(input));
-    setTimeout(() => {
-      hideNotification();
-    }, 60000);
   };
   const hideNotification = () => {
     dispatch(hideNotificationAction());
