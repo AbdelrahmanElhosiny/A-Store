@@ -27,14 +27,17 @@ const itemSlice = createSlice({
     addNewItem: (state, action: PayloadAction<Item>) => {
       state.push(action.payload);
     },
-    // clearNewItemForm
-    // sellItem
-    // restockItem
     // updateItem
     // removeItem
+    removeItem: (state, action: PayloadAction<Item>) => {
+      state.splice(
+        state.findIndex((item) => item.id === action.payload.id),
+        1
+      );
+    },
   },
 });
 
 export type { Item };
-export const { addNewItem } = itemSlice.actions;
+export const { addNewItem, removeItem } = itemSlice.actions;
 export default itemSlice.reducer;

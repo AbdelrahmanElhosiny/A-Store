@@ -1,5 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Item, addNewItem as addNewItemAction } from "../../features/itemSlice";
+import {
+  Item,
+  addNewItem as addNewItemAction,
+  removeItem as removeItemAction,
+} from "../../features/itemSlice";
 import { v4 as uuid } from "uuid";
 import { AppDispatch, RootState } from "../../app/store";
 import useNotification from "../../hooks/useNotification";
@@ -33,7 +37,12 @@ const useSell = () => {
     showNotification({ message: `${input.name} is added successfully!` });
   };
 
+  const removeItem = (input: Item) => {
+    dispatch(removeItemAction(input));
+  };
+
   return {
+    removeItem,
     addNewItem,
     items,
   };
