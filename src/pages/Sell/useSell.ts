@@ -37,8 +37,8 @@ const useSell = () => {
     showNotification({ message: `${input.name} is added successfully!` });
   };
 
-  const removeItem = (input: Item) => {
-    dispatch(removeItemAction(input));
+  const removeItem = (itemId: string | null) => {
+    itemId && dispatch(removeItemAction(itemId));
   };
 
   return {
