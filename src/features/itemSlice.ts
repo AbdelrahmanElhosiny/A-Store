@@ -12,39 +12,39 @@ interface Item {
 
 const initialState: Item[] = [
   {
-    id: "1",
-    name: "1",
+    id: "1id",
+    name: "1name",
     price: 1,
     description: "1",
-    stockNum: 11,
+    stockNum: 1,
   },
   {
-    id: "2",
-    name: "2",
+    id: "2id",
+    name: "2name",
     price: 2,
     description: "2",
-    stockNum: 22,
+    stockNum: 2,
   },
   {
-    id: "3",
-    name: "3",
+    id: "3id",
+    name: "3name",
     price: 3,
     description: "3",
-    stockNum: 33,
+    stockNum: 3,
   },
   {
-    id: "4",
-    name: "4",
+    id: "4id",
+    name: "4name",
     price: 4,
     description: "4",
-    stockNum: 44,
+    stockNum: 4,
   },
   {
-    id: "5",
-    name: "5",
+    id: "5id",
+    name: "5name",
     price: 5,
     description: "5",
-    stockNum: 55,
+    stockNum: 5,
   },
 ];
 
@@ -57,6 +57,16 @@ const itemSlice = createSlice({
       state.push(action.payload);
     },
     // updateItem
+    updateItem: (state, action: PayloadAction<Item>) => {
+      const id = _.findIndex(state, { id: action.payload.id });
+      state.splice(id, 1, action.payload);
+      // state.map((item) => {
+      //   if (item.id === action.payload.id) {
+      //     return action.payload;
+      //   }
+      //   return { ...item };
+      // });
+    },
     // removeItem
     // removeItem: (state, action: PayloadAction<Item>) => {
     //   state.splice(
@@ -71,5 +81,5 @@ const itemSlice = createSlice({
 });
 
 export type { Item };
-export const { addNewItem, removeItem } = itemSlice.actions;
+export const { addNewItem, updateItem, removeItem } = itemSlice.actions;
 export default itemSlice.reducer;

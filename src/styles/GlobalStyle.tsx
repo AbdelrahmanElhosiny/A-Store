@@ -26,6 +26,11 @@ const style = css`
   .sell {
     --primary-color: var(--sell-color);
   }
+
+  dialog {
+    &::backdrop {
+    }
+  }
 `;
 
 export type { ThemeType };
