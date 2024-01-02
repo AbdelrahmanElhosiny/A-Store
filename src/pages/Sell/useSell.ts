@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   Item,
   addNewItem as addNewItemAction,
+  updateItem as updateItemAction,
   removeItem as removeItemAction,
 } from "../../features/itemSlice";
 import { v4 as uuid } from "uuid";
@@ -37,13 +38,18 @@ const useSell = () => {
     showNotification({ message: `${input.name} is added successfully!` });
   };
 
+  const updateItem = (item: Item) => {
+    dispatch(updateItemAction(item));
+  };
+
   const removeItem = (itemId: string | null) => {
     itemId && dispatch(removeItemAction(itemId));
   };
 
   return {
-    removeItem,
     addNewItem,
+    updateItem,
+    removeItem,
     items,
   };
 };
