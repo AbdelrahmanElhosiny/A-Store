@@ -7,7 +7,7 @@ type Props = TextFieldProps & {
   name: string;
 };
 
-const TextFiled = ({ name, ...rest }: Props) => {
+const PriceField = ({ name, ...rest }: Props) => {
   const [shrink, setShrink] = useState(false);
 
   const [field, meta] = useField(name);
@@ -32,14 +32,14 @@ const TextFiled = ({ name, ...rest }: Props) => {
       variant="outlined"
       InputLabelProps={{ sx: { ml: 1.8 }, shrink }}
       onFocus={() => setShrink(true)}
-      // onBlur={(e) => setShrink(!!e.target.value)}
       InputProps={{
         startAdornment: <InputAdornment position="start">$</InputAdornment>,
         type: "number",
       }}
       {...configuredTextField}
+      // onBlur={(e) => setShrink(!!e.target.value)}
     />
   );
 };
 
-export default TextFiled;
+export default PriceField;
