@@ -1,8 +1,8 @@
 import { Form, Formik, FormikConfig, FormikHelpers } from "formik";
 import * as yup from "yup";
-import TextFiled from "../../components/form/TextFiled";
+import TextFiled from "../../components/form/TextField";
 import PriceField from "../../components/form/PriceField";
-import { Button, InputAdornment } from "@mui/material";
+import { Button } from "@mui/material";
 import useSell, { AddItemFormFields } from "./useSell";
 
 const initialValues: AddItemFormFields = {
@@ -20,7 +20,7 @@ const validationSchema = yup.object({
     .required("Required"),
   stockNum: yup
     .number()
-    .min(10, "At least 10 units must be in stock for new items")
+    .min(1, "At least 10 units must be in stock for new items")
     .required("Required"),
 });
 
