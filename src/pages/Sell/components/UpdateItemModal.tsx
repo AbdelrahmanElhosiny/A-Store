@@ -6,6 +6,7 @@ import { Item } from "../../../features/itemSlice";
 import * as yup from "yup";
 import { Formik, Form, FormikConfig, FormikHelpers } from "formik";
 import TextFiled from "../../../components/form/TextField";
+import useNotification from "../../../hooks/useNotification";
 
 interface Props {
   item: Item | null;
@@ -28,6 +29,7 @@ const validationSchema = yup.object({
 
 const UpdateItemModal: React.FC<Props> = ({ item, itemName, closeDialog }) => {
   const { updateItem } = useSell();
+  const { showNotification } = useNotification();
   const dialogRef = useRef<HTMLDialogElement>(null);
 
   // const toggleDialog = () => {
@@ -53,6 +55,7 @@ const UpdateItemModal: React.FC<Props> = ({ item, itemName, closeDialog }) => {
     updateItem(values);
     formikHelpers.resetForm();
     closeDialog();
+    showNotification({ message: `${item.name} was updated!` });
   };
   const FormProps: FormikConfig<Item> = {
     initialValues,
