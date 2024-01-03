@@ -8,6 +8,7 @@ interface Item {
   price: number;
   stockNum: number;
   image?: File;
+  buyNum: number;
 }
 
 const initialState: Item[] = [
@@ -17,6 +18,7 @@ const initialState: Item[] = [
     price: 1,
     description: "1",
     stockNum: 1,
+    buyNum: 0,
   },
   {
     id: "2id",
@@ -24,6 +26,7 @@ const initialState: Item[] = [
     price: 2,
     description: "2",
     stockNum: 2,
+    buyNum: 0,
   },
   {
     id: "3id",
@@ -31,6 +34,7 @@ const initialState: Item[] = [
     price: 3,
     description: "3",
     stockNum: 3,
+    buyNum: 0,
   },
   {
     id: "4id",
@@ -38,6 +42,7 @@ const initialState: Item[] = [
     price: 4,
     description: "4",
     stockNum: 4,
+    buyNum: 0,
   },
   {
     id: "5id",
@@ -45,6 +50,7 @@ const initialState: Item[] = [
     price: 5,
     description: "5",
     stockNum: 5,
+    buyNum: 0,
   },
 ];
 
@@ -56,6 +62,7 @@ const itemSlice = createSlice({
     addNewItem: (state, action: PayloadAction<Item>) => {
       state.push(action.payload);
     },
+
     // updateItem
     updateItem: (state, action: PayloadAction<Item>) => {
       const id = _.findIndex(state, { id: action.payload.id });
@@ -67,6 +74,7 @@ const itemSlice = createSlice({
       //   return { ...item };
       // });
     },
+
     // removeItem
     removeItem: (state, action: PayloadAction<string>) => {
       _.remove(state, { id: action.payload });
@@ -77,9 +85,19 @@ const itemSlice = createSlice({
     //     1
     //   );
     // },
+
+    // buyItem
+    buyItem: (state, action: PayloadAction<Item>) => {
+      const id = _.findIndex(state, { id: action.payload.id });
+      if (state[id].stockNum >= 1) {
+        state[id].buyNum += 1;
+        state[id].stockNum -= 1;
+      } else return state;
+    },
   },
 });
 
 export type { Item };
-export const { addNewItem, updateItem, removeItem } = itemSlice.actions;
+export const { addNewItem, updateItem, removeItem, buyItem } =
+  itemSlice.actions;
 export default itemSlice.reducer;
