@@ -5,6 +5,7 @@ import {
   updateItem as updateItemAction,
   removeItem as removeItemAction,
   buyItem as buyItemAction,
+  addToCart as addToCartAction,
 } from "../../features/itemSlice";
 import { v4 as uuid } from "uuid";
 import { AppDispatch, RootState } from "../../app/store";
@@ -52,11 +53,16 @@ const useSell = () => {
     dispatch(buyItemAction(item));
   };
 
+  const addToCart = (item: Item) => {
+    dispatch(addToCartAction(item));
+  };
+
   return {
     addNewItem,
     updateItem,
     removeItem,
     buyItem,
+    addToCart,
     items,
   };
 };

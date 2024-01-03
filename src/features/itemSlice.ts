@@ -13,42 +13,42 @@ interface Item {
 
 const initialState: Item[] = [
   {
-    id: "1id",
-    name: "1name",
+    id: "1 id",
+    name: "1 name",
     price: 1,
-    description: "1",
+    description: "1 description",
     stockNum: 1,
     buyNum: 0,
   },
   {
-    id: "2id",
-    name: "2name",
+    id: "2 id",
+    name: "2 name",
     price: 2,
-    description: "2",
+    description: "2 description",
     stockNum: 2,
     buyNum: 0,
   },
   {
-    id: "3id",
-    name: "3name",
+    id: "3 id",
+    name: "3 name",
     price: 3,
-    description: "3",
+    description: "3 description",
     stockNum: 3,
     buyNum: 0,
   },
   {
-    id: "4id",
-    name: "4name",
+    id: "4 id",
+    name: "4 name",
     price: 4,
-    description: "4",
+    description: "4 description",
     stockNum: 4,
     buyNum: 0,
   },
   {
-    id: "5id",
-    name: "5name",
+    id: "5 id",
+    name: "5 name",
     price: 5,
-    description: "5",
+    description: "5 description",
     stockNum: 5,
     buyNum: 0,
   },
@@ -67,37 +67,31 @@ const itemSlice = createSlice({
     updateItem: (state, action: PayloadAction<Item>) => {
       const id = _.findIndex(state, { id: action.payload.id });
       state.splice(id, 1, action.payload);
-      // state.map((item) => {
-      //   if (item.id === action.payload.id) {
-      //     return action.payload;
-      //   }
-      //   return { ...item };
-      // });
     },
 
     // removeItem
     removeItem: (state, action: PayloadAction<string>) => {
       _.remove(state, { id: action.payload });
     },
-    // removeItem: (state, action: PayloadAction<Item>) => {
-    //   state.splice(
-    //     state.findIndex((item) => item.id === action.payload.id),
-    //     1
-    //   );
-    // },
 
     // buyItem
     buyItem: (state, action: PayloadAction<Item>) => {
       const id = _.findIndex(state, { id: action.payload.id });
-      if (state[id].stockNum >= 1) {
+      if (state[id].stockNum > 0) {
         state[id].buyNum += 1;
         state[id].stockNum -= 1;
       } else return state;
+    },
+
+    //addToCart
+    addToCart: (state, action: PayloadAction<Item>) => {
+      const id = _.findIndex(state, { id: action.payload.id });
+      state[id].buyNum < state[id].stockNum ? (state[id].buyNum += 1) : state;
     },
   },
 });
 
 export type { Item };
-export const { addNewItem, updateItem, removeItem, buyItem } =
+export const { addNewItem, updateItem, removeItem, buyItem, addToCart } =
   itemSlice.actions;
 export default itemSlice.reducer;
