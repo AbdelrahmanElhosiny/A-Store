@@ -4,7 +4,7 @@ import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 import useNotification from "../../hooks/useNotification";
 
-const SuccessMessage = () => {
+const NotificationMessage = () => {
   const { hideNotification, notification } = useNotification();
 
   return (
@@ -31,4 +31,4 @@ const Holder = styled.div`
   z-index: 100;
 `;
 
-export default SuccessMessage;
+export default NotificationMessage;

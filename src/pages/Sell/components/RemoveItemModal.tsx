@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 import useSell from "../useSell";
 import { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
+import useNotification from "../../../hooks/useNotification";
 
 interface Props {
   itemId: string | null;
@@ -15,6 +16,7 @@ const RemoveItemModal: React.FC<Props> = ({
   closeDialog,
 }) => {
   const { removeItem } = useSell();
+  const { showNotification } = useNotification();
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
@@ -39,6 +41,7 @@ const RemoveItemModal: React.FC<Props> = ({
         onClick={() => {
           removeItem(itemId);
           closeDialog();
+          showNotification({ message: `${itemName} was removed!` });
         }}
       >
         Remove

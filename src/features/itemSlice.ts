@@ -68,15 +68,15 @@ const itemSlice = createSlice({
       // });
     },
     // removeItem
+    removeItem: (state, action: PayloadAction<string>) => {
+      _.remove(state, { id: action.payload });
+    },
     // removeItem: (state, action: PayloadAction<Item>) => {
     //   state.splice(
     //     state.findIndex((item) => item.id === action.payload.id),
     //     1
     //   );
     // },
-    removeItem: (state, action: PayloadAction<string>) => {
-      _.remove(state, { id: action.payload });
-    },
   },
 });
 

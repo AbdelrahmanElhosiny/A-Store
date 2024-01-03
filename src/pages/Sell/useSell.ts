@@ -40,6 +40,7 @@ const useSell = () => {
 
   const updateItem = (item: Item) => {
     dispatch(updateItemAction(item));
+    showNotification({ message: `${item.name} was updated!` });
   };
 
   const removeItem = (itemId: string | null) => {
