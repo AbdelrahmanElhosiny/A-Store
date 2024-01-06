@@ -4,10 +4,11 @@ import colorD from "../../styles/colorD";
 import useBuy from "./useBuy";
 
 const BuyHome = () => {
-  const { items, addToCart } = useBuy();
+  const { items, addToCart, addItemToUserCart } = useBuy();
 
   return (
     <Holder>
+      <h2>Buy items</h2>
       <div className="container">
         {items.map((item) => {
           const { name, description, id, price, stockNum } = item;
@@ -20,6 +21,7 @@ const BuyHome = () => {
               <Button
                 onClick={() => {
                   addToCart(item);
+                  addItemToUserCart(item);
                 }}
               >
                 Add to cart

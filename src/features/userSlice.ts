@@ -1,4 +1,6 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { Item } from "./itemSlice";
+import _ from "lodash";
 
 interface PillingInfo {
   cardNum: number;
@@ -14,16 +16,16 @@ interface User {
   phoneNum: number;
   isActive: boolean;
   pillingInfo: PillingInfo[];
-  items: ItemStatus[];
+  items: Item[];
 }
-interface ItemStatus {
-  itemId: string;
-  isInCart: boolean;
-  isOrdered: boolean;
-  isShipped: boolean;
-  isOutForDelivery: boolean;
-  isDelivered: boolean;
-}
+// interface ItemStatus {
+//   itemId: string;
+//   isInCart: boolean;
+//   isOrdered: boolean;
+//   isShipped: boolean;
+//   isOutForDelivery: boolean;
+//   isDelivered: boolean;
+// }
 
 const initialState: User[] = [
   {
@@ -46,9 +48,15 @@ const userSlice = createSlice({
     // removeUser
     // setActiveUser
     // addToCart
+    addItemToUserCart: (state, action: PayloadAction<Item>) => {
+      const userName = _.findIndex(state, { userName: "Mohammed Ali" });
+      state[userName].items.push(action.payload);
+    },
     // checkout
     // delivery (4)
   },
 });
 
+export type { User };
+export const { addItemToUserCart } = userSlice.actions;
 export default userSlice.reducer;
