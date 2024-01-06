@@ -4,8 +4,6 @@ import {
   addNewItem as addNewItemAction,
   updateItem as updateItemAction,
   removeItem as removeItemAction,
-  buyItem as buyItemAction,
-  addToCart as addToCartAction,
 } from "../../features/itemSlice";
 import { v4 as uuid } from "uuid";
 import { AppDispatch, RootState } from "../../app/store";
@@ -16,7 +14,7 @@ interface AddItemFormFields {
   description: string;
   price: string;
   stockNum: string;
-  buyNum: number;
+  inCartNum: number;
   image?: File;
 }
 
@@ -43,26 +41,17 @@ const useSell = () => {
 
   const updateItem = (item: Item) => {
     dispatch(updateItemAction(item));
+    showNotification({ message: `${item.name} was updated!` });
   };
 
   const removeItem = (itemId: string | null) => {
     itemId && dispatch(removeItemAction(itemId));
   };
 
-  const buyItem = (item: Item) => {
-    dispatch(buyItemAction(item));
-  };
-
-  const addToCart = (item: Item) => {
-    dispatch(addToCartAction(item));
-  };
-
   return {
     addNewItem,
     updateItem,
     removeItem,
-    buyItem,
-    addToCart,
     items,
   };
 };

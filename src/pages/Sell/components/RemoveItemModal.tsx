@@ -20,15 +20,6 @@ const RemoveItemModal: React.FC<Props> = ({
 
   const dialogRef = useRef<HTMLDialogElement>(null);
 
-  // const toggleDialog = () => {
-  //   if (!dialogRef.current) {
-  //     return;
-  //   }
-  //   dialogRef.current
-  //     ? dialogRef.current.close()
-  //     : dialogRef.current.showModal();
-  // };
-
   useEffect(() => {
     itemId && dialogRef.current?.showModal();
   }, [itemId]);
