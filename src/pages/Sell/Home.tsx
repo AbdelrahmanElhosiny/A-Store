@@ -15,7 +15,7 @@ const SellHome = () => {
 
   return (
     <Holder>
-      <h1>Edit and remove items</h1>
+      <h2>Edit and remove items</h2>
       <RemoveItemModal
         itemId={removedItemId}
         itemName={removedItemName}

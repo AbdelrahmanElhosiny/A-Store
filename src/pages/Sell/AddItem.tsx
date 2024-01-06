@@ -46,7 +46,7 @@ const AddItem = () => {
 
   return (
     <>
-      <h1>Add new item</h1>
+      <h2>Add new item</h2>
       <Formik {...FormProps}>
         <Form>
           <TextFiled name="name" label="Name" />
