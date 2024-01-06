@@ -8,7 +8,7 @@ interface Item {
   price: number;
   stockNum: number;
   image?: File;
-  buyNum: number;
+  inCartNum: number;
 }
 
 const initialState: Item[] = [
@@ -18,7 +18,7 @@ const initialState: Item[] = [
     price: 1,
     description: "1 description",
     stockNum: 1,
-    buyNum: 0,
+    inCartNum: 0,
   },
   {
     id: "2 id",
@@ -26,7 +26,7 @@ const initialState: Item[] = [
     price: 2,
     description: "2 description",
     stockNum: 2,
-    buyNum: 0,
+    inCartNum: 0,
   },
   {
     id: "3 id",
@@ -34,7 +34,7 @@ const initialState: Item[] = [
     price: 3,
     description: "3 description",
     stockNum: 3,
-    buyNum: 0,
+    inCartNum: 0,
   },
   {
     id: "4 id",
@@ -42,7 +42,7 @@ const initialState: Item[] = [
     price: 4,
     description: "4 description",
     stockNum: 4,
-    buyNum: 0,
+    inCartNum: 0,
   },
   {
     id: "5 id",
@@ -50,7 +50,7 @@ const initialState: Item[] = [
     price: 5,
     description: "5 description",
     stockNum: 5,
-    buyNum: 0,
+    inCartNum: 0,
   },
 ];
 
@@ -78,15 +78,16 @@ const itemSlice = createSlice({
     buyItem: (state, action: PayloadAction<Item>) => {
       const id = _.findIndex(state, { id: action.payload.id });
       if (state[id].stockNum > 0) {
-        state[id].buyNum += 1;
-        state[id].stockNum -= 1;
+        state[id].stockNum -= state[id].inCartNum;
       } else return state;
     },
 
     //addToCart
     addToCart: (state, action: PayloadAction<Item>) => {
       const id = _.findIndex(state, { id: action.payload.id });
-      state[id].buyNum < state[id].stockNum ? (state[id].buyNum += 1) : state;
+      state[id].inCartNum < state[id].stockNum
+        ? (state[id].inCartNum += 1)
+        : state;
     },
   },
 });
