@@ -10,7 +10,6 @@ const initialValues: AddItemFormFields = {
   description: "",
   price: "",
   stockNum: "",
-  inCartNum: 0,
 };
 const validationSchema = yup.object({
   name: yup.string().required("Required"),
