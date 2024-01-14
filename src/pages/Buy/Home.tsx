@@ -4,7 +4,7 @@ import colorD from "../../styles/colorD";
 import useBuy from "./useBuy";
 
 const BuyHome = () => {
-  const { items, addToCart, addItemToUserCart } = useBuy();
+  const { items, addItemToUserCart } = useBuy();
 
   return (
     <Holder>
@@ -20,8 +20,7 @@ const BuyHome = () => {
               <div className="stock-num">{stockNum}</div>
               <Button
                 onClick={() => {
-                  addToCart(item);
-                  addItemToUserCart(item);
+                  addItemToUserCart(item.id);
                 }}
               >
                 Add to cart

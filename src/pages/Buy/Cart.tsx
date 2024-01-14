@@ -2,33 +2,42 @@ import styled from "@emotion/styled";
 import { Button } from "@mui/material";
 import colorD from "../../styles/colorD";
 import useBuy from "./useBuy";
+import _ from "lodash";
 
 const Cart = () => {
-  const { users, buyItem } = useBuy();
+  const { cartItems, users, buyItem, activeUserIndex } = useBuy();
+
+  const hasCartItem: boolean = cartItems.length > 0;
 
   return (
     <Holder>
-      <h2>Cart</h2>
-      <div className="container">
-        {users[0].items.map((item) => {
-          const { name, description, id, price, stockNum } = item;
-          return (
-            <div className="card" key={id}>
-              <div className="name">{name}</div>
-              <div className="description">{description}</div>
-              <div className="price">{price}</div>
-              <div className="stock-num">{stockNum}</div>
-              <Button
-                onClick={() => {
-                  buyItem(item);
-                }}
-              >
-                Checkout
-              </Button>
-            </div>
-          );
-        })}
-      </div>
+      {hasCartItem && (
+        <>
+          <h2>Cart</h2>
+          <div className="container">
+            {cartItems.map((item) => {
+              if (!item) return;
+              const { name, description, id, price, stockNum } = item;
+              return (
+                <div className="card" key={id}>
+                  <div className="name">{name}</div>
+                  <div className="description">{description}</div>
+                  <div className="price">{price}</div>
+                  <div className="stock-num">{stockNum}</div>
+                  <Button
+                    onClick={() => {
+                      buyItem(users[activeUserIndex].items[0]);
+                    }}
+                  >
+                    Checkout
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+      {!hasCartItem && <h2>Cart Empty</h2>}
     </Holder>
   );
 };

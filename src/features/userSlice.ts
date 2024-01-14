@@ -1,5 +1,4 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { Item } from "./itemSlice";
 import _ from "lodash";
 
 interface PillingInfo {
@@ -16,16 +15,16 @@ interface User {
   phoneNum: number;
   isActive: boolean;
   pillingInfo: PillingInfo[];
-  items: Item[];
+  items: ItemStatus[];
 }
-// interface ItemStatus {
-//   itemId: string;
-//   isInCart: boolean;
-//   isOrdered: boolean;
-//   isShipped: boolean;
-//   isOutForDelivery: boolean;
-//   isDelivered: boolean;
-// }
+interface ItemStatus {
+  itemId: string;
+  inCartNum: number;
+  // isOrdered?: boolean;
+  // isShipped?: boolean;
+  // isOutForDelivery?: boolean;
+  // isDelivered?: boolean;
+}
 
 const initialState: User[] = [
   {
@@ -34,7 +33,7 @@ const initialState: User[] = [
     optAddress: "",
     zipCode: 123,
     phoneNum: 123,
-    isActive: false,
+    isActive: true,
     pillingInfo: [],
     items: [],
   },
@@ -47,16 +46,33 @@ const userSlice = createSlice({
     // addNewUSer
     // removeUser
     // setActiveUser
-    // addToCart
-    addItemToUserCart: (state, action: PayloadAction<Item>) => {
-      const userName = _.findIndex(state, { userName: "Mohammed Ali" });
-      state[userName].items.push(action.payload);
+    setActiveUser: (state) => {
+      _.map(state, { isActive: false });
     },
-    // checkout
+    // addItemToCart
+    addItemToUserCart: (state, action: PayloadAction<string>) => {
+      const activeUser = _.findIndex(state, { isActive: true });
+      const items = state[activeUser].items;
+      const isItemAddedToCartBefore = _.includes(
+        _.map(items, "itemId"),
+        action.payload
+      );
+      const itemInCartIndex = items.findIndex(
+        ({ itemId }) => itemId === action.payload
+      );
+
+      if (isItemAddedToCartBefore) {
+        items[itemInCartIndex].inCartNum++;
+        return;
+      } else items.push({ itemId: action.payload, inCartNum: 1 });
+    },
+    //removeItemFromCart
+    removeItemFromCart: () => {},
+    setItemOrdered: () => {}, //this will happened before you remove item if you bought it
     // delivery (4)
   },
 });
 
-export type { User };
-export const { addItemToUserCart } = userSlice.actions;
+export type { User, ItemStatus };
+export const { addItemToUserCart, setActiveUser } = userSlice.actions;
 export default userSlice.reducer;

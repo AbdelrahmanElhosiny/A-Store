@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
+import { ItemStatus } from "./userSlice";
 
 interface Item {
   id: string;
@@ -8,7 +9,6 @@ interface Item {
   price: number;
   stockNum: number;
   image?: File;
-  inCartNum: number;
 }
 
 const initialState: Item[] = [
@@ -18,7 +18,6 @@ const initialState: Item[] = [
     price: 1,
     description: "1 description",
     stockNum: 1,
-    inCartNum: 0,
   },
   {
     id: "2 id",
@@ -26,7 +25,6 @@ const initialState: Item[] = [
     price: 2,
     description: "2 description",
     stockNum: 2,
-    inCartNum: 0,
   },
   {
     id: "3 id",
@@ -34,7 +32,6 @@ const initialState: Item[] = [
     price: 3,
     description: "3 description",
     stockNum: 3,
-    inCartNum: 0,
   },
   {
     id: "4 id",
@@ -42,7 +39,6 @@ const initialState: Item[] = [
     price: 4,
     description: "4 description",
     stockNum: 4,
-    inCartNum: 0,
   },
   {
     id: "5 id",
@@ -50,7 +46,6 @@ const initialState: Item[] = [
     price: 5,
     description: "5 description",
     stockNum: 5,
-    inCartNum: 0,
   },
 ];
 
@@ -65,8 +60,8 @@ const itemSlice = createSlice({
 
     // updateItem
     updateItem: (state, action: PayloadAction<Item>) => {
-      const id = _.findIndex(state, { id: action.payload.id });
-      state.splice(id, 1, action.payload);
+      const idIndex = _.findIndex(state, { id: action.payload.id });
+      state.splice(idIndex, 1, action.payload);
     },
 
     // removeItem
@@ -75,24 +70,25 @@ const itemSlice = createSlice({
     },
 
     // buyItem
-    buyItem: (state, action: PayloadAction<Item>) => {
-      const id = _.findIndex(state, { id: action.payload.id });
-      if (state[id].stockNum > 0) {
-        state[id].stockNum -= state[id].inCartNum;
-      } else return state;
+    buyItem: (state, action: PayloadAction<ItemStatus>) => {
+      const id = _.findIndex(state, { id: action.payload.itemId });
+      state[id].stockNum -= action.payload.inCartNum;
+      // if (state[id].stockNum > 0) {
+      //   state[id].stockNum -= state[id].inCartNum;
+      // } else return state;
     },
 
     //addToCart
-    addToCart: (state, action: PayloadAction<Item>) => {
-      const id = _.findIndex(state, { id: action.payload.id });
-      state[id].inCartNum < state[id].stockNum
-        ? (state[id].inCartNum += 1)
-        : state;
-    },
+    // addToCart: (state, action: PayloadAction<Item>) => {
+    //   const id = _.findIndex(state, { id: action.payload.id });
+    //   state[id].inCartNum < state[id].stockNum
+    //     ? (state[id].inCartNum += 1)
+    //     : state;
+    // },
   },
 });
 
 export type { Item };
-export const { addNewItem, updateItem, removeItem, buyItem, addToCart } =
+export const { addNewItem, updateItem, removeItem, buyItem } =
   itemSlice.actions;
 export default itemSlice.reducer;
