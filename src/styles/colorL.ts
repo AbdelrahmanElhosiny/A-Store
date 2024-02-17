@@ -17,7 +17,6 @@ const colorL = {
   aquaB: "#427b58",
   orangeB: "#af3a03",
   grayB: "#7c6f64",
-  grayD: "#7c6f64",
 };
 
 export default colorL;
