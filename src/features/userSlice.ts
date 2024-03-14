@@ -37,6 +37,16 @@ const initialState: User[] = [
     pillingInfo: [],
     items: [],
   },
+  {
+    userName: "Ali Ahmed",
+    address: "abc street",
+    optAddress: "",
+    zipCode: 123,
+    phoneNum: 123,
+    isActive: false,
+    pillingInfo: [],
+    items: [],
+  },
 ];
 
 const userSlice = createSlice({

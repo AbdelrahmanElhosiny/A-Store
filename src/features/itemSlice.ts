@@ -72,10 +72,10 @@ const itemSlice = createSlice({
     // buyItem
     buyItem: (state, action: PayloadAction<ItemStatus>) => {
       const id = _.findIndex(state, { id: action.payload.itemId });
-      state[id].stockNum -= action.payload.inCartNum;
-      // if (state[id].stockNum > 0) {
-      //   state[id].stockNum -= state[id].inCartNum;
-      // } else return state;
+      if (state[id].stockNum > 0) {
+        state[id].stockNum -= action.payload.inCartNum;
+      } else return state;
+      console.log(action.payload.itemId);
     },
 
     //addToCart

@@ -17,7 +17,6 @@ const useBuy = () => {
   // const { showNotification } = useNotification();
 
   const activeUserIndex = _.findIndex(users, { isActive: true });
-
   const cartItemsIds = users[activeUserIndex].items.map(({ itemId }) => itemId);
   const cartItems = items
     .map((item) => {
@@ -25,6 +24,9 @@ const useBuy = () => {
       return isItemInCart && item;
     })
     .filter((item) => !!item);
+
+  const cartItemsIndex = (itemId: string) =>
+    _.findIndex(users[activeUserIndex].items, { itemId: itemId });
 
   //------------------
   // Handlers
@@ -49,6 +51,7 @@ const useBuy = () => {
     items,
     cartItems,
     users,
+    cartItemsIndex,
   };
 };
 

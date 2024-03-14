@@ -5,7 +5,8 @@ import useBuy from "./useBuy";
 import _ from "lodash";
 
 const Cart = () => {
-  const { cartItems, users, buyItem, activeUserIndex } = useBuy();
+  const { cartItems, users, buyItem, activeUserIndex, cartItemsIndex } =
+    useBuy();
 
   const hasCartItem: boolean = cartItems.length > 0;
 
@@ -26,7 +27,7 @@ const Cart = () => {
                   <div className="stock-num">{stockNum}</div>
                   <Button
                     onClick={() => {
-                      buyItem(users[activeUserIndex].items[0]);
+                      buyItem(users[activeUserIndex].items[cartItemsIndex(id)]);
                     }}
                   >
                     Checkout
