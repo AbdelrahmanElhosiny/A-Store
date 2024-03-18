@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
+import { Item } from "./itemSlice";
 
 interface PillingInfo {
   cardNum: number;
@@ -15,15 +16,11 @@ interface User {
   phoneNum: number;
   isActive: boolean;
   pillingInfo: PillingInfo[];
-  items: ItemStatus[];
+  cart: CartItemStatus[];
 }
-interface ItemStatus {
+interface CartItemStatus {
   itemId: string;
   inCartNum: number;
-  // isOrdered?: boolean;
-  // isShipped?: boolean;
-  // isOutForDelivery?: boolean;
-  // isDelivered?: boolean;
 }
 
 const initialState: User[] = [
@@ -35,7 +32,7 @@ const initialState: User[] = [
     phoneNum: 123,
     isActive: true,
     pillingInfo: [],
-    items: [],
+    cart: [],
   },
   {
     userName: "Ali Ahmed",
@@ -45,7 +42,7 @@ const initialState: User[] = [
     phoneNum: 123,
     isActive: false,
     pillingInfo: [],
-    items: [],
+    cart: [],
   },
 ];
 
@@ -60,29 +57,40 @@ const userSlice = createSlice({
       _.map(state, { isActive: false });
     },
     // addItemToCart
-    addItemToUserCart: (state, action: PayloadAction<string>) => {
+    addItemToUserCart: (state, action: PayloadAction<Item>) => {
       const activeUser = _.findIndex(state, { isActive: true });
-      const items = state[activeUser].items;
+      const items = state[activeUser].cart;
       const isItemAddedToCartBefore = _.includes(
         _.map(items, "itemId"),
-        action.payload
+        action.payload.id
       );
       const itemInCartIndex = items.findIndex(
-        ({ itemId }) => itemId === action.payload
+        ({ itemId }) => itemId === action.payload.id
       );
 
-      if (isItemAddedToCartBefore) {
+      if (
+        isItemAddedToCartBefore &&
+        action.payload.stockNum > items[itemInCartIndex].inCartNum
+      ) {
         items[itemInCartIndex].inCartNum++;
         return;
-      } else items.push({ itemId: action.payload, inCartNum: 1 });
+      } else if (isItemAddedToCartBefore) {
+        return state;
+      } else items.push({ itemId: action.payload.id, inCartNum: 1 });
     },
     //removeItemFromCart
-    removeItemFromCart: () => {},
+    removeItemFromCart: (state, action: PayloadAction<string>) => {
+      const activeUser = _.findIndex(state, { isActive: true });
+      const items = state[activeUser].cart;
+      _.remove(items, { itemId: action.payload });
+    },
+
     setItemOrdered: () => {}, //this will happened before you remove item if you bought it
     // delivery (4)
   },
 });
 
-export type { User, ItemStatus };
-export const { addItemToUserCart, setActiveUser } = userSlice.actions;
+export type { User, CartItemStatus as ItemStatus };
+export const { addItemToUserCart, setActiveUser, removeItemFromCart } =
+  userSlice.actions;
 export default userSlice.reducer;
