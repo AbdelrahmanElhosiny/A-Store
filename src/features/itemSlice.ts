@@ -72,19 +72,10 @@ const itemSlice = createSlice({
     // buyItem
     buyItem: (state, action: PayloadAction<ItemStatus>) => {
       const id = _.findIndex(state, { id: action.payload.itemId });
-      if (state[id].stockNum > 0) {
+      if (state[id].stockNum >= action.payload.inCartNum) {
         state[id].stockNum -= action.payload.inCartNum;
       } else return state;
-      console.log(action.payload.itemId);
     },
-
-    //addToCart
-    // addToCart: (state, action: PayloadAction<Item>) => {
-    //   const id = _.findIndex(state, { id: action.payload.id });
-    //   state[id].inCartNum < state[id].stockNum
-    //     ? (state[id].inCartNum += 1)
-    //     : state;
-    // },
   },
 });
 
