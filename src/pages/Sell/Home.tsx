@@ -35,8 +35,8 @@ const SellHome = () => {
             <div className="card" key={id}>
               <div className="name">{name}</div>
               <div className="description">{description}</div>
-              <div className="price">{price}</div>
-              <div className="stock-num">{stockNum}</div>
+              <div className="price">{`Price ${price}`}</div>
+              <div className="stock-num">{`StockNum ${stockNum}`}</div>
               <Button
                 onClick={() => {
                   setUpdatedItem(item);

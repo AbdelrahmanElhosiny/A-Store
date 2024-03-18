@@ -31,7 +31,7 @@ const Cart = () => {
                   <div className="description">{description}</div>
                   <div className="price">{`Price ${price}`}</div>
                   <div className="stock-num">{`StockNum ${stockNum}`}</div>
-                  <div className="cartNumCount">{`${
+                  <div className="cart-num-count">{`${
                     users[activeUserIndex].cart[cartItemsIndex(id)].inCartNum
                   } in cart`}</div>
                   <Button
@@ -71,7 +71,7 @@ const Holder = styled.div`
       width: 15em;
       height: 20em;
     }
-    .cartNumCount {
+    .cart-num-count {
       font-weight: 900;
     }
   }
