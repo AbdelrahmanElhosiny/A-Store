@@ -12,21 +12,23 @@ const BuyHome = () => {
       <div className="container">
         {items.map((item) => {
           const { name, description, id, price, stockNum } = item;
-          return (
-            <div className="card" key={id}>
-              <div className="name">{name}</div>
-              <div className="description">{description}</div>
-              <div className="price">{price}</div>
-              <div className="stock-num">{stockNum}</div>
-              <Button
-                onClick={() => {
-                  addItemToUserCart(item.id);
-                }}
-              >
-                Add to cart
-              </Button>
-            </div>
-          );
+          if (stockNum > 0) {
+            return (
+              <div className="card" key={id}>
+                <div className="name">{name}</div>
+                <div className="description">{description}</div>
+                <div className="price">{`Price ${price}`}</div>
+                <div className="stock-num">{`StockNum ${stockNum}`}</div>
+                <Button
+                  onClick={() => {
+                    addItemToUserCart(item);
+                  }}
+                >
+                  Add to cart
+                </Button>
+              </div>
+            );
+          }
         })}
       </div>
     </Holder>

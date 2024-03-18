@@ -5,8 +5,14 @@ import useBuy from "./useBuy";
 import _ from "lodash";
 
 const Cart = () => {
-  const { cartItems, users, buyItem, activeUserIndex, cartItemsIndex } =
-    useBuy();
+  const {
+    cartItems,
+    users,
+    buyItem,
+    activeUserIndex,
+    cartItemsIndex,
+    removeItemFromCart,
+  } = useBuy();
 
   const hasCartItem: boolean = cartItems.length > 0;
 
@@ -23,14 +29,24 @@ const Cart = () => {
                 <div className="card" key={id}>
                   <div className="name">{name}</div>
                   <div className="description">{description}</div>
-                  <div className="price">{price}</div>
-                  <div className="stock-num">{stockNum}</div>
+                  <div className="price">{`Price ${price}`}</div>
+                  <div className="stock-num">{`StockNum ${stockNum}`}</div>
+                  <div className="cartNumCount">{`${
+                    users[activeUserIndex].cart[cartItemsIndex(id)].inCartNum
+                  } in cart`}</div>
                   <Button
                     onClick={() => {
-                      buyItem(users[activeUserIndex].items[cartItemsIndex(id)]);
+                      buyItem(users[activeUserIndex].cart[cartItemsIndex(id)]);
                     }}
                   >
                     Checkout
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      removeItemFromCart(id);
+                    }}
+                  >
+                    Remove
                   </Button>
                 </div>
               );
@@ -54,6 +70,9 @@ const Holder = styled.div`
       background-color: ${colorD.fg};
       width: 15em;
       height: 20em;
+    }
+    .cartNumCount {
+      font-weight: 900;
     }
   }
 `;

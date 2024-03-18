@@ -5,6 +5,7 @@ import {
   User,
   addItemToUserCart as addItemToUserCartAction,
   setActiveUser as setActiveUserAction,
+  removeItemFromCart as removeItemFromCartAction,
 } from "../../features/userSlice";
 import { AppDispatch, RootState } from "../../app/store";
 import _ from "lodash";
@@ -16,8 +17,11 @@ const useBuy = () => {
   const users = useSelector<RootState>((store) => store.users) as User[];
   // const { showNotification } = useNotification();
 
+  //------------------
+  // definers
+  //------------------
   const activeUserIndex = _.findIndex(users, { isActive: true });
-  const cartItemsIds = users[activeUserIndex].items.map(({ itemId }) => itemId);
+  const cartItemsIds = users[activeUserIndex].cart.map(({ itemId }) => itemId);
   const cartItems = items
     .map((item) => {
       const isItemInCart = _.includes(cartItemsIds, item.id);
@@ -26,7 +30,7 @@ const useBuy = () => {
     .filter((item) => !!item);
 
   const cartItemsIndex = (itemId: string) =>
-    _.findIndex(users[activeUserIndex].items, { itemId: itemId });
+    _.findIndex(users[activeUserIndex].cart, { itemId: itemId });
 
   //------------------
   // Handlers
@@ -39,8 +43,12 @@ const useBuy = () => {
     dispatch(buyItemAction(item));
   };
 
-  const addItemToUserCart = (itemId: string) => {
-    dispatch(addItemToUserCartAction(itemId));
+  const addItemToUserCart = (item: Item) => {
+    dispatch(addItemToUserCartAction(item));
+  };
+
+  const removeItemFromCart = (itemId: string) => {
+    dispatch(removeItemFromCartAction(itemId));
   };
 
   return {
@@ -52,6 +60,7 @@ const useBuy = () => {
     cartItems,
     users,
     cartItemsIndex,
+    removeItemFromCart,
   };
 };
 
