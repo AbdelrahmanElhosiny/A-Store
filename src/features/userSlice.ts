@@ -2,12 +2,6 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { Item } from "./itemSlice";
 
-interface PillingInfo {
-  cardNum: number;
-  cvv: number;
-  expireDate: number;
-}
-
 interface User {
   userName: string;
   address: string;
@@ -15,12 +9,24 @@ interface User {
   zipCode: number;
   phoneNum: number;
   isActive: boolean;
-  pillingInfo: PillingInfo[];
   cart: CartItemStatus[];
+  orderedItems: OrderedItemStatus[];
+  pillingInfo: PillingInfo[];
 }
 interface CartItemStatus {
   itemId: string;
   inCartNum: number;
+}
+interface OrderedItemStatus {
+  itemId: string;
+  orderedNum: number;
+  isInDelivery?: boolean;
+  isDelivered?: boolean;
+}
+interface PillingInfo {
+  cardNum: number;
+  cvv: number;
+  expireDate: number;
 }
 
 const initialState: User[] = [
@@ -31,8 +37,9 @@ const initialState: User[] = [
     zipCode: 123,
     phoneNum: 123,
     isActive: true,
-    pillingInfo: [],
     cart: [],
+    orderedItems: [],
+    pillingInfo: [],
   },
   {
     userName: "Ali Ahmed",
@@ -41,8 +48,9 @@ const initialState: User[] = [
     zipCode: 123,
     phoneNum: 123,
     isActive: false,
-    pillingInfo: [],
     cart: [],
+    orderedItems: [],
+    pillingInfo: [],
   },
 ];
 
@@ -85,7 +93,7 @@ const userSlice = createSlice({
       _.remove(items, { itemId: action.payload });
     },
 
-    setItemOrdered: () => {}, //this will happened before you remove item if you bought it
+    addItemToOrdered: () => {}, //this will happened before you remove item if you bought it
     // delivery (4)
   },
 });
