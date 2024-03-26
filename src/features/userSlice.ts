@@ -72,15 +72,15 @@ const userSlice = createSlice({
         _.map(items, "itemId"),
         action.payload.id
       );
-      const itemInCartIndex = items.findIndex(
+      const itemIndex = items.findIndex(
         ({ itemId }) => itemId === action.payload.id
       );
 
       if (
         isItemAddedToCartBefore &&
-        action.payload.stockNum > items[itemInCartIndex].inCartNum
+        action.payload.stockNum > items[itemIndex].inCartNum
       ) {
-        items[itemInCartIndex].inCartNum++;
+        items[itemIndex].inCartNum++;
         return;
       } else if (isItemAddedToCartBefore) {
         return state;
@@ -93,12 +93,34 @@ const userSlice = createSlice({
       _.remove(items, { itemId: action.payload });
     },
 
-    addItemToOrdered: () => {}, //this will happened before you remove item if you bought it
+    addItemToOrdered: (state, action: PayloadAction<CartItemStatus>) => {
+      const activeUser = _.findIndex(state, { isActive: true });
+      const items = state[activeUser].orderedItems;
+      const isItemOrderedBefore = _.includes(
+        _.map(items, "itemId"),
+        action.payload.itemId
+      );
+      const itemIndex = items.findIndex(
+        ({ itemId }) => itemId === action.payload.itemId
+      );
+
+      if (isItemOrderedBefore) {
+        items[itemIndex].orderedNum += action.payload.inCartNum;
+      } else
+        items.push({
+          itemId: action.payload.itemId,
+          orderedNum: action.payload.inCartNum,
+        });
+    },
     // delivery (4)
   },
 });
 
-export type { User, CartItemStatus as ItemStatus };
-export const { addItemToUserCart, setActiveUser, removeItemFromCart } =
-  userSlice.actions;
+export type { User, OrderedItemStatus, CartItemStatus };
+export const {
+  addItemToUserCart,
+  setActiveUser,
+  removeItemFromCart,
+  addItemToOrdered,
+} = userSlice.actions;
 export default userSlice.reducer;

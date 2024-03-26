@@ -1,11 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Item, buyItem as buyItemAction } from "../../features/itemSlice";
 import {
-  ItemStatus,
+  OrderedItemStatus,
   User,
   addItemToUserCart as addItemToUserCartAction,
   setActiveUser as setActiveUserAction,
   removeItemFromCart as removeItemFromCartAction,
+  addItemToOrdered as addItemToOrderedAction,
+  CartItemStatus,
 } from "../../features/userSlice";
 import { AppDispatch, RootState } from "../../app/store";
 import _ from "lodash";
@@ -39,7 +41,8 @@ const useBuy = () => {
     dispatch(setActiveUserAction());
   };
 
-  const buyItem = (item: ItemStatus) => {
+  const orderItem = (item: CartItemStatus) => {
+    dispatch(addItemToOrderedAction(item));
     dispatch(buyItemAction(item));
   };
 
@@ -53,7 +56,6 @@ const useBuy = () => {
 
   return {
     setActiveUser,
-    buyItem,
     addItemToUserCart,
     activeUserIndex,
     items,
@@ -61,6 +63,7 @@ const useBuy = () => {
     users,
     cartItemsIndex,
     removeItemFromCart,
+    orderItem,
   };
 };
 

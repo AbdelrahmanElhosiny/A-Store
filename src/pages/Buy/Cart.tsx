@@ -8,10 +8,10 @@ const Cart = () => {
   const {
     cartItems,
     users,
-    buyItem,
     activeUserIndex,
     cartItemsIndex,
     removeItemFromCart,
+    orderItem,
   } = useBuy();
 
   const hasCartItem: boolean = cartItems.length > 0;
@@ -36,10 +36,13 @@ const Cart = () => {
                   } in cart`}</div>
                   <Button
                     onClick={() => {
-                      buyItem(users[activeUserIndex].cart[cartItemsIndex(id)]);
+                      orderItem(
+                        users[activeUserIndex].cart[cartItemsIndex(id)]
+                      );
+                      removeItemFromCart(id);
                     }}
                   >
-                    Checkout
+                    Order
                   </Button>
                   <Button
                     onClick={() => {

@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
-import { ItemStatus } from "./userSlice";
+import { CartItemStatus, OrderedItemStatus } from "./userSlice";
 
 interface Item {
   id: string;
@@ -70,7 +70,7 @@ const itemSlice = createSlice({
     },
 
     // buyItem
-    buyItem: (state, action: PayloadAction<ItemStatus>) => {
+    buyItem: (state, action: PayloadAction<CartItemStatus>) => {
       const id = _.findIndex(state, { id: action.payload.itemId });
       if (state[id].stockNum >= action.payload.inCartNum) {
         state[id].stockNum -= action.payload.inCartNum;
