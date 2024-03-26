@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
-import { CartItemStatus, OrderedItemStatus } from "./userSlice";
+import { CartItemStatus } from "./userSlice";
 
 interface Item {
   id: string;

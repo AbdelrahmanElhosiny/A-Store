@@ -14,7 +14,6 @@ interface AddItemFormFields {
   description: string;
   price: string;
   stockNum: string;
-  inCartNum: number;
   image?: File;
 }
 

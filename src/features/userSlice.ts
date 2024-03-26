@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { Item } from "./itemSlice";
+import { v4 as uuid } from "uuid";
 
 interface User {
   userName: string;
@@ -18,6 +19,7 @@ interface CartItemStatus {
   inCartNum: number;
 }
 interface OrderedItemStatus {
+  orderId: string;
   itemId: string;
   orderedNum: number;
   isInDelivery?: boolean;
@@ -96,21 +98,12 @@ const userSlice = createSlice({
     addItemToOrdered: (state, action: PayloadAction<CartItemStatus>) => {
       const activeUser = _.findIndex(state, { isActive: true });
       const items = state[activeUser].orderedItems;
-      const isItemOrderedBefore = _.includes(
-        _.map(items, "itemId"),
-        action.payload.itemId
-      );
-      const itemIndex = items.findIndex(
-        ({ itemId }) => itemId === action.payload.itemId
-      );
 
-      if (isItemOrderedBefore) {
-        items[itemIndex].orderedNum += action.payload.inCartNum;
-      } else
-        items.push({
-          itemId: action.payload.itemId,
-          orderedNum: action.payload.inCartNum,
-        });
+      items.push({
+        orderId: uuid(),
+        itemId: action.payload.itemId,
+        orderedNum: action.payload.inCartNum,
+      });
     },
     // delivery (4)
   },
