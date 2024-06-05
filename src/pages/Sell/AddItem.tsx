@@ -12,16 +12,16 @@ const initialValues: AddItemFormFields = {
   stockNum: "",
 };
 const validationSchema = yup.object({
-  name: yup.string().required("Required"),
-  description: yup.string().required("Required"),
+  name: yup.string().required("* Required!"),
+  description: yup.string().required("* Required!"),
   price: yup
     .number()
     .min(1, "Price can't be less than or equal to 0")
-    .required("Required"),
+    .required("* Required!"),
   stockNum: yup
     .number()
     .min(1, "At least 10 units must be in stock for new items")
-    .required("Required"),
+    .required("* Required!"),
 });
 
 //------------------

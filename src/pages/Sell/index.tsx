@@ -3,6 +3,8 @@ import Layout from "../../layout/Layout";
 import NavBar from "../../components/NavBar";
 import { ROUTE_INDEX, SELL_ROUTE } from "../../constant/routeConstant";
 import styled from "@emotion/styled";
+import { ThemeProvider } from "@mui/material";
+import sellTheme from "../../styles/sellTheme";
 
 // -------------------
 // define links array
@@ -38,11 +40,13 @@ const MainComponent = () => {
 // -----------------
 const SellIndex = () => {
   return (
-    <Layout
-      NavBar={<NavbarComponent />}
-      MainComponent={<MainComponent />}
-      Theme="sell"
-    />
+    <ThemeProvider theme={sellTheme}>
+      <Layout
+        NavBar={<NavbarComponent />}
+        MainComponent={<MainComponent />}
+        Theme="sell"
+      />
+    </ThemeProvider>
   );
 };
 // -----------------
