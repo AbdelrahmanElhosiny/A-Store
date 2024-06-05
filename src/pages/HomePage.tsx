@@ -77,17 +77,17 @@ const Holder = styled.div`
 
   /* buttons separated style to specify colors */
   .buy-button {
-    background-color: ${colorD.blue};
+    background-color: var(--buy-color);
     &:hover {
       border-color: ${colorD.bg};
-      outline: 0.5em solid ${colorD.blue};
+      outline: 0.5em solid var(--buy-color);
     }
   }
   .sell-button {
-    background-color: ${colorD.orange};
+    background-color: var(--sell-color);
     &:hover {
       border-color: ${colorD.bg};
-      outline: 0.5em solid ${colorD.orange};
+      outline: 0.5em solid var(--sell-color);
     }
   }
 `;

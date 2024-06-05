@@ -10,8 +10,8 @@ const GlobalStyle = () => {
 
 const style = css`
   :root {
-    --sell-color: ${colorD.orange};
-    --buy-color: ${colorD.green};
+    --sell-color: ${colorD.purple};
+    --buy-color: ${colorD.blue};
 
     /* sizes */
     --size-xs: 14px;
