@@ -9,11 +9,13 @@ interface User {
   optAddress?: string;
   zipCode: number;
   phoneNum: number;
-  isActive: boolean;
+  isLoggedIn: boolean;
+  userType: "seller" | "buyer";
   cart: CartItemStatus[];
   orderedItems: OrderedItemStatus[];
   pillingInfo: PillingInfo[];
 }
+
 interface CartItemStatus {
   itemId: string;
   inCartNum: number;
@@ -33,23 +35,37 @@ interface PillingInfo {
 
 const initialState: User[] = [
   {
-    userName: "Mohammed Ali",
+    userName: "Guest",
     address: "abc street",
     optAddress: "",
     zipCode: 123,
     phoneNum: 123,
-    isActive: true,
+    isLoggedIn: true,
+    userType: "buyer",
     cart: [],
     orderedItems: [],
     pillingInfo: [],
   },
   {
-    userName: "Ali Ahmed",
+    userName: "Ahmed",
     address: "abc street",
     optAddress: "",
     zipCode: 123,
     phoneNum: 123,
-    isActive: false,
+    isLoggedIn: false,
+    userType: "buyer",
+    cart: [],
+    orderedItems: [],
+    pillingInfo: [],
+  },
+  {
+    userName: "Omar",
+    address: "abc street",
+    optAddress: "",
+    zipCode: 123,
+    phoneNum: 123,
+    isLoggedIn: false,
+    userType: "buyer",
     cart: [],
     orderedItems: [],
     pillingInfo: [],
@@ -62,13 +78,21 @@ const userSlice = createSlice({
   reducers: {
     // addNewUSer
     // removeUser
-    // setActiveUser
-    setActiveUser: (state) => {
-      _.map(state, { isActive: false });
+    // setLoggedInUser
+    setLoggedInUser: (state, action: PayloadAction<string>) => {
+      const userIndex = _.findIndex(state, { userName: action.payload });
+      state[userIndex].isLoggedIn = true;
+      state[0].isLoggedIn = false;
+    },
+    // setLoggedOutUser
+    setLoggedOutUser: (state, action: PayloadAction<string>) => {
+      const userIndex = _.findIndex(state, { userName: action.payload });
+      state[0].isLoggedIn = true;
+      state[userIndex].isLoggedIn = false;
     },
     // addItemToCart
     addItemToUserCart: (state, action: PayloadAction<Item>) => {
-      const activeUser = _.findIndex(state, { isActive: true });
+      const activeUser = _.findIndex(state, { isLoggedIn: true });
       const items = state[activeUser].cart;
       const isItemAddedToCartBefore = _.includes(
         _.map(items, "itemId"),
@@ -90,13 +114,13 @@ const userSlice = createSlice({
     },
     //removeItemFromCart
     removeItemFromCart: (state, action: PayloadAction<string>) => {
-      const activeUser = _.findIndex(state, { isActive: true });
+      const activeUser = _.findIndex(state, { isLoggedIn: true });
       const items = state[activeUser].cart;
       _.remove(items, { itemId: action.payload });
     },
 
     addItemToOrdered: (state, action: PayloadAction<CartItemStatus>) => {
-      const activeUser = _.findIndex(state, { isActive: true });
+      const activeUser = _.findIndex(state, { isLoggedIn: true });
       const items = state[activeUser].orderedItems;
 
       items.push({
@@ -112,8 +136,9 @@ const userSlice = createSlice({
 export type { User, OrderedItemStatus, CartItemStatus };
 export const {
   addItemToUserCart,
-  setActiveUser,
+  setLoggedInUser,
   removeItemFromCart,
   addItemToOrdered,
+  setLoggedOutUser,
 } = userSlice.actions;
 export default userSlice.reducer;

@@ -47,12 +47,7 @@ const useSell = () => {
     itemId && dispatch(removeItemAction(itemId));
   };
 
-  return {
-    addNewItem,
-    updateItem,
-    removeItem,
-    items,
-  };
+  return { addNewItem, updateItem, removeItem, items };
 };
 
 export type { AddItemFormFields };

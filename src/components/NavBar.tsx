@@ -4,6 +4,8 @@ import SVG from "../assets/svg";
 import styled from "@emotion/styled";
 import colorD from "../styles/colorD";
 import font from "../styles/font";
+import { Button } from "@mui/material";
+import useSell from "../pages/Buy/useBuy";
 
 interface LinkProp {
   path: string;
@@ -17,16 +19,24 @@ interface NavbarProps {
 // JSX
 // -----------------
 const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
+  const { setLoggedInUser, setLoggedOutUser } = useSell();
+
   return (
     <Holder className={` ${className || ""}`}>
       <Link to={`${ROUTE_INDEX.HOME}`} className={"logo"}>
         <SVG.Icons.logo />
       </Link>
-      {navLinks.map(({ path, label }) => (
-        <NavLink to={path} className="link" end={true} key={label}>
-          {label}
-        </NavLink>
-      ))}
+      <div className="nav-links">
+        {navLinks.map(({ path, label }) => (
+          <NavLink to={path} className="link" end={true} key={label}>
+            {label}
+          </NavLink>
+        ))}
+      </div>
+      <div className="login">
+        <Button onClick={setLoggedInUser}>Login</Button>
+        <Button onClick={setLoggedOutUser}>Logout</Button>
+      </div>
     </Holder>
   );
 };
@@ -35,10 +45,10 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
 // -----------------
 const Holder = styled.div`
   background-color: ${colorD.bg};
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
   align-items: center;
   padding: 0 3em;
-  gap: 5%;
   height: 100%;
 
   .logo svg {
@@ -81,6 +91,16 @@ const Holder = styled.div`
     &.active {
       --color: var(--primary-color);
     }
+  }
+
+  .nav-links {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .login {
+    display: flex;
+    justify-content: end;
   }
 `;
 

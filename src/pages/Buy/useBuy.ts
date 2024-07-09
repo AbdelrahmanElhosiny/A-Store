@@ -4,7 +4,8 @@ import {
   OrderedItemStatus,
   User,
   addItemToUserCart as addItemToUserCartAction,
-  setActiveUser as setActiveUserAction,
+  setLoggedInUser as setLoggedInUserAction,
+  setLoggedOutUser as setLoggedOutUserAction,
   removeItemFromCart as removeItemFromCartAction,
   addItemToOrdered as addItemToOrderedAction,
   CartItemStatus,
@@ -22,7 +23,7 @@ const useBuy = () => {
   //------------------
   // definers
   //------------------
-  const activeUserIndex = _.findIndex(users, { isActive: true });
+  const activeUserIndex = _.findIndex(users, { isLoggedIn: true });
   const cartItemsIds = users[activeUserIndex].cart.map(({ itemId }) => itemId);
   const cartItems = items
     .map((item) => {
@@ -37,8 +38,11 @@ const useBuy = () => {
   //------------------
   // Handlers
   //------------------
-  const setActiveUser = () => {
-    dispatch(setActiveUserAction());
+  const setLoggedInUser = () => {
+    dispatch(setLoggedInUserAction("Omar"));
+  };
+  const setLoggedOutUser = () => {
+    dispatch(setLoggedOutUserAction("Omar"));
   };
 
   const orderItem = (item: CartItemStatus) => {
@@ -55,7 +59,8 @@ const useBuy = () => {
   };
 
   return {
-    setActiveUser,
+    setLoggedInUser,
+    setLoggedOutUser,
     addItemToUserCart,
     activeUserIndex,
     items,
