@@ -15,10 +15,6 @@ const navLinks = [
     path: ROUTE_INDEX.BUY,
   },
   {
-    label: "Add User",
-    path: `${ROUTE_INDEX.BUY}/${BUY_ROUTE.ADD_USER}`,
-  },
-  {
     label: "Cart",
     path: `${ROUTE_INDEX.BUY}/${BUY_ROUTE.CART}`,
   },
