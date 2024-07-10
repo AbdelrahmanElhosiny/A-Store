@@ -36,10 +36,10 @@ interface PillingInfo {
 const initialState: User[] = [
   {
     userName: "Guest",
-    address: "abc street",
+    address: "",
     optAddress: "",
-    zipCode: 123,
-    phoneNum: 123,
+    zipCode: 0,
+    phoneNum: 0,
     isLoggedIn: true,
     userType: "buyer",
     cart: [],
@@ -77,19 +77,24 @@ const userSlice = createSlice({
   initialState,
   reducers: {
     // addNewUSer
-    // removeUser
+    addNewUser: (state, action: PayloadAction<User>) => {
+      state.push(action.payload);
+    },
+
     // setLoggedInUser
     setLoggedInUser: (state, action: PayloadAction<string>) => {
       const userIndex = _.findIndex(state, { userName: action.payload });
       state[userIndex].isLoggedIn = true;
       state[0].isLoggedIn = false;
     },
+
     // setLoggedOutUser
     setLoggedOutUser: (state, action: PayloadAction<string>) => {
       const userIndex = _.findIndex(state, { userName: action.payload });
       state[0].isLoggedIn = true;
       state[userIndex].isLoggedIn = false;
     },
+
     // addItemToCart
     addItemToUserCart: (state, action: PayloadAction<Item>) => {
       const activeUser = _.findIndex(state, { isLoggedIn: true });
@@ -112,6 +117,7 @@ const userSlice = createSlice({
         return state;
       } else items.push({ itemId: action.payload.id, inCartNum: 1 });
     },
+
     //removeItemFromCart
     removeItemFromCart: (state, action: PayloadAction<string>) => {
       const activeUser = _.findIndex(state, { isLoggedIn: true });
@@ -119,6 +125,7 @@ const userSlice = createSlice({
       _.remove(items, { itemId: action.payload });
     },
 
+    //addItemToOrdered
     addItemToOrdered: (state, action: PayloadAction<CartItemStatus>) => {
       const activeUser = _.findIndex(state, { isLoggedIn: true });
       const items = state[activeUser].orderedItems;
@@ -135,10 +142,11 @@ const userSlice = createSlice({
 
 export type { User, OrderedItemStatus, CartItemStatus };
 export const {
-  addItemToUserCart,
+  addNewUser,
   setLoggedInUser,
+  setLoggedOutUser,
+  addItemToUserCart,
   removeItemFromCart,
   addItemToOrdered,
-  setLoggedOutUser,
 } = userSlice.actions;
 export default userSlice.reducer;

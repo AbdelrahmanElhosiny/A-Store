@@ -24,6 +24,9 @@ const useBuy = () => {
   // definers
   //------------------
   const activeUserIndex = _.findIndex(users, { isLoggedIn: true });
+
+  const activeUserName = users[activeUserIndex].userName;
+
   const cartItemsIds = users[activeUserIndex].cart.map(({ itemId }) => itemId);
   const cartItems = items
     .map((item) => {
@@ -42,7 +45,7 @@ const useBuy = () => {
     dispatch(setLoggedInUserAction("Omar"));
   };
   const setLoggedOutUser = () => {
-    dispatch(setLoggedOutUserAction("Omar"));
+    dispatch(setLoggedOutUserAction(activeUserName));
   };
 
   const orderItem = (item: CartItemStatus) => {
@@ -66,6 +69,7 @@ const useBuy = () => {
     items,
     cartItems,
     users,
+    activeUserName,
     cartItemsIndex,
     removeItemFromCart,
     orderItem,

@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 import colorD from "../styles/colorD";
 import font from "../styles/font";
 import { Button } from "@mui/material";
-import useSell from "../pages/Buy/useBuy";
+import useBuy from "../pages/Buy/useBuy";
 
 interface LinkProp {
   path: string;
@@ -19,7 +19,9 @@ interface NavbarProps {
 // JSX
 // -----------------
 const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
-  const { setLoggedInUser, setLoggedOutUser } = useSell();
+  const { setLoggedInUser, setLoggedOutUser, activeUserName } = useBuy();
+
+  const guestLoggedIn: boolean = activeUserName === "Guest";
 
   return (
     <Holder className={` ${className || ""}`}>
@@ -33,10 +35,23 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
           </NavLink>
         ))}
       </div>
-      <div className="login">
-        <Button onClick={setLoggedInUser}>Login</Button>
-        <Button onClick={setLoggedOutUser}>Logout</Button>
-      </div>
+      {guestLoggedIn && (
+        <div className="login">
+          <Button variant="contained" onClick={setLoggedInUser}>
+            Login
+          </Button>
+          <Button variant="contained" onClick={setLoggedInUser}>
+            Sign up
+          </Button>
+        </div>
+      )}
+      {!guestLoggedIn && (
+        <div className="logout">
+          <Button variant="outlined" onClick={setLoggedOutUser}>
+            Logout
+          </Button>
+        </div>
+      )}
     </Holder>
   );
 };
@@ -99,6 +114,10 @@ const Holder = styled.div`
   }
 
   .login {
+    display: flex;
+    justify-content: end;
+  }
+  .logout {
     display: flex;
     justify-content: end;
   }
