@@ -4,6 +4,7 @@ import TextFiled from "../../components/form/TextField";
 import PriceField from "../../components/form/PriceField";
 import { Button } from "@mui/material";
 import useSell, { AddItemFormFields } from "./useSell";
+import styled from "@emotion/styled";
 
 const initialValues: AddItemFormFields = {
   name: "",
@@ -44,7 +45,7 @@ const AddItem = () => {
   };
 
   return (
-    <>
+    <Holder>
       <h2>Add new item</h2>
       <Formik {...FormProps}>
         <Form>
@@ -77,8 +78,10 @@ const AddItem = () => {
           </div>
         </Form>
       </Formik>
-    </>
+    </Holder>
   );
 };
+
+const Holder = styled.div``;
 
 export default AddItem;

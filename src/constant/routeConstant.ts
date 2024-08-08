@@ -4,7 +4,6 @@ const SELL_ROUTE = {
 };
 
 const BUY_ROUTE = {
-  ADD_USER: "add-user",
   CART: "cart",
   TRACK_BOUGHT: "track-bought",
 };
@@ -13,6 +12,7 @@ const ROUTE_INDEX = {
   HOME: "/",
   SELL: "/sell",
   BUY: "/buy",
+  SIGN_UP: "/sign-up",
 };
 
 export { SELL_ROUTE, BUY_ROUTE, ROUTE_INDEX };

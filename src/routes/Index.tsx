@@ -11,6 +11,7 @@ import SellIndex from "../pages/Sell";
 import SellHome from "../pages/Sell/Home";
 import { useEffect } from "react";
 import useNotification from "../hooks/useNotification";
+import SignUp from "../pages/SignUp";
 
 const RouterIndex = () => {
   const location = useLocation();
@@ -22,6 +23,7 @@ const RouterIndex = () => {
   return (
     <Routes>
       <Route path={ROUTE_INDEX.HOME} element={<HomePage />} />
+      <Route path={ROUTE_INDEX.SIGN_UP} element={<SignUp />} />
       <Route path={ROUTE_INDEX.SELL} element={<SellIndex />}>
         <Route index element={<SellHome />} />
         <Route path={SELL_ROUTE.ADD_ITEM} element={<AddItem />} />

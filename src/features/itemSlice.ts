@@ -2,6 +2,9 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { CartItemStatus } from "./userSlice";
 
+//TODO: add seller name to item
+//TODO: item delivery is here and has (id of process, time of order and time delivered)
+
 interface Item {
   id: string;
   name: string;

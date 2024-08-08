@@ -15,6 +15,9 @@ interface User {
   orderedItems: OrderedItemStatus[];
   pillingInfo: PillingInfo[];
 }
+//TODO: make seller (sold and other things) and buyer (cart and ordered items and pilling info) with ?
+//TODO: Tracking sold items to itemSlice
+//TODO: make user one obj with two baths seller and buyer then fill them with info
 
 interface CartItemStatus {
   itemId: string;
@@ -86,6 +89,7 @@ const userSlice = createSlice({
       const userIndex = _.findIndex(state, { userName: action.payload });
       state[userIndex].isLoggedIn = true;
       state[0].isLoggedIn = false;
+      //TODO: when logged in transfer data from guest to user
     },
 
     // setLoggedOutUser
