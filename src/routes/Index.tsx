@@ -12,6 +12,7 @@ import SellHome from "../pages/Sell/Home";
 import { useEffect } from "react";
 import useNotification from "../hooks/useNotification";
 import SignUp from "../pages/SignUp";
+import Error404 from "../pages/Error404";
 
 const RouterIndex = () => {
   const location = useLocation();
@@ -34,6 +35,7 @@ const RouterIndex = () => {
         <Route path={BUY_ROUTE.CART} element={<Cart />} />
         <Route path={BUY_ROUTE.TRACK_BOUGHT} element={<TrackBought />} />
       </Route>
+      <Route path="*" element={<Error404 />} />
     </Routes>
   );
 };
