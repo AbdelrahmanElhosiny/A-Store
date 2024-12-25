@@ -4,6 +4,7 @@ import { CartItemStatus } from "./userSlice";
 
 //TODO: add seller name to item
 //TODO: item delivery is here and has (id of process, time of order and time delivered)
+//TODO: uploading images using FileList api
 
 interface Item {
   id: string;
