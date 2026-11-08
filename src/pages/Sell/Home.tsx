@@ -1,7 +1,7 @@
 import styled from "@emotion/styled";
 import useSell from "./useSell";
 import { Button } from "@mui/material";
-import colorD from "../../styles/colorD";
+import { color } from "../../styles/tokens";
 import { useState } from "react";
 import RemoveItemModal from "./components/RemoveItemModal";
 import UpdateItemModal from "./components/UpdateItemModal";
@@ -69,7 +69,8 @@ const Holder = styled.div`
     justify-content: center;
 
     .card {
-      background-color: ${colorD.fg};
+      background-color: ${color.bg1};
+      border: 1px solid ${color.bg2};
       width: 15em;
       height: 20em;
     }

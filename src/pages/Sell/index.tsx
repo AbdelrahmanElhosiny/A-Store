@@ -4,7 +4,7 @@ import NavBar from "../../components/NavBar";
 import { ROUTE_INDEX, SELL_ROUTE } from "../../constant/routeConstant";
 import styled from "@emotion/styled";
 import { ThemeProvider } from "@mui/material";
-import sellTheme from "../../styles/sellTheme";
+import { useSideTheme } from "../../hooks/useThemeMode";
 
 // -------------------
 // define links array
@@ -39,8 +39,9 @@ const MainComponent = () => {
 // JSX
 // -----------------
 const SellIndex = () => {
+  const theme = useSideTheme("sell");
   return (
-    <ThemeProvider theme={sellTheme}>
+    <ThemeProvider theme={theme}>
       <Layout
         NavBar={<NavbarComponent />}
         MainComponent={<MainComponent />}

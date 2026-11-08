@@ -16,7 +16,7 @@ const RootApp = () => {
 };
 
 const Holder = styled.div`
-  ${font.Regular}
+  ${font.Sans}
 `;
 
 export default RootApp;

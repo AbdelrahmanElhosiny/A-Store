@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Button } from "@mui/material";
-import colorD from "../../styles/colorD";
+import { color } from "../../styles/tokens";
 import useBuy from "./useBuy";
 
 const BuyHome = () => {
@@ -43,7 +43,8 @@ const Holder = styled.div`
     justify-content: center;
 
     .card {
-      background-color: ${colorD.fg};
+      background-color: ${color.bg1};
+      border: 1px solid ${color.bg2};
       width: 15em;
       height: 20em;
     }

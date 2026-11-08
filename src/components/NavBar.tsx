@@ -2,7 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 import { ROUTE_INDEX } from "../constant/routeConstant";
 import SVG from "../assets/svg";
 import styled from "@emotion/styled";
-import colorD from "../styles/colorD";
+import { color } from "../styles/tokens";
 import font from "../styles/font";
 import { Button } from "@mui/material";
 import useAuth from "../hooks/useAuth";
@@ -59,7 +59,8 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
 // Styled component
 // -----------------
 const Holder = styled.div`
-  background-color: ${colorD.bg};
+  background-color: ${color.bg1};
+  border-bottom: 1px solid ${color.bg2};
   display: grid;
   grid-template-columns: 1fr 2fr 1fr;
   align-items: center;
@@ -71,7 +72,7 @@ const Holder = styled.div`
   }
 
   .link {
-    --color: ${colorD.fg};
+    --color: ${color.fg};
 
     position: relative;
     ${font.Bold}
@@ -96,7 +97,7 @@ const Holder = styled.div`
     }
 
     :hover {
-      color: ${colorD.bg};
+      color: ${color.bg};
       &::after {
         z-index: -1;
         width: 100%;

@@ -4,13 +4,16 @@ import { Provider } from "react-redux";
 import store from "./app/store";
 import "./App.css";
 import GlobalStyle from "./styles/GlobalStyle";
+import ThemeModeProvider from "./styles/ThemeModeProvider";
 
 function App() {
   return (
     <BrowserRouter>
       <Provider store={store}>
-        <GlobalStyle />
-        <RootApp />
+        <ThemeModeProvider>
+          <GlobalStyle />
+          <RootApp />
+        </ThemeModeProvider>
       </Provider>
     </BrowserRouter>
   );

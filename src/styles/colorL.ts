@@ -1,5 +1,9 @@
 const colorL = {
   bg: "#fbf1c7",
+  bgH: "#f9f5d7",
+  bg1: "#ebdbb2",
+  bg2: "#d5c4a1",
+  bg3: "#bdae93",
   fg: "#3c3836",
   red: "#cc241d",
   green: "#98971a",

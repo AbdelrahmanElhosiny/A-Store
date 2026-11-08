@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import { Link } from "react-router-dom";
-import colorD from "../styles/colorD";
+import { color } from "../styles/tokens";
 import sellImage from "../assets/sell.jpg";
 import buyImage from "../assets/buy.jpg";
 import font from "../styles/font";
@@ -62,7 +62,7 @@ const Holder = styled.div`
     scale: 150%;
     ${font.ItalicBold}
     cursor: pointer;
-    color: ${colorD.bg};
+    color: ${color.bg};
     border: double;
     font-size: 2em;
     padding: 0.7em 1.2em;
@@ -79,14 +79,14 @@ const Holder = styled.div`
   .buy-button {
     background-color: var(--buy-color);
     &:hover {
-      border-color: ${colorD.bg};
+      border-color: ${color.bg};
       outline: 0.5em solid var(--buy-color);
     }
   }
   .sell-button {
     background-color: var(--sell-color);
     &:hover {
-      border-color: ${colorD.bg};
+      border-color: ${color.bg};
       outline: 0.5em solid var(--sell-color);
     }
   }

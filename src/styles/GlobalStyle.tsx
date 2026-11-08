@@ -1,6 +1,7 @@
 import { Global, css } from "@emotion/react";
-import colorD from "./colorD";
 import size from "./size";
+import { Mode, Palette, palettes, fontMono, fontSans } from "./theme";
+import { color } from "./tokens";
 
 type ThemeType = "sell" | "buy";
 
@@ -8,10 +9,32 @@ const GlobalStyle = () => {
   return <Global styles={style} />;
 };
 
+// colour variables for one mode
+const modeVars = (mode: Mode, p: Palette) => css`
+  color-scheme: ${mode};
+
+  --color-bg: ${p.bg};
+  --color-bg-1: ${p.bg1};
+  --color-bg-2: ${p.bg2};
+  --color-fg: ${p.fg};
+  --color-fg-muted: ${p.fgMuted};
+  --color-red: ${p.red};
+  --color-green: ${p.green};
+  --color-yellow: ${p.yellow};
+  --color-orange: ${p.orange};
+  --color-shadow: ${p.shadow};
+
+  --sell-color: ${p.sell};
+  --buy-color: ${p.buy};
+`;
+
 const style = css`
   :root {
-    --sell-color: ${colorD.purple};
-    --buy-color: ${colorD.blue};
+    ${modeVars("light", palettes.light)}
+
+    /* fonts */
+    --font-sans: ${fontSans};
+    --font-mono: ${fontMono};
 
     /* sizes */
     --size-xs: 14px;
@@ -19,6 +42,36 @@ const style = css`
     --size-m: 20px;
     --size-l: 30px;
     --size-xl: 40px;
+
+    /* spacing */
+    --space-xs: 4px;
+    --space-s: 8px;
+    --space-m: 16px;
+    --space-l: 24px;
+    --space-xl: 32px;
+    --space-xxl: 48px;
+
+    /* sharp edges: square corners, hard shadows */
+    --radius: 0;
+    --shadow-1: 2px 2px 0 0 var(--color-shadow);
+    --shadow-2: 4px 4px 0 0 var(--color-shadow);
+    --shadow-3: 8px 8px 0 0 var(--color-shadow);
+  }
+
+  /* follow the system until the app sets data-theme */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      ${modeVars("dark", palettes.dark)}
+    }
+  }
+  :root[data-theme="dark"] {
+    ${modeVars("dark", palettes.dark)}
+  }
+
+  body {
+    background-color: ${color.bg};
+    color: ${color.fg};
+    font-family: var(--font-sans);
   }
 
   h1 {
@@ -28,20 +81,20 @@ const style = css`
     font-size: ${size.l};
   }
 
-  p {
-  }
-
   .buy {
-    --primary-color: var(--buy-color);
+    --primary-color: ${color.buy};
   }
 
   .sell {
-    --primary-color: var(--sell-color);
+    --primary-color: ${color.sell};
   }
 
   dialog {
-    &::backdrop {
-    }
+    background-color: ${color.bg1};
+    color: ${color.fg};
+    border: 1px solid ${color.bg2};
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-2);
   }
 `;
 

@@ -1,5 +1,5 @@
 import styled from "@emotion/styled";
-import colorD from "../../styles/colorD";
+import { color } from "../../styles/tokens";
 import { IconButton } from "@mui/material";
 import DisabledByDefaultIcon from "@mui/icons-material/DisabledByDefault";
 import useNotification from "../../hooks/useNotification";
@@ -26,7 +26,8 @@ const Holder = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: ${colorD.yellow};
+  background-color: ${color.yellow};
+  color: ${color.bg};
   padding-inline: 3em;
   z-index: 100;
 `;

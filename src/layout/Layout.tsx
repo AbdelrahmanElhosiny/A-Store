@@ -1,6 +1,6 @@
 import styled from "@emotion/styled";
 import font from "../styles/font";
-import colorD from "../styles/colorD";
+import { color } from "../styles/tokens";
 import { ThemeType } from "../styles/GlobalStyle";
 
 interface Props {
@@ -57,11 +57,12 @@ const Holder = styled.div`
   }
 
   footer {
-    background-color: ${colorD.bg};
+    background-color: ${color.bg1};
+    border-top: 1px solid ${color.bg2};
     display: flex;
     justify-content: space-between;
     padding-inline: var(--padding-inline);
-    color: ${colorD.fg};
+    color: ${color.fg};
     ${font.Bold}
     position: absolute;
     width: calc(100% - 6em);
