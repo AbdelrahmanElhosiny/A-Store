@@ -3,6 +3,7 @@ import useSell from "../useSell";
 import { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
 import useNotification from "../../../hooks/useNotification";
+import DialogHeader from "../../../components/DialogHeader";
 
 interface Props {
   itemId: string | null;
@@ -26,22 +27,44 @@ const RemoveItemModal: React.FC<Props> = ({
 
   if (!itemId) return; // Quick exit
   return (
-    <Holder ref={dialogRef}>
-      <div className="text">Are you sure you want to remove {itemName}</div>
-      <Button
-        onClick={() => {
-          removeItem(itemId);
-          closeDialog();
-          showNotification({ message: `${itemName} was removed!` });
-        }}
-      >
-        Remove
-      </Button>
-      <Button onClick={closeDialog}>Cancel</Button>
+    <Holder ref={dialogRef} onClose={closeDialog}>
+      <DialogHeader
+        title="Remove item"
+        subtitle={itemName}
+        onClose={closeDialog}
+      />
+      <p className="text">
+        Remove this item from the store? This can't be undone.
+      </p>
+      <div className="buttons">
+        <Button
+          variant="contained"
+          color="error"
+          onClick={() => {
+            removeItem(itemId);
+            closeDialog();
+            showNotification({ message: `${itemName} was removed!` });
+          }}
+        >
+          Remove
+        </Button>
+        <Button variant="outlined" onClick={closeDialog}>
+          Cancel
+        </Button>
+      </div>
     </Holder>
   );
 };
 
-const Holder = styled.dialog``;
+const Holder = styled.dialog`
+  .text {
+    margin: var(--space-m) 0 var(--space-l);
+  }
+  .buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--space-s);
+  }
+`;
 
 export default RemoveItemModal;

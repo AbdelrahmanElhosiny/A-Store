@@ -84,11 +84,15 @@ const createAppTheme = (side: Side, mode: Mode): Theme => {
       button: { fontFamily: fontMono, fontWeight: 700 },
     },
     components: {
+      // no round ripples: focus shows as a square outline (GlobalStyle)
+      MuiButtonBase: { defaultProps: { disableRipple: true } },
       MuiButton: { defaultProps: { disableElevation: true } },
       // MUI lightens dark-mode surfaces with a gradient; keep them flat
       MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },
       MuiChip: { styleOverrides: { root: { borderRadius: 0 } } },
       MuiBadge: { styleOverrides: { badge: { borderRadius: 0 } } },
+      // hover and focus highlights on icon buttons are square too
+      MuiIconButton: { styleOverrides: { root: { borderRadius: 0 } } },
     },
   });
 };

@@ -95,7 +95,14 @@ const style = css`
     --primary-color: ${color.sell};
   }
 
+  /* square focus ring for keyboard users */
+  :focus-visible {
+    outline: 2px solid var(--primary-color, ${color.fg});
+    outline-offset: 2px;
+  }
+
   dialog {
+    font-family: var(--font-sans);
     background-color: ${color.bg1};
     color: ${color.fg};
     border: 1px solid ${color.bg2};
@@ -103,6 +110,10 @@ const style = css`
     box-shadow: var(--shadow-2);
     width: min(calc(100vw - 2 * var(--page-gutter)), 480px);
     padding: var(--space-l);
+
+    &::backdrop {
+      background-color: rgb(0 0 0 / 0.55);
+    }
   }
 `;
 

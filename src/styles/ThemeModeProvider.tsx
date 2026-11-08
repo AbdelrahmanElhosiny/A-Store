@@ -36,12 +36,17 @@ interface Props {
 const ThemeModeProvider: React.FC<Props> = ({ children }) => {
   const [preference, setPreferenceState] =
     useState<Preference>(readPreference);
-  const setPreference = useCallback((next: Preference) => {
-    savePreference(next);
-    setPreferenceState(next);
-  }, []);
   const [systemMode, setSystemMode] = useState<Mode>(getSystemMode);
 
+  // picking the mode the system already uses goes back to following it
+  const setPreference = useCallback(
+    (next: Preference) => {
+      const resolved = next === getSystemMode() ? "system" : next;
+      savePreference(resolved);
+      setPreferenceState(resolved);
+    },
+    []
+  );
   // follow the system setting when it changes
   useEffect(() => {
     const query = window.matchMedia?.(DARK_QUERY);

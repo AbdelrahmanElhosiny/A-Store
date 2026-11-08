@@ -6,6 +6,7 @@ import { Item } from "../../../features/itemSlice";
 import * as yup from "yup";
 import { Formik, Form, FormikConfig, FormikHelpers } from "formik";
 import TextFiled from "../../../components/form/TextField";
+import DialogHeader from "../../../components/DialogHeader";
 
 interface Props {
   item: Item | null;
@@ -61,8 +62,12 @@ const UpdateItemModal: React.FC<Props> = ({ item, itemName, closeDialog }) => {
   };
 
   return (
-    <Holder ref={dialogRef}>
-      <div className="text">Updating {itemName}</div>
+    <Holder ref={dialogRef} onClose={closeDialog}>
+      <DialogHeader
+        title="Update item"
+        subtitle={itemName}
+        onClose={closeDialog}
+      />
       <Formik {...FormProps}>
         <Form>
           <TextFiled name="name" label="Name" />
@@ -84,8 +89,12 @@ const UpdateItemModal: React.FC<Props> = ({ item, itemName, closeDialog }) => {
           />
           <TextFiled name="stockNum" label="Stock" type="number" />
           <div className="buttons">
-            <Button type="submit">Update</Button>
-            <Button onClick={closeDialog}>Cancel</Button>
+            <Button type="submit" variant="contained">
+              Update
+            </Button>
+            <Button onClick={closeDialog} variant="outlined">
+              Cancel
+            </Button>
           </div>
         </Form>
       </Formik>
@@ -102,6 +111,7 @@ const Holder = styled.dialog`
   }
   .buttons {
     display: flex;
+    justify-content: flex-end;
     gap: var(--space-s);
   }
 `;

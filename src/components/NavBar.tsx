@@ -99,6 +99,7 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
           </IconButton>
         )}
         <IconButton
+          edge="end"
           aria-label="Open menu"
           aria-expanded={isMenuOpen}
           onClick={() => setIsMenuOpen(true)}
@@ -215,13 +216,20 @@ const Holder = styled.div`
   .mobile-actions {
     display: none;
     justify-self: end;
+    align-items: center;
+    gap: var(--space-xs);
     color: ${color.fg};
     .MuiIconButton-root {
       color: inherit;
     }
+    /* as big as the logo */
+    .MuiSvgIcon-root {
+      font-size: 32px;
+    }
   }
 
   @media (max-width: 767px) {
+    grid-template-columns: auto 1fr;
     .nav-links,
     .actions {
       display: none;

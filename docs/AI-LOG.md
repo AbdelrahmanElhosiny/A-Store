@@ -48,3 +48,17 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** `npm run lint` and `npm run build` pass. At 390 px: no sideways scroll, drawer opens, badge counts cart items, switch flips the theme and survives a reload.
 
 **Changed by hand:** —
+
+## 3b. Fixes after review (Claude Code)
+
+**Prompt:** Chrome doesn't follow the system or browser theme. On phones make the menu and cart icons bigger, with the menu at the navbar edge. Give the update dialog an X at the top right, a styled title, and the site's font.
+
+**Changes**
+- Theme switch: flipping back to the mode the system uses clears the saved choice, so the app follows the system again. (A flip saved during testing had pinned Chrome to one mode.)
+- Phone navbar: menu and cart icons are 32 px, as large as the logo; the menu button sits on the right edge (the hidden desktop column no longer reserves space).
+- New `DialogHeader` (title, item name in mono accent, X button) used by the Update and Remove dialogs; dialogs set the site font explicitly, dim the page behind them, and close cleanly with Escape. Remove gets a confirm line and a red Remove button.
+- Sharp edges everywhere: MUI's round ripples are off; focus shows as a square 2 px outline in the side's colour.
+
+**Check:** lint and build pass; verified in Chrome at 390 px.
+
+**Changed by hand:** —
