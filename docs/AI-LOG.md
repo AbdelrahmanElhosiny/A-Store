@@ -62,3 +62,19 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** lint and build pass; verified in Chrome at 390 px.
 
 **Changed by hand:** —
+
+## 4. Home hero and images (Claude Code)
+
+**Prompt:** Home hero and image optimisation: split Sell/Buy hero that stacks on phones; images converted to WebP/AVIF under 200 KB each; hover and focus motion.
+
+**Changes**
+- Photos: the two 1.8-1.9 MB JPEGs are replaced by 640 px and 1200 px AVIF and WebP versions (38-198 KB each) in `src/assets/home/`, served through `<picture>` with `srcset`/`sizes` so a phone or a 1x screen loads a ~40-55 KB AVIF.
+- Each half is one link (the old `<button>` inside a `<Link>` is gone), with the photo as a real `<img>`, a big italic mono label on the side colour, a one-line tagline and a call to action.
+- Hover and keyboard focus share one effect: the photo regains colour and zooms slightly, the label lifts onto a bigger hard shadow, the call to action fills with the side colour. All motion is off under `prefers-reduced-motion`.
+- A floating top bar with the logo and the theme switch; a gradient from the page background keeps the text readable on any photo in both modes.
+- Phones: halves stack and keep their taglines. On touch screens (`hover: none`) the first tap on a half shows the hover look and the second tap opens it; tapping the other half moves the highlight. Desktop clicks and keyboard Enter open straight away. `:hover` styles only apply where a pointer can hover, so they don't stick after a tap.
+- No blue tap flash on phones (`-webkit-tap-highlight-color: transparent` on `html`). Nav links, the logo and the hero halves can't be dragged or have their text selected (`draggable={false}` for Firefox, `-webkit-user-drag: none` and `user-select: none`); the hero photo ignores the pointer, so a long press acts on the link.
+
+**Check:** lint and build pass; checked at 1280 px (light, dark, hover, Tab focus, one-click open) and with touch emulation at 360 and 390 px (tap, second tap, switching halves).
+
+**Changed by hand:** —

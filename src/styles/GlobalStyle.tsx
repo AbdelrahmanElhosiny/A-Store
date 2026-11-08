@@ -72,6 +72,12 @@ const style = css`
     ${modeVars("dark", palettes.dark)}
   }
 
+  /* no blue flash when tapping links and buttons on phones;
+     keyboard users still get the focus ring below */
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
   body {
     background-color: ${color.bg};
     color: ${color.fg};

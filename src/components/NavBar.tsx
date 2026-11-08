@@ -40,6 +40,7 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
       className="link"
       end={true}
       key={label}
+      draggable={false}
       onClick={closeMenu}
     >
       {badge !== undefined ? (
@@ -72,7 +73,12 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
 
   return (
     <Holder className={className || ""}>
-      <Link to={ROUTE_INDEX.HOME} className="logo" aria-label="A-Store home">
+      <Link
+        to={ROUTE_INDEX.HOME}
+        className="logo"
+        aria-label="A-Store home"
+        draggable={false}
+      >
         <SVG.Icons.logo />
       </Link>
 
@@ -135,6 +141,10 @@ const linkStyle = css`
   .link {
     --color: ${color.fg};
 
+    /* nav text can't be selected or dragged away */
+    user-select: none;
+    -webkit-user-drag: none;
+
     position: relative;
     font-size: 1.1em;
     text-decoration: none;
@@ -182,9 +192,11 @@ const Holder = styled.div`
   gap: var(--space-l);
   padding-inline: var(--page-gutter);
   height: 100%;
+  user-select: none;
 
   .logo {
     display: flex;
+    -webkit-user-drag: none;
     svg {
       width: 2.6em;
     }
