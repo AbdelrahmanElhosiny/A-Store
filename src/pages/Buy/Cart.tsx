@@ -2,7 +2,6 @@ import styled from "@emotion/styled";
 import { Button } from "@mui/material";
 import colorD from "../../styles/colorD";
 import useBuy from "./useBuy";
-import _ from "lodash";
 
 //TODO: make the page optional so it wont give an error if seller user
 

@@ -20,7 +20,7 @@ const RouterIndex = () => {
 
   useEffect(() => {
     hideNotification();
-  }, [location]);
+  }, [location, hideNotification]);
   return (
     <Routes>
       <Route path={ROUTE_INDEX.HOME} element={<HomePage />} />

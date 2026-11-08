@@ -1,32 +1,31 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Item, buyItem as buyItemAction } from "../../features/itemSlice";
 import {
-  OrderedItemStatus,
-  User,
   addItemToUserCart as addItemToUserCartAction,
-  setLoggedInUser as setLoggedInUserAction,
-  setLoggedOutUser as setLoggedOutUserAction,
   removeItemFromCart as removeItemFromCartAction,
   addItemToOrdered as addItemToOrderedAction,
   CartItemStatus,
 } from "../../features/userSlice";
 import { AppDispatch, RootState } from "../../app/store";
 import _ from "lodash";
+import useAuth from "../../hooks/useAuth";
 // import useNotification from "../../hooks/useNotification";
 
 const useBuy = () => {
   const dispatch = useDispatch<AppDispatch>();
   const items = useSelector<RootState>((store) => store.items) as Item[];
-  const users = useSelector<RootState>((store) => store.users) as User[];
+  const {
+    users,
+    activeUserIndex,
+    activeUserName,
+    setLoggedInUser,
+    setLoggedOutUser,
+  } = useAuth();
   // const { showNotification } = useNotification();
 
   //------------------
   // definers
   //------------------
-  const activeUserIndex = _.findIndex(users, { isLoggedIn: true });
-
-  const activeUserName = users[activeUserIndex].userName;
-
   const cartItemsIds = users[activeUserIndex].cart.map(({ itemId }) => itemId);
   const cartItems = items
     .map((item) => {
@@ -41,13 +40,6 @@ const useBuy = () => {
   //------------------
   // Handlers
   //------------------
-  const setLoggedInUser = () => {
-    dispatch(setLoggedInUserAction("Omar"));
-  };
-  const setLoggedOutUser = () => {
-    dispatch(setLoggedOutUserAction(activeUserName));
-  };
-
   const orderItem = (item: CartItemStatus) => {
     dispatch(addItemToOrderedAction(item));
     dispatch(buyItemAction(item));

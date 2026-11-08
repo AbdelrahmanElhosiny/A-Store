@@ -5,7 +5,7 @@ import styled from "@emotion/styled";
 import colorD from "../styles/colorD";
 import font from "../styles/font";
 import { Button } from "@mui/material";
-import useBuy from "../pages/Buy/useBuy";
+import useAuth from "../hooks/useAuth";
 
 interface LinkProp {
   path: string;
@@ -19,7 +19,7 @@ interface NavbarProps {
 // JSX
 // -----------------
 const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
-  const { setLoggedInUser, setLoggedOutUser, activeUserName } = useBuy();
+  const { setLoggedInUser, setLoggedOutUser, activeUserName } = useAuth();
 
   const guestLoggedIn: boolean = activeUserName === "Guest";
 

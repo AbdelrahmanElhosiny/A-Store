@@ -5,6 +5,7 @@ import {
   hideNotification as hideNotificationAction,
 } from "../features/notificationSlice";
 import { AppDispatch, RootState } from "../app/store";
+import { useCallback } from "react";
 
 const useNotification = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -15,12 +16,15 @@ const useNotification = () => {
   //------------------
   // Handlers
   //------------------
-  const showNotification = (input: Omit<Notification, "isOpen">) => {
-    dispatch(showNotificationAction(input));
-  };
-  const hideNotification = () => {
+  const showNotification = useCallback(
+    (input: Omit<Notification, "isOpen">) => {
+      dispatch(showNotificationAction(input));
+    },
+    [dispatch]
+  );
+  const hideNotification = useCallback(() => {
     dispatch(hideNotificationAction());
-  };
+  }, [dispatch]);
   return {
     showNotification,
     hideNotification,

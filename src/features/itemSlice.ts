@@ -76,6 +76,7 @@ const itemSlice = createSlice({
     // buyItem
     buyItem: (state, action: PayloadAction<CartItemStatus>) => {
       const id = _.findIndex(state, { id: action.payload.itemId });
+      if (id === -1) return state;
       if (state[id].stockNum >= action.payload.inCartNum) {
         state[id].stockNum -= action.payload.inCartNum;
       } else return state;

@@ -21,7 +21,7 @@ const validationSchema = yup.object({
     .required("* Required!"),
   stockNum: yup
     .number()
-    .min(1, "At least 10 units must be in stock for new items")
+    .min(1, "At least 1 unit must be in stock")
     .required("* Required!"),
 });
 
