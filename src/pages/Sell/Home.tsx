@@ -64,15 +64,22 @@ const SellHome = () => {
 const Holder = styled.div`
   .container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, 15em);
-    gap: 2em;
-    justify-content: center;
+    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+    gap: var(--space-l);
 
     .card {
       background-color: ${color.bg1};
       border: 1px solid ${color.bg2};
-      width: 15em;
-      height: 20em;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      padding: var(--space-m);
+      min-width: 0;
+      overflow-wrap: anywhere;
+
+      .MuiButton-root {
+        align-self: flex-start;
+      }
     }
   }
 `;

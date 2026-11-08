@@ -10,7 +10,11 @@ const NotificationMessage = () => {
   return (
     <Holder>
       <div className="text">{notification.message}</div>
-      <IconButton onClick={hideNotification}>
+      <IconButton
+        onClick={hideNotification}
+        aria-label="Close notification"
+        color="inherit"
+      >
         <DisabledByDefaultIcon />
       </IconButton>
     </Holder>
@@ -19,7 +23,7 @@ const NotificationMessage = () => {
 
 const Holder = styled.div`
   position: fixed;
-  top: 3em;
+  top: var(--nav-height);
   right: 0;
   left: 0;
   height: max-content;
@@ -28,7 +32,8 @@ const Holder = styled.div`
   justify-content: space-between;
   background-color: ${color.yellow};
   color: ${color.bg};
-  padding-inline: 3em;
+  padding-inline: var(--page-gutter);
+  gap: var(--space-m);
   z-index: 100;
 `;
 

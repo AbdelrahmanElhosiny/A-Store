@@ -82,6 +82,18 @@ const AddItem = () => {
   );
 };
 
-const Holder = styled.div``;
+const Holder = styled.div`
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    max-width: 640px;
+  }
+  .buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-s);
+  }
+`;
 
 export default AddItem;

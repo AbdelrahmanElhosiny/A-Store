@@ -26,7 +26,7 @@ const navLinks = [
 // ------------------
 // define components
 // ------------------
-const NavbarComponent = () => <NavBar navLinks={navLinks} />;
+const NavbarComponent = () => <NavBar navLinks={navLinks} className="sell" />;
 const MainComponent = () => {
   return (
     <Holder>

@@ -93,6 +93,17 @@ const UpdateItemModal: React.FC<Props> = ({ item, itemName, closeDialog }) => {
   );
 };
 
-const Holder = styled.dialog``;
+const Holder = styled.dialog`
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    margin-top: var(--space-m);
+  }
+  .buttons {
+    display: flex;
+    gap: var(--space-s);
+  }
+`;
 
 export default UpdateItemModal;

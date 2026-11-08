@@ -51,6 +51,10 @@ const style = css`
     --space-xl: 32px;
     --space-xxl: 48px;
 
+    /* layout */
+    --page-gutter: clamp(16px, 4vw, 48px);
+    --nav-height: 56px;
+
     /* sharp edges: square corners, hard shadows */
     --radius: 0;
     --shadow-1: 2px 2px 0 0 var(--color-shadow);
@@ -72,13 +76,15 @@ const style = css`
     background-color: ${color.bg};
     color: ${color.fg};
     font-family: var(--font-sans);
+    /* clip, not hidden: hidden would break the sticky navbar */
+    overflow-x: clip;
   }
 
   h1 {
-    font-size: ${size.xl};
+    font-size: clamp(28px, 7vw, ${size.xl});
   }
   h2 {
-    font-size: ${size.l};
+    font-size: clamp(22px, 5vw, ${size.l});
   }
 
   .buy {
@@ -95,6 +101,8 @@ const style = css`
     border: 1px solid ${color.bg2};
     border-radius: var(--radius);
     box-shadow: var(--shadow-2);
+    width: min(calc(100vw - 2 * var(--page-gutter)), 480px);
+    padding: var(--space-l);
   }
 `;
 

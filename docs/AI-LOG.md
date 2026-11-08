@@ -33,3 +33,18 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** `npm run lint` and `npm run build` pass. Switch the OS between light and dark: the app follows it.
 
 **Changed by hand:** —
+
+## 3. App shell, theme switch and phone layout (Claude Code)
+
+**Prompt:** App shell: navbar, drawer, cart badge, theme toggle, footer. Add a light/dark switch that starts from the system setting. Fix the phone layout: pages are tight, overlap and run off the screen.
+
+**Changes**
+- `ThemeSwitch`: a square Gruvbox switch with sun/moon icons. Starts from the browser's colour-scheme setting; a flip is saved in `localStorage` and applied before first paint by a small script in `index.html`. (Chrome and Firefox report their own Appearance / Website appearance setting, not macOS's, which is why they didn't follow the OS.)
+- `NavBar`: logo, links and actions on wide screens; under 768 px a cart icon and a menu button open a right-side drawer with the links, the switch and login. The Cart link shows a badge with the item count.
+- `Layout`: sticky navbar, flex column so the footer sits at the end instead of being absolutely positioned; one `--page-gutter` (16-48 px) replaces fixed `3em` padding.
+- Footer: real links to the source, the classic version (tag `v1-classic`) and the GitHub compare view, with a "rebuilt with AI" note.
+- Phone fixes: card grids use `minmax(min(220px, 100%), 1fr)` instead of fixed 15 × 20 em boxes; headings scale with the screen; the home split stacks Sell over Buy; dialogs fit the screen; forms have spacing; the notification bar sits under the navbar.
+
+**Check:** `npm run lint` and `npm run build` pass. At 390 px: no sideways scroll, drawer opens, badge counts cart items, switch flips the theme and survives a reload.
+
+**Changed by hand:** —

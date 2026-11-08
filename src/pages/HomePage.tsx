@@ -32,7 +32,9 @@ const Holder = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
+
 
   /* main style of the sides */
   .sell-section,
@@ -88,6 +90,19 @@ const Holder = styled.div`
     &:hover {
       border-color: ${color.bg};
       outline: 0.5em solid var(--sell-color);
+    }
+  }
+  /* phones: Sell on top, Buy below */
+  @media (max-width: 767px) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+
+    button {
+      scale: 100%;
+      font-size: 1.6em;
+      &:hover {
+        padding: 0.9em 1.5em;
+      }
     }
   }
 `;

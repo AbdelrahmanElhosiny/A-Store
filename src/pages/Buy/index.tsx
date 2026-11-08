@@ -5,11 +5,12 @@ import { BUY_ROUTE, ROUTE_INDEX } from "../../constant/routeConstant";
 import styled from "@emotion/styled";
 import { ThemeProvider } from "@mui/material";
 import { useSideTheme } from "../../hooks/useThemeMode";
+import useBuy from "./useBuy";
 
 // -------------------
 // define links array
 // -------------------
-const navLinks = [
+const getNavLinks = (cartCount: number) => [
   {
     label: "Home",
     path: ROUTE_INDEX.BUY,
@@ -17,6 +18,7 @@ const navLinks = [
   {
     label: "Cart",
     path: `${ROUTE_INDEX.BUY}/${BUY_ROUTE.CART}`,
+    badge: cartCount,
   },
   {
     label: "Track Shipment",
@@ -26,7 +28,14 @@ const navLinks = [
 // ------------------
 // define components
 // ------------------
-const NavbarComponent = () => <NavBar navLinks={navLinks} />;
+const NavbarComponent = () => {
+  const { users, activeUserIndex } = useBuy();
+  const cartCount = users[activeUserIndex].cart.reduce(
+    (total, { inCartNum }) => total + inCartNum,
+    0
+  );
+  return <NavBar navLinks={getNavLinks(cartCount)} className="buy" />;
+};
 const MainComponent = () => {
   return (
     <Holder>

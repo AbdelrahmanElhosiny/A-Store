@@ -1,12 +1,31 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { ThemeProvider } from "@mui/material";
 import createAppTheme, { Mode } from "./theme";
 import { Preference, ThemeModeContext } from "../hooks/useThemeMode";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
+const STORAGE_KEY = "a-store-theme";
 
 const getSystemMode = (): Mode =>
   window.matchMedia?.(DARK_QUERY).matches ? "dark" : "light";
+
+// the user's last pick, if any; storage can be blocked (private windows)
+const readPreference = (): Preference => {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    return saved === "light" || saved === "dark" ? saved : "system";
+  } catch {
+    return "system";
+  }
+};
+const savePreference = (preference: Preference) => {
+  try {
+    if (preference === "system") localStorage.removeItem(STORAGE_KEY);
+    else localStorage.setItem(STORAGE_KEY, preference);
+  } catch {
+    // keep working without storage
+  }
+};
 
 interface Props {
   children: React.ReactNode;
@@ -15,7 +34,12 @@ interface Props {
 // Holds the light/dark mode, follows the system by default,
 // and gives pages outside Sell/Buy a neutral MUI theme.
 const ThemeModeProvider: React.FC<Props> = ({ children }) => {
-  const [preference, setPreference] = useState<Preference>("system");
+  const [preference, setPreferenceState] =
+    useState<Preference>(readPreference);
+  const setPreference = useCallback((next: Preference) => {
+    savePreference(next);
+    setPreferenceState(next);
+  }, []);
   const [systemMode, setSystemMode] = useState<Mode>(getSystemMode);
 
   // follow the system setting when it changes
@@ -37,7 +61,7 @@ const ThemeModeProvider: React.FC<Props> = ({ children }) => {
 
   const value = useMemo(
     () => ({ mode, preference, setPreference }),
-    [mode, preference]
+    [mode, preference, setPreference]
   );
   const neutralTheme = useMemo(() => createAppTheme("neutral", mode), [mode]);
 

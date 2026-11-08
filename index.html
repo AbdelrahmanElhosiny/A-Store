@@ -5,6 +5,14 @@
     <link rel="icon" type="image/svg+xml" href="/src/assets/svg/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>A-Store</title>
+    <script>
+      // apply a saved light/dark choice before the first paint (no flash)
+      try {
+        var theme = localStorage.getItem("a-store-theme");
+        if (theme === "light" || theme === "dark")
+          document.documentElement.dataset.theme = theme;
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
