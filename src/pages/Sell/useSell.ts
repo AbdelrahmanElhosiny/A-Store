@@ -14,7 +14,7 @@ interface AddItemFormFields {
   description: string;
   price: string;
   stockNum: string;
-  image?: File;
+  image: string; // data URL from the picker, "" when there is none
 }
 
 const useSell = () => {
@@ -26,12 +26,14 @@ const useSell = () => {
   // Handlers
   //------------------
   const addNewItem = (input: AddItemFormFields) => {
-    const { price, stockNum, ...rest } = input;
+    const { price, stockNum, image, ...rest } = input;
     dispatch(
       addNewItemAction({
         id: uuid(),
-        price: parseInt(price),
+        // Number keeps cents: parseInt turned 12.50 into 12
+        price: Number(price),
         stockNum: parseInt(stockNum),
+        image: image || undefined,
         ...rest,
       })
     );

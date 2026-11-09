@@ -3,6 +3,7 @@ import { Item, buyItem as buyItemAction } from "../../features/itemSlice";
 import {
   addItemToUserCart as addItemToUserCartAction,
   removeItemFromCart as removeItemFromCartAction,
+  setCartItemNum as setCartItemNumAction,
   addItemToOrdered as addItemToOrderedAction,
   CartItemStatus,
 } from "../../features/userSlice";
@@ -49,6 +50,10 @@ const useBuy = () => {
     dispatch(addItemToUserCartAction(item));
   };
 
+  const setCartItemNum = (itemId: string, inCartNum: number) => {
+    dispatch(setCartItemNumAction({ itemId, inCartNum }));
+  };
+
   const removeItemFromCart = (itemId: string) => {
     dispatch(removeItemFromCartAction(itemId));
   };
@@ -64,6 +69,7 @@ const useBuy = () => {
     activeUserName,
     cartItemsIndex,
     removeItemFromCart,
+    setCartItemNum,
     orderItem,
   };
 };

@@ -101,6 +101,16 @@ const style = css`
     --primary-color: ${color.sell};
   }
 
+  /* hidden on screen, still read by screen readers */
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
   /* square focus ring for keyboard users */
   :focus-visible {
     outline: 2px solid var(--primary-color, ${color.fg});

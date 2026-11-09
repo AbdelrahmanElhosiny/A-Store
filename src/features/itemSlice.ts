@@ -1,10 +1,14 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { CartItemStatus } from "./userSlice";
+import headphones from "../assets/products/headphones.webp";
+import lamp from "../assets/products/lamp.webp";
+import mug from "../assets/products/mug.webp";
+import watch from "../assets/products/watch.webp";
+import backpack from "../assets/products/backpack.webp";
 
 //TODO: add seller name to item
 //TODO: item delivery is here and has (id of process, time of order and time delivered)
-//TODO: uploading images using FileList api
 
 interface Item {
   id: string;
@@ -12,44 +16,51 @@ interface Item {
   description: string;
   price: number;
   stockNum: number;
-  image?: File;
+  // a URL: a bundled picture, or a data URL from the Add Item picker
+  image?: string;
 }
 
+// seed items, pictures from Unsplash (see src/assets/products/CREDITS.md)
 const initialState: Item[] = [
   {
     id: "1 id",
-    name: "1 name",
-    price: 1,
-    description: "1 description",
-    stockNum: 1,
+    name: "Wireless headphones",
+    description: "Over-ear, 30 hours of battery, folds flat into its case.",
+    price: 89,
+    stockNum: 12,
+    image: headphones,
   },
   {
     id: "2 id",
-    name: "2 name",
-    price: 2,
-    description: "2 description",
-    stockNum: 2,
+    name: "Desk lamp",
+    description: "Steel shade on an adjustable arm, warm white bulb included.",
+    price: 45,
+    stockNum: 3,
+    image: lamp,
   },
   {
     id: "3 id",
-    name: "3 name",
-    price: 3,
-    description: "3 description",
-    stockNum: 3,
+    name: "Ceramic mug",
+    description: "350 ml stoneware, dishwasher safe, matte white glaze.",
+    price: 14,
+    stockNum: 40,
+    image: mug,
   },
   {
     id: "4 id",
-    name: "4 name",
-    price: 4,
-    description: "4 description",
-    stockNum: 4,
+    name: "Smart watch",
+    description: "Heart rate, sleep tracking and a week of battery life.",
+    price: 129,
+    stockNum: 2,
+    image: watch,
   },
   {
     id: "5 id",
-    name: "5 name",
-    price: 5,
-    description: "5 description",
-    stockNum: 5,
+    name: "City backpack",
+    description: "20 L, water-resistant, padded sleeve for a 15-inch laptop.",
+    price: 65,
+    stockNum: 8,
+    image: backpack,
   },
 ];
 

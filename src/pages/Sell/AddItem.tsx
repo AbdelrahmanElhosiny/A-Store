@@ -2,6 +2,7 @@ import { Form, Formik, FormikConfig, FormikHelpers } from "formik";
 import * as yup from "yup";
 import TextFiled from "../../components/form/TextField";
 import PriceField from "../../components/form/PriceField";
+import ImageField from "../../components/form/ImageField";
 import { Button } from "@mui/material";
 import useSell, { AddItemFormFields } from "./useSell";
 import styled from "@emotion/styled";
@@ -11,6 +12,7 @@ const initialValues: AddItemFormFields = {
   description: "",
   price: "",
   stockNum: "",
+  image: "",
 };
 const validationSchema = yup.object({
   name: yup.string().required("* Required!"),
@@ -58,6 +60,7 @@ const AddItem = () => {
           />
           <PriceField name="price" label="Price" />
           <TextFiled name="stockNum" label="Stock" type="number" />
+          <ImageField name="image" label="Picture (optional)" />
           <div className="buttons">
             <Button
               variant="contained"

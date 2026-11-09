@@ -135,15 +135,6 @@ const Holder = styled.div`
   height: 100vh;
   height: 100dvh;
 
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-
   /* logo and theme switch float over the photos */
   .top-bar {
     user-select: none;

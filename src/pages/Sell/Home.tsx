@@ -1,11 +1,16 @@
 import styled from "@emotion/styled";
 import useSell from "./useSell";
 import { Button } from "@mui/material";
-import { color } from "../../styles/tokens";
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { SELL_ROUTE } from "../../constant/routeConstant";
+import { color } from "../../styles/tokens";
 import RemoveItemModal from "./components/RemoveItemModal";
 import UpdateItemModal from "./components/UpdateItemModal";
 import { Item } from "../../features/itemSlice";
+import ProductCard from "../../components/ProductCard";
+import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 const SellHome = () => {
   const { items } = useSell();
@@ -27,35 +32,38 @@ const SellHome = () => {
           itemName={removedItemName}
           closeDialog={() => setUpdatedItem(null)}
         />
-      )}{" "}
+      )}
+      {items.length === 0 && (
+        <p className="empty">
+          No items yet. <Link to={SELL_ROUTE.ADD_ITEM}>Add your first item</Link>
+        </p>
+      )}
       <div className="container">
-        {items.map((item) => {
-          const { name, description, id, price, stockNum } = item;
-          return (
-            <div className="card" key={id}>
-              <div className="name">{name}</div>
-              <div className="description">{description}</div>
-              <div className="price">{`Price ${price}`}</div>
-              <div className="stock-num">{`StockNum ${stockNum}`}</div>
-              <Button
-                onClick={() => {
-                  setUpdatedItem(item);
-                  setRemovedItemName(name);
-                }}
-              >
-                Update
-              </Button>
-              <Button
-                onClick={() => {
-                  setRemovedItemId(id);
-                  setRemovedItemName(name);
-                }}
-              >
-                Remove
-              </Button>
-            </div>
-          );
-        })}
+        {items.map((item) => (
+          <ProductCard item={item} key={item.id}>
+            <Button
+              variant="outlined"
+              startIcon={<EditOutlinedIcon />}
+              onClick={() => {
+                setUpdatedItem(item);
+                setRemovedItemName(item.name);
+              }}
+            >
+              Update
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteOutlineIcon />}
+              onClick={() => {
+                setRemovedItemId(item.id);
+                setRemovedItemName(item.name);
+              }}
+            >
+              Remove
+            </Button>
+          </ProductCard>
+        ))}
       </div>
     </Holder>
   );
@@ -66,20 +74,12 @@ const Holder = styled.div`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
     gap: var(--space-l);
+  }
 
-    .card {
-      background-color: ${color.bg1};
-      border: 1px solid ${color.bg2};
-      display: flex;
-      flex-direction: column;
-      gap: var(--space-xs);
-      padding: var(--space-m);
-      min-width: 0;
-      overflow-wrap: anywhere;
-
-      .MuiButton-root {
-        align-self: flex-start;
-      }
+  .empty {
+    color: ${color.fgMuted};
+    a {
+      color: ${color.primary};
     }
   }
 `;

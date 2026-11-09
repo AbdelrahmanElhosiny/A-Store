@@ -78,3 +78,21 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** lint and build pass; checked at 1280 px (light, dark, hover, Tab focus, one-click open) and with touch emulation at 360 and 390 px (tap, second tap, switching halves).
 
 **Changed by hand:** —
+
+## 5. Product card, seed pictures, image picker (Claude Code)
+
+**Prompt:** Product card: picture, name, price in mono, stock chip with a low-stock warning, add-to-cart feedback, loading skeleton. Product pictures: seed images in `src/assets/products/`; Add Item gets an image picker (FileReader → data URL kept in state).
+
+**Changes**
+- `Item.image` is now a URL string instead of a `File` (a `File` can't be stored in Redux or saved later). The five placeholder items ("1 name" … "5 name") became real products with descriptions, prices, mixed stock levels and pictures.
+- Seed pictures: five Unsplash photos (no brand logos) cropped to 640 × 480 WebP, 2-10 KB each, sources in `src/assets/products/CREDITS.md`.
+- New `ProductCard` used by Buy and Sell: 4:3 picture, stock chip on the picture ("12 in stock", orange "Only 3 left" at 3 or fewer, red "Sold out"), name, two-line description, mono price, buttons pinned to the bottom so cards in a row line up. Hard shadow lift on hover where a pointer can hover. Skeleton shimmer while the picture loads; a missing or broken picture shows the item's first letter instead. Motion off under reduced motion.
+- Buy: "Add to cart" turns into "✓ Added", which fades out into a stepper (`CartStepper`: − | quantity | + and a clear button). The quantity can be typed (Enter or leaving the field applies it, capped at the stock), + stops at the stock, and reaching 0 by −, typing 0 or the clear button brings back "Add to cart". Keyboard focus moves to + after "Added" and back to "Add to cart" at 0; adds and changes are announced to screen readers; the stepper is the button's height so the card doesn't jump. New `setCartItemNum` reducer sets an exact quantity. Empty state when nothing is in stock. (Stepper design from the user's review.)
+- Sell: Update and Remove are outlined buttons with icons (Remove in red). Empty state links to Add Item.
+- New `ImageField` on Add Item: choose a picture with the button, by clicking the empty frame, or by dropping a file on desktop; preview with Change and Remove; rejects non-pictures and files over 15 MB. The file is read with FileReader and scaled on a canvas to at most 960 px (WebP, JPEG where WebP can't be written), so a several-MB phone photo becomes ~25-150 KB in state.
+- Prices keep their cents (`parseInt` turned 149.50 into 149) and display as `$89` / `$149.50`.
+- `.visually-hidden` moved to the global styles (used by the home page and the Buy announcements).
+
+**Check:** lint and build pass. Chrome at 1280 px light and dark, 390 and 360 px: all pictures load, no sideways scroll. Cart controls: Added → stepper after 1.2 s, + + − gives 2, typing 99 caps at 40, typing 5 sets 5, typing 0 / − at 1 / clear return to Add to cart, + disabled at the stock, keyboard focus follows, card height unchanged, at 1280 and 360 px. Add Item with a 3000 px, 700 KB photo: preview is a 25 KB WebP data URL, the new item shows on Sell with its picture and `$149.50`. Pictures held back on the network show the skeleton; failed pictures show the letters.
+
+**Changed by hand:** —

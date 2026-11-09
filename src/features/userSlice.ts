@@ -122,6 +122,18 @@ const userSlice = createSlice({
       } else items.push({ itemId: action.payload.id, inCartNum: 1 });
     },
 
+    // setCartItemNum: an exact quantity from the card's stepper; 0 removes it
+    setCartItemNum: (state, action: PayloadAction<CartItemStatus>) => {
+      const activeUser = _.findIndex(state, { isLoggedIn: true });
+      const items = state[activeUser].cart;
+      const { itemId, inCartNum } = action.payload;
+      const cartItem = items.find((item) => item.itemId === itemId);
+
+      if (inCartNum <= 0) _.remove(items, { itemId });
+      else if (cartItem) cartItem.inCartNum = inCartNum;
+      else items.push({ itemId, inCartNum });
+    },
+
     //removeItemFromCart
     removeItemFromCart: (state, action: PayloadAction<string>) => {
       const activeUser = _.findIndex(state, { isLoggedIn: true });
@@ -150,6 +162,7 @@ export const {
   setLoggedInUser,
   setLoggedOutUser,
   addItemToUserCart,
+  setCartItemNum,
   removeItemFromCart,
   addItemToOrdered,
 } = userSlice.actions;
