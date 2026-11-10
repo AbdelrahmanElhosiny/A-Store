@@ -11,7 +11,9 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import useAuth from "../hooks/useAuth";
+import useSide from "../hooks/useSide";
 import ThemeSwitch from "./ThemeSwitch";
+import LoginDialog from "./LoginDialog";
 
 interface LinkProp {
   path: string;
@@ -27,12 +29,17 @@ interface NavbarProps {
 // JSX
 // -----------------
 const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
-  const { setLoggedInUser, setLoggedOutUser, activeUserName } = useAuth();
+  const { setLoggedOutUser, activeUserName, isGuest } = useAuth();
+  const { signUpPath, pathname } = useSide();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
-  const guestLoggedIn: boolean = activeUserName === "Guest";
   const cartLink = navLinks.find(({ badge }) => badge !== undefined);
   const closeMenu = () => setIsMenuOpen(false);
+  const openLogin = () => {
+    closeMenu();
+    setIsLoginOpen(true);
+  };
 
   const links = navLinks.map(({ path, label, badge }) => (
     <NavLink
@@ -53,20 +60,33 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
     </NavLink>
   ));
 
-  const account = guestLoggedIn ? (
+  const account = isGuest ? (
     <div className="account">
-      <Button variant="contained" onClick={setLoggedInUser}>
-        Login
+      <Button variant="contained" onClick={openLogin}>
+        Log in
       </Button>
-      <Button variant="outlined" onClick={setLoggedInUser}>
+      <Button
+        variant="outlined"
+        component={Link}
+        to={signUpPath}
+        // after signing up, go back to the page they were on
+        state={{ from: pathname }}
+        onClick={closeMenu}
+      >
         Sign up
       </Button>
     </div>
   ) : (
     <div className="account">
       <span className="user-name">{activeUserName}</span>
-      <Button variant="outlined" onClick={setLoggedOutUser}>
-        Logout
+      <Button
+        variant="outlined"
+        onClick={() => {
+          closeMenu();
+          setLoggedOutUser();
+        }}
+      >
+        Log out
       </Button>
     </div>
   );
@@ -129,6 +149,7 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
           {account}
         </DrawerHolder>
       </Drawer>
+      <LoginDialog isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
     </Holder>
   );
 };

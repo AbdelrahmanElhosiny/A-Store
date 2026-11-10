@@ -112,3 +112,19 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** lint and build pass. The plan's path at 360 px with no sideways scroll: Buy → add headphones, 3 mugs, 3 lamps → seller drops the lamp stock to 1 → Cart shows the warning and a $176 subtotal for 5 items → Place order → Track Shipment goes Ordered → In delivery (17 s) → Delivered (47 s) → Track Sold shows 5 units, 1 order, $176, the lamp sold out → Buy no longer lists the lamp. Same pages checked at 1280 px dark; empty states for Cart, Track Shipment and Track Sold.
 
 **Changed by hand:** —
+
+## 7. Sign up, login, guest-cart merge, persistence (Claude Code)
+
+**Prompt:** Sign up and login: a real Formik/Yup sign-up that adds a user to state; login picks a demo account; the guest cart moves into the user's cart on login. Persistence: save items and users to localStorage (RTK listener middleware, throttled), plus a "Reset demo data" button.
+
+**Changes**
+- Log in opens a dialog listing the accounts (Ahmed, Omar and any created here), each a button with its initial and address; no passwords, and the dialog says so. Esc, the X or a tap on the backdrop closes it. "New here? Create an account" links to sign up.
+- On login, the guest's cart moves into the account: quantities of the same item add up but stop at the stock (and never drop below what the account already had). The guest's orders move too, so Track Shipment doesn't look empty after logging in mid-way. The dialog and the sign-up page say what comes along ("Your cart (3 items) comes with you."). Logging out goes back to the guest with an empty cart. The hard-coded "always Omar" login and the `TODO: transfer data from guest to user` are gone.
+- Sign up is a real page under each side (`/buy/sign-up`, `/sell/sign-up`, so it keeps that side's nav and colour): name, delivery address, optional second line, ZIP code and phone, with Yup checks (name 2-24 characters and not taken, ignoring case; ZIP format; phone with at least 7 digits). It adds the account, logs straight into it and returns to the page Sign up was clicked from. Demo accounts are offered next to the form (under it on phones). If someone is already logged in, the page says so with Log out / back buttons. `zipCode` and `phoneNum` are strings now (a number drops leading zeros and "+"); the seed accounts got realistic addresses.
+- Persistence: a listener middleware saves `items` and `users` to localStorage (`a-store-data`, versioned) at most twice a second, and flushes on `pagehide`. Seed pictures are saved by name and turned back into the current build's URL on load, so a new deploy doesn't break them. Broken, old or blocked storage falls back to the seed data; if the browser refuses to save (storage full), a one-time warning says so.
+- "Reset demo data" in the footer asks first, then a shared `resetDemoData` action puts both slices back to the starter data and clears the saved copy.
+- Nav buttons read "Log in" / "Log out". `DialogHeader` takes a `titleId` for the dialog's label.
+
+**Check:** lint and build pass. Chrome at 360 px: guest adds a mug → Log in as Omar (cart moves) → Omar adds a watch → Log out (empty cart) → guest adds 2 watches → Log in as Omar gives mug 1, watch 2 (capped at the stock of 2) → refresh keeps Omar and the cart. Sign up: empty submit shows four errors, " omar " and phone "123" show "taken" and "At least 7 digits", then Sara signs up, lands back on the cart with the guest's 3 lines. Sell: an added item survives a refresh. Reset brings back the five items and the guest, clears storage, and a refresh stays reset. Login dialog closes on Esc and the backdrop. 1280 px dark checked; no sideways scroll; no console errors.
+
+**Changed by hand:** —

@@ -1,8 +1,10 @@
+import { useState } from "react";
 import styled from "@emotion/styled";
 import font from "../styles/font";
 import { color } from "../styles/tokens";
 import { ThemeType } from "../styles/GlobalStyle";
 import { EXTERNAL_LINK } from "../constant/linkConstant";
+import ResetDemoDialog from "../components/ResetDemoDialog";
 
 interface Props {
   NavBar: React.ReactElement;
@@ -13,6 +15,8 @@ interface Props {
 // JSX
 // -----------------
 const Layout: React.FC<Props> = ({ NavBar, MainComponent, Theme }) => {
+  const [isResetOpen, setIsResetOpen] = useState(false);
+
   return (
     <Holder className={`${Theme}`}>
       <header className="nav-bar">{NavBar}</header>
@@ -31,8 +35,19 @@ const Layout: React.FC<Props> = ({ NavBar, MainComponent, Theme }) => {
           <a href={EXTERNAL_LINK.AI_COMPARE} className="link">
             What AI changed
           </a>
+          <button
+            type="button"
+            className="link reset"
+            onClick={() => setIsResetOpen(true)}
+          >
+            Reset demo data
+          </button>
         </div>
       </footer>
+      <ResetDemoDialog
+        isOpen={isResetOpen}
+        onClose={() => setIsResetOpen(false)}
+      />
     </Holder>
   );
 };
@@ -88,6 +103,20 @@ const Holder = styled.div`
       &:hover,
       &:focus-visible {
         color: var(--primary-color);
+      }
+    }
+
+    /* a button that looks like the links next to it */
+    .reset {
+      font: inherit;
+      background: none;
+      border-width: 0 0 2px;
+      border-color: ${color.red};
+      padding: 0;
+      cursor: pointer;
+      &:hover,
+      &:focus-visible {
+        color: ${color.red};
       }
     }
   }

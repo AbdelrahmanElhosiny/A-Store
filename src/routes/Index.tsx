@@ -24,16 +24,17 @@ const RouterIndex = () => {
   return (
     <Routes>
       <Route path={ROUTE_INDEX.HOME} element={<HomePage />} />
-      <Route path={ROUTE_INDEX.SIGN_UP} element={<SignUp />} />
       <Route path={ROUTE_INDEX.SELL} element={<SellIndex />}>
         <Route index element={<SellHome />} />
         <Route path={SELL_ROUTE.ADD_ITEM} element={<AddItem />} />
         <Route path={SELL_ROUTE.TRACK_SOLD} element={<TrackSold />} />
+        <Route path={SELL_ROUTE.SIGN_UP} element={<SignUp />} />
       </Route>
       <Route path={ROUTE_INDEX.BUY} element={<BuyIndex />}>
         <Route index element={<BuyHome />} />
         <Route path={BUY_ROUTE.CART} element={<Cart />} />
         <Route path={BUY_ROUTE.TRACK_BOUGHT} element={<TrackBought />} />
+        <Route path={BUY_ROUTE.SIGN_UP} element={<SignUp />} />
       </Route>
       <Route path="*" element={<Error404 />} />
     </Routes>

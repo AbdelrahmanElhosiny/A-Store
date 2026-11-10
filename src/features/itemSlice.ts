@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { CartItemStatus } from "./userSlice";
+import resetDemoData from "../app/resetDemoData";
 import headphones from "../assets/products/headphones.webp";
 import lamp from "../assets/products/lamp.webp";
 import mug from "../assets/products/mug.webp";
@@ -19,6 +20,15 @@ interface Item {
   // a URL: a bundled picture, or a data URL from the Add Item picker
   image?: string;
 }
+
+// bundled pictures by name; saved data refers to them by name (see app/persist.ts)
+const SEED_IMAGES: Record<string, string> = {
+  headphones,
+  lamp,
+  mug,
+  watch,
+  backpack,
+};
 
 // seed items, pictures from Unsplash (see src/assets/products/CREDITS.md)
 const initialState: Item[] = [
@@ -93,9 +103,13 @@ const itemSlice = createSlice({
       } else return state;
     },
   },
+  extraReducers: (builder) => {
+    builder.addCase(resetDemoData, () => initialState);
+  },
 });
 
 export type { Item };
+export { SEED_IMAGES };
 export const { addNewItem, updateItem, removeItem, buyItem } =
   itemSlice.actions;
 export default itemSlice.reducer;

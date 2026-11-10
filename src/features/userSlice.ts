@@ -1,13 +1,15 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { Item } from "./itemSlice";
+import resetDemoData from "../app/resetDemoData";
 
 interface User {
   userName: string;
   address: string;
   optAddress?: string;
-  zipCode: number;
-  phoneNum: number;
+  // strings: a number would drop leading zeros and "+"
+  zipCode: string;
+  phoneNum: string;
   isLoggedIn: boolean;
   userType: "seller" | "buyer";
   cart: CartItemStatus[];
@@ -38,14 +40,22 @@ interface PillingInfo {
   cvv: number;
   expireDate: number;
 }
+// the stock of each item, so a merged cart never asks for more than exists
+interface LogInPayload {
+  userName: string;
+  stockById: Record<string, number>;
+}
+
+// the guest is always first; it is the active user when nobody is logged in
+const GUEST_NAME = "Guest";
 
 const initialState: User[] = [
   {
-    userName: "Guest",
+    userName: GUEST_NAME,
     address: "",
     optAddress: "",
-    zipCode: 0,
-    phoneNum: 0,
+    zipCode: "",
+    phoneNum: "",
     isLoggedIn: true,
     userType: "buyer",
     cart: [],
@@ -54,10 +64,10 @@ const initialState: User[] = [
   },
   {
     userName: "Ahmed",
-    address: "abc street",
+    address: "14 Nile Street, Cairo",
     optAddress: "",
-    zipCode: 123,
-    phoneNum: 123,
+    zipCode: "11511",
+    phoneNum: "+20 100 000 0001",
     isLoggedIn: false,
     userType: "buyer",
     cart: [],
@@ -66,10 +76,10 @@ const initialState: User[] = [
   },
   {
     userName: "Omar",
-    address: "abc street",
+    address: "8 Corniche Road, Alexandria",
     optAddress: "",
-    zipCode: 123,
-    phoneNum: 123,
+    zipCode: "21500",
+    phoneNum: "+20 100 000 0002",
     isLoggedIn: false,
     userType: "buyer",
     cart: [],
@@ -87,19 +97,40 @@ const userSlice = createSlice({
       state.push(action.payload);
     },
 
-    // setLoggedInUser
-    setLoggedInUser: (state, action: PayloadAction<string>) => {
-      const userIndex = _.findIndex(state, { userName: action.payload });
-      state[userIndex].isLoggedIn = true;
-      state[0].isLoggedIn = false;
-      //TODO: when logged in transfer data from guest to user
+    // setLoggedInUser: what the guest had in the cart and ordered moves to
+    // the account, so nothing is lost by logging in halfway through shopping
+    setLoggedInUser: (state, action: PayloadAction<LogInPayload>) => {
+      const { userName, stockById } = action.payload;
+      const user = state.find((u) => u.userName === userName);
+      const guest = state[0];
+      if (!user || user === guest || user.isLoggedIn) return;
+
+      if (guest.isLoggedIn) {
+        guest.cart.forEach(({ itemId, inCartNum }) => {
+          const line = user.cart.find((cartItem) => cartItem.itemId === itemId);
+          const hadNum = line?.inCartNum ?? 0;
+          // add them up, but not past the stock (and never below what the
+          // account already had)
+          const mergedNum = Math.max(
+            Math.min(hadNum + inCartNum, stockById[itemId] ?? 0),
+            hadNum,
+          );
+          if (line) line.inCartNum = mergedNum;
+          else if (mergedNum > 0) user.cart.push({ itemId, inCartNum: mergedNum });
+        });
+        user.orderedItems.push(...guest.orderedItems);
+        guest.cart = [];
+        guest.orderedItems = [];
+      }
+
+      state.forEach((u) => (u.isLoggedIn = false));
+      user.isLoggedIn = true;
     },
 
-    // setLoggedOutUser
-    setLoggedOutUser: (state, action: PayloadAction<string>) => {
-      const userIndex = _.findIndex(state, { userName: action.payload });
+    // setLoggedOutUser: back to the guest, with an empty cart
+    setLoggedOutUser: (state) => {
+      state.forEach((u) => (u.isLoggedIn = false));
       state[0].isLoggedIn = true;
-      state[userIndex].isLoggedIn = false;
     },
 
     // addItemToCart
@@ -153,9 +184,13 @@ const userSlice = createSlice({
     },
     // delivery (4)
   },
+  extraReducers: (builder) => {
+    builder.addCase(resetDemoData, () => initialState);
+  },
 });
 
 export type { User, OrderedItemStatus, CartItemStatus };
+export { GUEST_NAME };
 export const {
   addNewUser,
   setLoggedInUser,

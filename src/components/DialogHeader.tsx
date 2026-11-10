@@ -7,15 +7,23 @@ import { color } from "../styles/tokens";
 interface Props {
   title: string;
   subtitle?: string | null; // e.g. the item's name
+  titleId?: string; // for the dialog's aria-labelledby
   onClose: () => void;
 }
 
 // Title row of a dialog: title, optional subtitle, and an X to close
-const DialogHeader: React.FC<Props> = ({ title, subtitle, onClose }) => {
+const DialogHeader: React.FC<Props> = ({
+  title,
+  subtitle,
+  titleId,
+  onClose,
+}) => {
   return (
     <Holder>
       <div className="titles">
-        <h3 className="title">{title}</h3>
+        <h3 className="title" id={titleId}>
+          {title}
+        </h3>
         {subtitle && <div className="subtitle">{subtitle}</div>}
       </div>
       <IconButton
