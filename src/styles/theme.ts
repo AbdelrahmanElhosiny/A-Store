@@ -13,16 +13,32 @@ type Side = "sell" | "buy" | "neutral";
 // Accents use the variant that keeps text readable on them:
 // bright colours on the dark background, faded colours on the light one.
 // Text on an accent is always the page background colour.
+//
+// A few values are nudged so text passes WCAG AA (4.5:1) on the cards (bg1)
+// as well as the page; each is marked and stays close to the Gruvbox colour.
+const accessible = {
+  // Gruvbox fg3: the muted grey one step closer to the text colour
+  mutedL: "#665c54",
+  mutedD: "#bdae93",
+  // greenB / orangeB darkened a little (were 3.6 and 4.5 on bg1)
+  greenL: "#66611a",
+  orangeL: "#aa3a05",
+  // purpleB / blueB 10% lighter, redB mixed 40% toward fg (were 4.2, 4.3, 3.4)
+  sellD: "#d6909e",
+  buyD: "#8caa9a",
+  redD: "#f48568",
+};
+
 const palettes = {
   dark: {
     bg: colorD.bg,
     bg1: colorD.bg1,
     bg2: colorD.bg2,
     fg: colorD.fg,
-    fgMuted: colorD.grayB,
-    sell: colorD.purpleB,
-    buy: colorD.blueB,
-    red: colorD.redB,
+    fgMuted: accessible.mutedD,
+    sell: accessible.sellD,
+    buy: accessible.buyD,
+    red: accessible.redD,
     green: colorD.greenB,
     yellow: colorD.yellowB,
     orange: colorD.orangeB,
@@ -33,13 +49,13 @@ const palettes = {
     bg1: colorL.bg1,
     bg2: colorL.bg2,
     fg: colorL.fg,
-    fgMuted: colorL.grayB,
+    fgMuted: accessible.mutedL,
     sell: colorL.purpleB,
     buy: colorL.blueB,
     red: colorL.redB,
-    green: colorL.greenB,
+    green: accessible.greenL,
     yellow: colorL.yellowB,
-    orange: colorL.orangeB,
+    orange: accessible.orangeL,
     shadow: colorL.bg3,
   },
 };
@@ -85,7 +101,19 @@ const createAppTheme = (side: Side, mode: Mode): Theme => {
     },
     components: {
       // no round ripples: focus shows as a square outline (GlobalStyle)
-      MuiButtonBase: { defaultProps: { disableRipple: true } },
+      // MUI removes the outline on its buttons, so they get the same square
+      // ring as the rest of the app when focused from the keyboard
+      MuiButtonBase: {
+        defaultProps: { disableRipple: true },
+        styleOverrides: {
+          root: {
+            "&.Mui-focusVisible": {
+              outline: `2px solid var(--primary-color, ${p.fg})`,
+              outlineOffset: "2px",
+            },
+          },
+        },
+      },
       MuiButton: { defaultProps: { disableElevation: true } },
       // MUI lightens dark-mode surfaces with a gradient; keep them flat
       MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },

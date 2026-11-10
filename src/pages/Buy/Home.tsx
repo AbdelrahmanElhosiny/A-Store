@@ -9,6 +9,9 @@ import ProductCard from "../../components/ProductCard";
 import CartStepper from "../../components/CartStepper";
 import { color } from "../../styles/tokens";
 import useBuy from "./useBuy";
+import { AnimatePresence, m } from "motion/react";
+import { listItem } from "../../styles/motion";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 // how long "Added" shows (it fades out at the end) before the stepper
 const ADDED_MS = 1200;
@@ -98,6 +101,7 @@ const BuyHome = () => {
   const { items, addItemToUserCart, setCartItemNum, users, activeUserIndex } =
     useBuy();
   const [announcement, setAnnouncement] = useState("");
+  useDocumentTitle("Shop");
   const cart = users[activeUserIndex].cart;
   const inCartNum = (id: string) =>
     cart.find(({ itemId }) => itemId === id)?.inCartNum ?? 0;
@@ -129,15 +133,19 @@ const BuyHome = () => {
         <p className="empty">Nothing in stock right now. Check back soon.</p>
       )}
       <div className="container">
-        {inStock.map((item) => (
-          <BuyCard
-            key={item.id}
-            item={item}
-            inCartNum={inCartNum(item.id)}
-            onAdd={handleAdd}
-            onChangeNum={handleChangeNum}
-          />
-        ))}
+        {/* items that sell out leave, new ones pop in */}
+        <AnimatePresence initial={false} mode="popLayout">
+          {inStock.map((item) => (
+            <m.div className="cell" key={item.id} {...listItem}>
+              <BuyCard
+                item={item}
+                inCartNum={inCartNum(item.id)}
+                onAdd={handleAdd}
+                onChangeNum={handleChangeNum}
+              />
+            </m.div>
+          ))}
+        </AnimatePresence>
       </div>
     </Holder>
   );
@@ -158,9 +166,14 @@ const fadeIn = keyframes`
 
 const Holder = styled.div`
   .container {
+    position: relative; /* for the leaving item (popLayout) */
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
     gap: var(--space-l);
+  }
+  /* the card fills its cell, so cards in a row stay the same height */
+  .cell {
+    display: grid;
   }
 
   .add-button {

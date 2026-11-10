@@ -12,6 +12,7 @@ import useAuth, { SignUpFields } from "../hooks/useAuth";
 import useSide from "../hooks/useSide";
 import { color } from "../styles/tokens";
 import font from "../styles/font";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 const initialValues: SignUpFields = {
   userName: "",
@@ -66,6 +67,7 @@ const getValidationSchema = (isNameTaken: (userName: string) => boolean) =>
 // JSX
 //------------------
 const SignUp = () => {
+  useDocumentTitle("Create an account");
   const {
     isGuest,
     activeUserName,

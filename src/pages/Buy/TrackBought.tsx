@@ -22,6 +22,7 @@ import {
   shortOrderId,
 } from "../../utils/orders";
 import useBuy from "./useBuy";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 // one line under the order's title, e.g. "In delivery · arrives in 12 s"
 const statusText = ({ orderedAt }: Order, now: number) => {
@@ -37,6 +38,7 @@ const statusText = ({ orderedAt }: Order, now: number) => {
 // JSX
 // -----------------
 const TrackBought = () => {
+  useDocumentTitle("Track shipment");
   const { orderedItems } = useBuy();
   const orders = groupOrders(orderedItems);
   // the clock only ticks while something is still on its way

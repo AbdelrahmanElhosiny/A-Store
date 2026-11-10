@@ -5,6 +5,7 @@ import font from "../../styles/font";
 import formatPrice from "../../utils/formatPrice";
 import { LOW_STOCK } from "../../constant/stockConstant";
 import useSell from "./useSell";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 interface SoldRow {
   itemId: string;
@@ -19,6 +20,7 @@ interface SoldRow {
 // JSX
 // -----------------
 const TrackSold = () => {
+  useDocumentTitle("Sold items");
   const { items, soldLines } = useSell();
 
   // one row per listed item (sold or not), plus removed items that sold

@@ -14,11 +14,15 @@ import AddIcon from "@mui/icons-material/Add";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
+import { AnimatePresence, m } from "motion/react";
+import { listItem } from "../../styles/motion";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 type DialogKind = "update" | "remove";
 
 const SellHome = () => {
   const { items } = useSell();
+  useDocumentTitle("Your items");
   // the item stays set while its dialog animates out; only the kind is cleared
   const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [openDialog, setOpenDialog] = useState<DialogKind | null>(null);
@@ -79,27 +83,32 @@ const SellHome = () => {
         </EmptyState>
       ) : (
         <div className="container">
-          {items.map((item) => (
-            <ProductCard item={item} key={item.id}>
-              <Button
-                variant="outlined"
-                startIcon={<EditOutlinedIcon />}
-                onClick={() => open("update", item)}
-                aria-label={`Update ${item.name}`}
-              >
-                Update
-              </Button>
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<DeleteOutlineIcon />}
-                onClick={() => open("remove", item)}
-                aria-label={`Remove ${item.name}`}
-              >
-                Remove
-              </Button>
-            </ProductCard>
-          ))}
+          {/* a removed card shrinks away and the others slide into place */}
+          <AnimatePresence initial={false} mode="popLayout">
+            {items.map((item) => (
+              <m.div className="cell" key={item.id} {...listItem}>
+                <ProductCard item={item}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<EditOutlinedIcon />}
+                    onClick={() => open("update", item)}
+                    aria-label={`Update ${item.name}`}
+                  >
+                    Update
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    startIcon={<DeleteOutlineIcon />}
+                    onClick={() => open("remove", item)}
+                    aria-label={`Remove ${item.name}`}
+                  >
+                    Remove
+                  </Button>
+                </ProductCard>
+              </m.div>
+            ))}
+          </AnimatePresence>
         </div>
       )}
     </Holder>
@@ -126,9 +135,14 @@ const Holder = styled.div`
   }
 
   .container {
+    position: relative; /* for the leaving item (popLayout) */
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
     gap: var(--space-l);
+  }
+  /* the card fills its cell, so cards in a row stay the same height */
+  .cell {
+    display: grid;
   }
 `;
 

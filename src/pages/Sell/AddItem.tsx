@@ -4,6 +4,7 @@ import useSell, { ItemFormFields } from "./useSell";
 import ItemFields from "./components/ItemFields";
 import getItemSchema from "./itemSchema";
 import styled from "@emotion/styled";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 const initialValues: ItemFormFields = {
   name: "",
@@ -18,6 +19,7 @@ const validationSchema = getItemSchema(1);
 // JSX
 //------------------
 const AddItem = () => {
+  useDocumentTitle("Add item");
   const { addNewItem } = useSell();
 
   const handelSubmit = (

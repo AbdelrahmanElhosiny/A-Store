@@ -15,6 +15,7 @@ import buy640Avif from "../assets/home/buy-640.avif";
 import buy1200Avif from "../assets/home/buy-1200.avif";
 import buy640Webp from "../assets/home/buy-640.webp";
 import buy1200Webp from "../assets/home/buy-1200.webp";
+import useDocumentTitle from "../hooks/useDocumentTitle";
 
 // each half is half the screen wide on desktop, full width on phones
 const SIZES = "(max-width: 767px) 100vw, 50vw";
@@ -51,6 +52,7 @@ const isTouchScreen = () => window.matchMedia?.(TOUCH_QUERY).matches ?? false;
 // JSX
 // -----------------
 const HomePage = () => {
+  useDocumentTitle();
   const [activeSide, setActiveSide] = useState<string | null>(null);
 
   const handleClick = (event: React.MouseEvent, side: string) => {

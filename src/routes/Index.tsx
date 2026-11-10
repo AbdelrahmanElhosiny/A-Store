@@ -11,8 +11,11 @@ import SellIndex from "../pages/Sell";
 import SellHome from "../pages/Sell/Home";
 import SignUp from "../pages/SignUp";
 import Error404 from "../pages/Error404";
+import useRouteFocus from "../hooks/useRouteFocus";
 
 const RouterIndex = () => {
+  useRouteFocus();
+
   return (
     <Routes>
       <Route path={ROUTE_INDEX.HOME} element={<HomePage />} />
@@ -21,14 +24,19 @@ const RouterIndex = () => {
         <Route path={SELL_ROUTE.ADD_ITEM} element={<AddItem />} />
         <Route path={SELL_ROUTE.TRACK_SOLD} element={<TrackSold />} />
         <Route path={SELL_ROUTE.SIGN_UP} element={<SignUp />} />
+        <Route path="*" element={<Error404 />} />
       </Route>
       <Route path={ROUTE_INDEX.BUY} element={<BuyIndex />}>
         <Route index element={<BuyHome />} />
         <Route path={BUY_ROUTE.CART} element={<Cart />} />
         <Route path={BUY_ROUTE.TRACK_BOUGHT} element={<TrackBought />} />
         <Route path={BUY_ROUTE.SIGN_UP} element={<SignUp />} />
+        <Route path="*" element={<Error404 />} />
       </Route>
-      <Route path="*" element={<Error404 />} />
+      {/* any other address: the 404 page inside the shop's layout */}
+      <Route path="*" element={<BuyIndex />}>
+        <Route path="*" element={<Error404 />} />
+      </Route>
     </Routes>
   );
 };

@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
+import { ErrorBoundary } from "react-error-boundary";
 import styled from "@emotion/styled";
 import font from "../styles/font";
 import { color } from "../styles/tokens";
@@ -6,6 +8,8 @@ import { ThemeType } from "../styles/GlobalStyle";
 import { EXTERNAL_LINK } from "../constant/linkConstant";
 import ResetDemoDialog from "../components/ResetDemoDialog";
 import Toaster from "../components/Toaster";
+import ErrorFallback from "../components/ErrorFallback";
+import PageTransition from "../components/PageTransition";
 
 interface Props {
   NavBar: React.ReactElement;
@@ -17,11 +21,26 @@ interface Props {
 // -----------------
 const Layout: React.FC<Props> = ({ NavBar, MainComponent, Theme }) => {
   const [isResetOpen, setIsResetOpen] = useState(false);
+  const { pathname } = useLocation();
 
   return (
     <Holder className={`${Theme}`}>
-      <header className="nav-bar">{NavBar}</header>
-      <main className="main-component">{MainComponent}</main>
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
+      <header className="nav-bar">
+        {/* every page's title is an h2, under this one for the whole side */}
+        <h1 className="visually-hidden">
+          {Theme === "buy" ? "A-Store shop" : "A-Store seller tools"}
+        </h1>
+        {NavBar}
+      </header>
+      <main className="main-component" id="main" tabIndex={-1}>
+        {/* a crashed page keeps the nav; going to another page clears it */}
+        <ErrorBoundary FallbackComponent={ErrorFallback} resetKeys={[pathname]}>
+          <PageTransition>{MainComponent}</PageTransition>
+        </ErrorBoundary>
+      </main>
       <footer>
         <div className="about">
           A-Store <span className="note">· rebuilt with AI</span>
@@ -70,8 +89,28 @@ const Holder = styled.div`
     z-index: 100;
   }
 
+  /* hidden until a keyboard user tabs to it */
+  .skip-link {
+    ${font.Bold}
+    position: absolute;
+    top: var(--space-s);
+    left: var(--space-s);
+    z-index: 200;
+    padding: var(--space-s) var(--space-m);
+    background-color: var(--primary-color);
+    color: ${color.bg};
+    box-shadow: var(--shadow-2);
+    transform: translateY(-200%);
+    &:focus-visible {
+      transform: none;
+    }
+  }
+
   .main-component {
     flex: 1;
+    &:focus {
+      outline: none;
+    }
     padding: var(--space-l) var(--page-gutter) var(--space-xxl);
   }
 

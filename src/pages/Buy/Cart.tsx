@@ -13,6 +13,9 @@ import font from "../../styles/font";
 import formatPrice from "../../utils/formatPrice";
 import { shortOrderId } from "../../utils/orders";
 import useBuy from "./useBuy";
+import { AnimatePresence, m } from "motion/react";
+import { listItem } from "../../styles/motion";
+import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 const TRACK_PATH = `${ROUTE_INDEX.BUY}/${BUY_ROUTE.TRACK_BOUGHT}`;
 
@@ -22,6 +25,7 @@ const TRACK_PATH = `${ROUTE_INDEX.BUY}/${BUY_ROUTE.TRACK_BOUGHT}`;
 const Cart = () => {
   const { cartLines, setCartItemNum, placeOrder } = useBuy();
   const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
+  useDocumentTitle("Cart");
 
   const units = cartLines.reduce((sum, line) => sum + line.orderableNum, 0);
   const subtotal = cartLines.reduce(
@@ -72,36 +76,39 @@ const Cart = () => {
       <h2>Cart</h2>
       <div className="layout">
         <ul className="lines">
-          {cartLines.map(({ item, inCartNum, orderableNum }) => (
-            <li className="line" key={item.id}>
-              <ProductThumb
-                className="thumb"
-                name={item.name}
-                image={item.image}
-              />
-              <div className="info">
-                <h3 className="name">{item.name}</h3>
-                <span className="each">{formatPrice(item.price)} each</span>
-                {orderableNum < inCartNum && (
-                  <span className="warning">
-                    {item.stockNum > 0
-                      ? `Only ${item.stockNum} in stock: ${orderableNum} will be ordered`
-                      : "Sold out: won't be ordered"}
-                  </span>
-                )}
-              </div>
-              <CartStepper
-                className="stepper"
-                itemName={item.name}
-                value={inCartNum}
-                max={Math.max(item.stockNum, inCartNum)}
-                onChange={(next) => setCartItemNum(item.id, next)}
-              />
-              <span className="line-total">
-                {formatPrice(item.price * orderableNum)}
-              </span>
-            </li>
-          ))}
+          {/* a removed line shrinks away and the ones below move up */}
+          <AnimatePresence initial={false} mode="popLayout">
+            {cartLines.map(({ item, inCartNum, orderableNum }) => (
+              <m.li className="line" key={item.id} {...listItem}>
+                <ProductThumb
+                  className="thumb"
+                  name={item.name}
+                  image={item.image}
+                />
+                <div className="info">
+                  <h3 className="name">{item.name}</h3>
+                  <span className="each">{formatPrice(item.price)} each</span>
+                  {orderableNum < inCartNum && (
+                    <span className="warning">
+                      {item.stockNum > 0
+                        ? `Only ${item.stockNum} in stock: ${orderableNum} will be ordered`
+                        : "Sold out: won't be ordered"}
+                    </span>
+                  )}
+                </div>
+                <CartStepper
+                  className="stepper"
+                  itemName={item.name}
+                  value={inCartNum}
+                  max={Math.max(item.stockNum, inCartNum)}
+                  onChange={(next) => setCartItemNum(item.id, next)}
+                />
+                <span className="line-total">
+                  {formatPrice(item.price * orderableNum)}
+                </span>
+              </m.li>
+            ))}
+          </AnimatePresence>
         </ul>
 
         <aside className="summary" aria-label="Order summary">
@@ -149,6 +156,7 @@ const Holder = styled.div`
 
   /* -------- line items -------- */
   .lines {
+    position: relative; /* for the leaving item (popLayout) */
     list-style: none;
     margin: 0;
     padding: 0;

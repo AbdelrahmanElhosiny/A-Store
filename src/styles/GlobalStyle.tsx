@@ -116,6 +116,11 @@ const style = css`
     outline: 2px solid var(--primary-color, ${color.fg});
     outline-offset: 2px;
   }
+  /* headings get focus after a page change (useRouteFocus): no ring there */
+  h1[tabindex="-1"]:focus,
+  h2[tabindex="-1"]:focus {
+    outline: none;
+  }
 `;
 
 export type { ThemeType };
