@@ -40,7 +40,7 @@ const AddItem = () => {
       <h2>Add new item</h2>
       <Formik {...FormProps}>
         <Form noValidate>
-          <ItemFields />
+          <ItemFields minStock={1} />
           <div className="buttons">
             <Button
               variant="contained"

@@ -43,7 +43,7 @@ const UpdateItemModal: React.FC<Props> = ({ item, isOpen, closeDialog }) => {
         <Formik {...FormProps}>
           {({ dirty }) => (
             <Form noValidate>
-              <ItemFields />
+              <ItemFields minStock={0} />
               <div className="buttons">
                 <Button onClick={closeDialog} variant="outlined">
                   Cancel

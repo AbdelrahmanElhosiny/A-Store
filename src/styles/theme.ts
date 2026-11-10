@@ -14,31 +14,30 @@ type Side = "sell" | "buy" | "neutral";
 // bright colours on the dark background, faded colours on the light one.
 // Text on an accent is always the page background colour.
 //
-// A few values are nudged so text passes WCAG AA (4.5:1) on the cards (bg1)
-// as well as the page; each is marked and stays close to the Gruvbox colour.
+// A few values are chosen so text passes WCAG AA (4.5:1) on the cards (bg1)
+// as well as the page. The accents themselves stay Gruvbox's.
 const accessible = {
-  // Gruvbox fg3: the muted grey one step closer to the text colour
+  // light: Gruvbox fg3, the muted grey one step closer to the text colour
   mutedL: "#665c54",
-  mutedD: "#bdae93",
-  // greenB / orangeB darkened a little (were 3.6 and 4.5 on bg1)
+  // light: greenB / orangeB darkened a little (were 3.6 and 4.5 on bg1)
   greenL: "#66611a",
   orangeL: "#aa3a05",
-  // purpleB / blueB 10% lighter, redB mixed 40% toward fg (were 4.2, 4.3, 3.4)
-  sellD: "#d6909e",
-  buyD: "#8caa9a",
-  redD: "#f48568",
+  // dark: cards, nav and dialogs use Gruvbox bg0_s instead of bg1, so the
+  // bright accents read better on them (purple 4.8, blue 4.9, grey 4.7;
+  // red 3.8, up from 3.4)
+  cardD: "#32302f",
 };
 
 const palettes = {
   dark: {
     bg: colorD.bg,
-    bg1: colorD.bg1,
+    bg1: accessible.cardD,
     bg2: colorD.bg2,
     fg: colorD.fg,
-    fgMuted: accessible.mutedD,
-    sell: accessible.sellD,
-    buy: accessible.buyD,
-    red: accessible.redD,
+    fgMuted: colorD.grayB,
+    sell: colorD.purpleB,
+    buy: colorD.blueB,
+    red: colorD.redB,
     green: colorD.greenB,
     yellow: colorD.yellowB,
     orange: colorD.orangeB,
@@ -71,7 +70,7 @@ const fontMono =
 const hardShadows = [
   "none",
   ...Array.from({ length: 24 }, (_, i) =>
-    i < 4 ? shadow.s1 : i < 12 ? shadow.s2 : shadow.s3
+    i < 4 ? shadow.s1 : i < 12 ? shadow.s2 : shadow.s3,
   ),
 ] as Shadows;
 
@@ -86,7 +85,11 @@ const createAppTheme = (side: Side, mode: Mode): Theme => {
     palette: {
       mode,
       primary: { main, contrastText: p.bg },
-      error: { main: p.red, contrastText: p.bg },
+      // dark text on the bright red needs the darkest Gruvbox background
+      error: {
+        main: p.red,
+        contrastText: mode === "dark" ? colorD.bgH : p.bg,
+      },
       warning: { main: p.yellow, contrastText: p.bg },
       success: { main: p.green, contrastText: p.bg },
       background: { default: p.bg, paper: p.bg1 },

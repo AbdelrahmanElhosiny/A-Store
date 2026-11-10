@@ -164,3 +164,16 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** lint and build pass. axe-core 4.10 (WCAG 2.1 A/AA + best practice) reports nothing on Home, Buy, Cart, Track Shipment, Sign up with errors, Sell, the Update dialog, Add Item, Track Sold, the 404 page and the Login dialog, in light and dark (before: 175 contrast problems, a missing h1, and a 404 nested inside a second layout, caused by a route edit in this task and fixed). Chrome: the first Tab shows the skip link, Enter moves to the content, the next Tab rings "Add to cart"; going to Cart focuses its heading at the top with the title "Cart · A-Store"; mid-transition opacity ~0.5 then 1; a removed card leaves while the next one slides over. With reduced motion: no fade (opacity 1 right away) and a removed card leaves at once. Broken saved orders crash only Track Shipment (the nav stays) and Reset brings it back; a broken saved cart crashes the nav, shows the full-screen fallback, and Reset brings the app back.
 
 **Changed by hand:** —
+
+## 9b. Review changes: dark-mode colours, stock arrows (Claude Code)
+
+**Prompt (user's review):** Change back the colours to be higher in contrast; I want the red instead of the soft coral. On the item edit page, add an up arrow and a down arrow, good for the stock (maybe not the price).
+
+**Changes**
+- Dark mode is back to the original Gruvbox accents (bright red, purple, blue and grey). The contrast comes from a darker surface instead: cards, the navbar, the footer and dialogs use Gruvbox `bg0_s` (#32302f) instead of `bg1` (#3c3836). Purple (4.8), blue (4.9) and grey (4.7) now pass AA on them. Text on filled red buttons uses Gruvbox's darkest background (4.8). Light mode keeps the task 9 values.
+- Known gap, by choice: the bright red stays below AA as small text in dark mode: the outlined Remove buttons on cards (3.8:1) and form error messages on the page (4.3:1). Everything else passes axe in both themes.
+- New `StockField` for Stock on Add Item and in the Update dialog: ▲ / ▼ buttons stacked at the right of the field, full height, square. They stop at the minimum (1 for a new item, 0 when updating) and at 9,999, and an empty field counts as 0. The arrow keys do the same while typing, so the buttons stay out of the Tab order. The input is a `spinbutton` with its current value and limits for screen readers. The price keeps its plain field.
+
+**Check:** lint and build pass. Update Desk lamp (3): ▲ gives 4 and enables Save; ▼ five times stops at 0 with ▼ disabled; ArrowUp twice gives 2 and ArrowDown gives 1; saving shows "Only 1 left". Add Item: ▼ is disabled while empty, ▲ gives 1, and ▼ is disabled at 1. Checked in light and dark at 390 px. axe: light clean; dark only the red text above.
+
+**Changed by hand:** —
