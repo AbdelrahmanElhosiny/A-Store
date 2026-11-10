@@ -119,8 +119,10 @@ const Holder = styled.div`
     border-radius: 0;
     padding: 0;
 
+    /* the caret and the selected number already show focus here */
+    &:focus,
     &:focus-visible {
-      outline-offset: -4px;
+      outline: none;
     }
   }
 

@@ -5,9 +5,8 @@ import { Item } from "../features/itemSlice";
 import { color } from "../styles/tokens";
 import font from "../styles/font";
 import formatPrice from "../utils/formatPrice";
+import { LOW_STOCK } from "../constant/stockConstant";
 
-// at or under this many units the stock chip turns into a warning
-const LOW_STOCK = 3;
 
 interface Props {
   item: Item;

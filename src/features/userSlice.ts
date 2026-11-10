@@ -1,7 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
 import { Item } from "./itemSlice";
-import { v4 as uuid } from "uuid";
 
 interface User {
   userName: string;
@@ -23,12 +22,16 @@ interface CartItemStatus {
   itemId: string;
   inCartNum: number;
 }
+// one line of an order; every line placed together shares the orderId
 interface OrderedItemStatus {
   orderId: string;
   itemId: string;
   orderedNum: number;
-  isInDelivery?: boolean;
-  isDelivered?: boolean;
+  orderedAt: number; // ms timestamp; the delivery status is worked out from it
+  // the item as it was when ordered: the seller can change or remove it later
+  name: string;
+  price: number;
+  image?: string;
 }
 interface PillingInfo {
   cardNum: number;
@@ -141,16 +144,12 @@ const userSlice = createSlice({
       _.remove(items, { itemId: action.payload });
     },
 
-    //addItemToOrdered
-    addItemToOrdered: (state, action: PayloadAction<CartItemStatus>) => {
-      const activeUser = _.findIndex(state, { isLoggedIn: true });
-      const items = state[activeUser].orderedItems;
-
-      items.push({
-        orderId: uuid(),
-        itemId: action.payload.itemId,
-        orderedNum: action.payload.inCartNum,
-      });
+    // placeOrder: adds the order's lines and takes them out of the cart
+    placeOrder: (state, action: PayloadAction<OrderedItemStatus[]>) => {
+      const activeUser = state[_.findIndex(state, { isLoggedIn: true })];
+      const orderedIds = action.payload.map(({ itemId }) => itemId);
+      activeUser.orderedItems.push(...action.payload);
+      _.remove(activeUser.cart, ({ itemId }) => orderedIds.includes(itemId));
     },
     // delivery (4)
   },
@@ -164,6 +163,6 @@ export const {
   addItemToUserCart,
   setCartItemNum,
   removeItemFromCart,
-  addItemToOrdered,
+  placeOrder,
 } = userSlice.actions;
 export default userSlice.reducer;

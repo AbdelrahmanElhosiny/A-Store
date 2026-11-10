@@ -8,6 +8,7 @@ import {
 import { v4 as uuid } from "uuid";
 import { AppDispatch, RootState } from "../../app/store";
 import useNotification from "../../hooks/useNotification";
+import { OrderedItemStatus, User } from "../../features/userSlice";
 
 interface AddItemFormFields {
   name: string;
@@ -20,6 +21,11 @@ interface AddItemFormFields {
 const useSell = () => {
   const dispatch = useDispatch<AppDispatch>();
   const items = useSelector<RootState>((store) => store.items) as Item[];
+  const users = useSelector<RootState>((store) => store.users) as User[];
+  // every buyer's order lines: in this demo there's one seller, the store
+  const soldLines: OrderedItemStatus[] = users.flatMap(
+    ({ orderedItems }) => orderedItems,
+  );
   const { showNotification } = useNotification();
 
   //------------------
@@ -49,7 +55,7 @@ const useSell = () => {
     itemId && dispatch(removeItemAction(itemId));
   };
 
-  return { addNewItem, updateItem, removeItem, items };
+  return { addNewItem, updateItem, removeItem, items, soldLines };
 };
 
 export type { AddItemFormFields };

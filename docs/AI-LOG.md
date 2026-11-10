@@ -96,3 +96,19 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** lint and build pass. Chrome at 1280 px light and dark, 390 and 360 px: all pictures load, no sideways scroll. Cart controls: Added → stepper after 1.2 s, + + − gives 2, typing 99 caps at 40, typing 5 sets 5, typing 0 / − at 1 / clear return to Add to cart, + disabled at the stock, keyboard focus follows, card height unchanged, at 1280 and 360 px. Add Item with a 3000 px, 700 KB photo: preview is a 25 KB WebP data URL, the new item shows on Sell with its picture and `$149.50`. Pictures held back on the network show the skeleton; failed pictures show the letters.
 
 **Changed by hand:** —
+
+## 6. Cart and both Track pages (Claude Code)
+
+**Prompt:** Cart: line items with a quantity stepper, subtotal, order button, a friendly empty state. Track pages: Track Shipment lists `orderedItems` with a simulated status line (Ordered → In delivery → Delivered). Track Sold shows sold quantity per item.
+
+**Changes**
+- Orders: each order line now keeps `orderedAt` and a snapshot of the item's name, price and picture, so later edits or removals by the seller don't change past orders. Lines placed together share one `orderId`. `addItemToOrdered` became `placeOrder`, which adds the lines and takes them out of the cart in one step; the unused `isInDelivery` / `isDelivered` flags are gone (the status is worked out from the time).
+- Cart: line items with picture, name, unit price, the `CartStepper` and a line total; a sticky summary (items, free delivery, subtotal, Place order, "no payment is taken" note). If the stock dropped below what's in the cart, the line says how many will be ordered and the subtotal counts only those. One Place order button orders everything; the cart then shows "Order #XXXXXX placed" with Track shipment / Keep shopping. Empty cart: a friendly message and a Browse the shop button. Desktop: lines and summary side by side; tablets and phones: summary below, and on phones the stepper and total sit under the name.
+- Track Shipment: orders newest first, each with its short id, time, item count and total, a live status line ("Packing · ships in 12 s", "On its way · arrives in 28 s", "Delivered at 10:44"), a three-step bar (square markers, fills over time, green when delivered) and its items. Delivery is simulated (ships after 15 s, arrives after 45 s) and the page says so. The clock only ticks while an order is on its way; screen readers hear the step changes, not every second.
+- Track Sold: total units, orders and revenue, then one row per item with units sold, revenue (at the price each order paid) and the stock left, sold items first; items the seller removed but sold still show, marked "No longer listed".
+- Shared: `EmptyState`, `ProductThumb`, `useNow`, `utils/orders.ts`, and `LOW_STOCK` in `constant/stockConstant.ts`.
+- The quantity field in `CartStepper` no longer draws the focus outline inside the box (user's review).
+
+**Check:** lint and build pass. The plan's path at 360 px with no sideways scroll: Buy → add headphones, 3 mugs, 3 lamps → seller drops the lamp stock to 1 → Cart shows the warning and a $176 subtotal for 5 items → Place order → Track Shipment goes Ordered → In delivery (17 s) → Delivered (47 s) → Track Sold shows 5 units, 1 order, $176, the lamp sold out → Buy no longer lists the lamp. Same pages checked at 1280 px dark; empty states for Cart, Track Shipment and Track Sold.
+
+**Changed by hand:** —

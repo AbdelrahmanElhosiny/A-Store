@@ -1,90 +1,285 @@
+import { useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 import { Button } from "@mui/material";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+import CheckIcon from "@mui/icons-material/Check";
+import CartStepper from "../../components/CartStepper";
+import ProductThumb from "../../components/ProductThumb";
+import EmptyState from "../../components/EmptyState";
+import { BUY_ROUTE, ROUTE_INDEX } from "../../constant/routeConstant";
 import { color } from "../../styles/tokens";
+import font from "../../styles/font";
+import formatPrice from "../../utils/formatPrice";
+import { shortOrderId } from "../../utils/orders";
 import useBuy from "./useBuy";
 
-//TODO: make the page optional so it wont give an error if seller user
+const TRACK_PATH = `${ROUTE_INDEX.BUY}/${BUY_ROUTE.TRACK_BOUGHT}`;
 
+// -----------------
+// JSX
+// -----------------
 const Cart = () => {
-  const {
-    cartItems,
-    users,
-    activeUserIndex,
-    cartItemsIndex,
-    removeItemFromCart,
-    orderItem,
-  } = useBuy();
+  const { cartLines, setCartItemNum, placeOrder } = useBuy();
+  const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
 
-  const hasCartItem: boolean = cartItems.length > 0;
+  const units = cartLines.reduce((sum, line) => sum + line.orderableNum, 0);
+  const subtotal = cartLines.reduce(
+    (sum, { item, orderableNum }) => sum + item.price * orderableNum,
+    0,
+  );
+
+  const handleOrder = () => {
+    const orderId = placeOrder();
+    if (orderId) setPlacedOrderId(orderId);
+  };
+
+  // nothing in the cart: either the order just went through, or it's empty
+  if (cartLines.length === 0) {
+    return (
+      <Holder>
+        <h2>Cart</h2>
+        {placedOrderId ? (
+          <EmptyState
+            icon={<CheckIcon />}
+            title={`Order ${shortOrderId(placedOrderId)} placed`}
+            text="It ships in a few seconds. Follow it on Track Shipment."
+          >
+            <Button variant="contained" component={Link} to={TRACK_PATH}>
+              Track shipment
+            </Button>
+            <Button variant="outlined" component={Link} to={ROUTE_INDEX.BUY}>
+              Keep shopping
+            </Button>
+          </EmptyState>
+        ) : (
+          <EmptyState
+            icon={<ShoppingCartOutlinedIcon />}
+            title="Your cart is empty"
+            text="Find something you like in the shop."
+          >
+            <Button variant="contained" component={Link} to={ROUTE_INDEX.BUY}>
+              Browse the shop
+            </Button>
+          </EmptyState>
+        )}
+      </Holder>
+    );
+  }
 
   return (
     <Holder>
-      {hasCartItem && (
-        <>
-          <h2>Cart</h2>
-          <div className="container">
-            {cartItems.map((item) => {
-              if (!item) return;
-              const { name, description, id, price, stockNum } = item;
-              return (
-                <div className="card" key={id}>
-                  <div className="name">{name}</div>
-                  <div className="description">{description}</div>
-                  <div className="price">{`Price ${price}`}</div>
-                  <div className="stock-num">{`StockNum ${stockNum}`}</div>
-                  <div className="cart-num-count">{`${
-                    users[activeUserIndex].cart[cartItemsIndex(id)].inCartNum
-                  } in cart`}</div>
-                  <Button
-                    onClick={() => {
-                      orderItem(
-                        users[activeUserIndex].cart[cartItemsIndex(id)]
-                      );
-                      removeItemFromCart(id);
-                    }}
-                  >
-                    Order
-                  </Button>
-                  <Button
-                    onClick={() => {
-                      removeItemFromCart(id);
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-      {!hasCartItem && <h2>Cart Empty</h2>}
+      <h2>Cart</h2>
+      <div className="layout">
+        <ul className="lines">
+          {cartLines.map(({ item, inCartNum, orderableNum }) => (
+            <li className="line" key={item.id}>
+              <ProductThumb
+                className="thumb"
+                name={item.name}
+                image={item.image}
+              />
+              <div className="info">
+                <h3 className="name">{item.name}</h3>
+                <span className="each">{formatPrice(item.price)} each</span>
+                {orderableNum < inCartNum && (
+                  <span className="warning">
+                    {item.stockNum > 0
+                      ? `Only ${item.stockNum} in stock: ${orderableNum} will be ordered`
+                      : "Sold out: won't be ordered"}
+                  </span>
+                )}
+              </div>
+              <CartStepper
+                className="stepper"
+                itemName={item.name}
+                value={inCartNum}
+                max={Math.max(item.stockNum, inCartNum)}
+                onChange={(next) => setCartItemNum(item.id, next)}
+              />
+              <span className="line-total">
+                {formatPrice(item.price * orderableNum)}
+              </span>
+            </li>
+          ))}
+        </ul>
+
+        <aside className="summary" aria-label="Order summary">
+          <h3>Summary</h3>
+          <dl>
+            <div>
+              <dt>Items</dt>
+              <dd>{units}</dd>
+            </div>
+            <div>
+              <dt>Delivery</dt>
+              <dd>Free</dd>
+            </div>
+            <div className="subtotal">
+              <dt>Subtotal</dt>
+              <dd>{formatPrice(subtotal)}</dd>
+            </div>
+          </dl>
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={handleOrder}
+            disabled={units === 0}
+          >
+            Place order
+          </Button>
+          <p className="note">Demo store: no payment is taken.</p>
+        </aside>
+      </div>
     </Holder>
   );
 };
 
+// -----------------
+// Styled component
+// -----------------
 const Holder = styled.div`
-  .container {
+  .layout {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+    grid-template-columns: minmax(0, 1fr) 300px;
+    align-items: start;
     gap: var(--space-l);
+  }
 
-    .card {
-      background-color: ${color.bg1};
-      border: 1px solid ${color.bg2};
+  /* -------- line items -------- */
+  .lines {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+  }
+
+  .line {
+    display: grid;
+    grid-template-columns: 112px minmax(0, 1fr) 200px 6em;
+    grid-template-areas: "thumb info stepper total";
+    align-items: center;
+    gap: var(--space-m);
+    padding: var(--space-m);
+    background-color: ${color.bg1};
+    border: 1px solid ${color.bg2};
+  }
+
+  .thumb {
+    grid-area: thumb;
+  }
+
+  .info {
+    grid-area: info;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+    min-width: 0;
+  }
+
+  .name {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .each {
+    ${font.Regular}
+    font-size: 0.9rem;
+    color: ${color.fgMuted};
+  }
+
+  .warning {
+    font-size: 0.85rem;
+    color: ${color.orange};
+  }
+
+  .stepper {
+    grid-area: stepper;
+  }
+
+  .line-total {
+    ${font.Bold}
+    grid-area: total;
+    text-align: right;
+    font-size: 1.1rem;
+  }
+
+  /* -------- summary -------- */
+  .summary {
+    position: sticky;
+    top: calc(var(--nav-height) + var(--space-m));
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-m);
+    padding: var(--space-l);
+    background-color: ${color.bg1};
+    border: 1px solid ${color.bg2};
+    box-shadow: var(--shadow-2);
+
+    h3 {
+      margin: 0;
+    }
+    dl {
+      margin: 0;
       display: flex;
       flex-direction: column;
-      gap: var(--space-xs);
-      padding: var(--space-m);
-      min-width: 0;
-      overflow-wrap: anywhere;
-
-      .MuiButton-root {
-        align-self: flex-start;
+      gap: var(--space-s);
+    }
+    dl div {
+      display: flex;
+      justify-content: space-between;
+      gap: var(--space-m);
+    }
+    dt {
+      color: ${color.fgMuted};
+    }
+    dd {
+      ${font.Bold}
+      margin: 0;
+    }
+    .subtotal {
+      padding-top: var(--space-s);
+      border-top: 1px solid ${color.bg2};
+      dt {
+        color: ${color.fg};
+        font-weight: 600;
+      }
+      dd {
+        font-size: 1.35rem;
       }
     }
-    .cart-num-count {
-      font-weight: 900;
+  }
+
+  .note {
+    margin: 0;
+    font-size: 0.85rem;
+    color: ${color.fgMuted};
+    text-align: center;
+  }
+
+  /* tablets: summary under the lines */
+  @media (max-width: 1023px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .summary {
+      position: static;
+    }
+  }
+
+  /* phones: picture and name on top, stepper and total below them */
+  @media (max-width: 599px) {
+    .line {
+      grid-template-columns: 88px minmax(0, 1fr) auto;
+      grid-template-areas:
+        "thumb info info"
+        "stepper stepper total";
+      gap: var(--space-m);
     }
   }
 `;
