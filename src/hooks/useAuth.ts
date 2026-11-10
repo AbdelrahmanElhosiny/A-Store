@@ -1,5 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
-import _ from "lodash";
+import findIndex from "lodash/findIndex";
+import sumBy from "lodash/sumBy";
+import uniqBy from "lodash/uniqBy";
 import {
   User,
   addNewUser,
@@ -29,14 +31,14 @@ const useAuth = () => {
   //------------------
   // definers
   //------------------
-  const activeUserIndex = _.findIndex(users, { isLoggedIn: true });
+  const activeUserIndex = findIndex(users, { isLoggedIn: true });
   const activeUserName = users[activeUserIndex].userName;
   const isGuest = activeUserIndex === 0;
   // everyone who can log in (the guest is only the logged-out state)
   const accounts = users.slice(1);
   // what moves to an account on login
-  const guestCartNum = _.sumBy(users[0].cart, "inCartNum");
-  const guestOrderNum = _.uniqBy(users[0].orderedItems, "orderId").length;
+  const guestCartNum = sumBy(users[0].cart, "inCartNum");
+  const guestOrderNum = uniqBy(users[0].orderedItems, "orderId").length;
   // e.g. "Your cart (3 items) and 1 order come with you."
   const carryText = (() => {
     if (!isGuest) return null;

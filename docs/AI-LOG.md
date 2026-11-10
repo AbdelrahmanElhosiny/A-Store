@@ -177,3 +177,23 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** lint and build pass. Update Desk lamp (3): ▲ gives 4 and enables Save; ▼ five times stops at 0 with ▼ disabled; ArrowUp twice gives 2 and ArrowDown gives 1; saving shows "Only 1 left". Add Item: ▼ is disabled while empty, ▲ gives 1, and ▼ is disabled at 1. Checked in light and dark at 390 px. axe: light clean; dark only the red text above.
 
 **Changed by hand:** —
+
+## 10. Lighthouse pass and version chip (Claude Code)
+
+**Prompt:** Lighthouse pass (mobile 90+ in Performance, Accessibility, Best Practices and SEO; lint and build with no warnings) and the version chip: a small fixed chip, "AI-enhanced · see the classic version", linking to the classic address and to the GitHub compare view master...AI-enhanced.
+
+**Changes**
+- Code splitting: only the home page is in the first download; every other page is `React.lazy`. React, the router, Redux and Emotion share a `vendor` file that stays cached across deploys; MUI is split by page. The first load went from 225 kB to 119 kB gzip, and the "chunk larger than 500 kB" build warning is gone.
+- lodash: `import _ from "lodash"` shipped the whole library (70 kB raw) for seven functions; each is imported on its own now (`lodash/findIndex`, …).
+- The page a visit starts on: its code (layout plus page) is fetched in one go, not one level at a time. In the built `index.html`, a small script starts those downloads together with the main code (`modulepreload`), plus the home photos on `/` and the first product picture on `/buy` and `/sell` (vite plugin `preload-start-page`, file names read from the build).
+- After the first paint: both sides' home pages are prefetched once the page has loaded and the browser is idle, and so is the animation code. Until it arrives, new items and pages simply appear; nothing can stay hidden. Tested with the file blocked: removing a card and changing pages still work. Animations moved from around the whole app into the Buy/Sell layout, so the home page doesn't download them. The page a visit starts on no longer fades in (its fade had to wait for the animation code).
+- Fonts: the three JetBrains Mono files are cut down to Latin (with · → × … − and the ligatures), 92-96 kB to 35-37 kB each.
+- Images: a 900 px size of both home photos (AVIF 52-76 kB, WebP 95-150 kB) between 640 and 1200, which fits a phone screen at 2x; the hero photo and the first four product pictures load with high priority instead of lazily.
+- The app's CSS (under 1 kB) is put into `index.html` instead of a render-blocking `<link>`.
+- SEO: a meta description, `theme-color` for light and dark, and `public/robots.txt`.
+- Version chip (`VersionChip`): fixed bottom-left, inverted colours, "AI-enhanced · See the classic version · Changes" ("Classic version" on phones), opening in a new tab, with an × that hides it for good (saved in the browser). The classic link reads `VITE_CLASSIC_URL` (set it on Vercel once the classic site is live) and falls back to the `v1-classic` code on GitHub.
+- `tsconfig.node.json` gets `target: ES2020`, so `vite.config.ts` type-checks on its own.
+
+**Check:** lint and build pass with no warnings. Lighthouse 12.8 mobile on the production build, seven pages (Home, Buy, Sell, Cart, Track Shipment, Add Item, Sign up), over HTTP/2 with brotli like a CDN: Performance 94-98, Accessibility 100 (95 on Sell: the dark-mode red Remove buttons, kept by choice in 9b; Lighthouse ran in dark mode), Best Practices 100, SEO 100. Before this task Home was 73 / 100 / 100 / 83 and Buy 89 / 100 / 100 / 83. On `vite preview` (HTTP/1.1, gzip) Performance is 87-93, because the page's small files queue on 6 connections. Production build in Chrome at 360 px: Home → Buy → add a mug → Cart; a direct load of `/sell` preloads its files and the first picture; removing cards works with and without the animation code; the chip fits on one line, hides, and stays hidden after a refresh; no console errors.
+
+**Changed by hand:** —

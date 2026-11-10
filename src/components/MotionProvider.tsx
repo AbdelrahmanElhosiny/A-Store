@@ -1,9 +1,6 @@
 import { LazyMotion, MotionConfig } from "motion/react";
 import { useMediaQuery } from "@mui/material";
-
-// the animation code downloads separately, so it doesn't delay the first paint
-const loadFeatures = () =>
-  import("./motionFeatures").then((mod) => mod.default);
+import { loadMotionFeatures } from "../styles/motion";
 
 interface Props {
   children: React.ReactNode;
@@ -12,7 +9,7 @@ interface Props {
 // Motion settings for the whole app.
 // - LazyMotion with the `m` components keeps the main bundle small; the
 //   features (domMax: animations plus layout, for cards sliding into place)
-//   load in their own chunk.
+//   load in their own chunk once the page has loaded and the browser is idle.
 // - Under prefers-reduced-motion every animation takes 0 s, so things
 //   still appear and disappear, just without moving or fading.
 const MotionProvider: React.FC<Props> = ({ children }) => {
@@ -20,7 +17,7 @@ const MotionProvider: React.FC<Props> = ({ children }) => {
   const isReducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   return (
-    <LazyMotion features={loadFeatures} strict>
+    <LazyMotion features={loadMotionFeatures} strict>
       <MotionConfig
         reducedMotion="user"
         transition={

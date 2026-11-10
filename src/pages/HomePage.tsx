@@ -8,12 +8,16 @@ import SVG from "../assets/svg";
 import ThemeSwitch from "../components/ThemeSwitch";
 import { ROUTE_INDEX } from "../constant/routeConstant";
 import sell640Avif from "../assets/home/sell-640.avif";
+import sell900Avif from "../assets/home/sell-900.avif";
 import sell1200Avif from "../assets/home/sell-1200.avif";
 import sell640Webp from "../assets/home/sell-640.webp";
+import sell900Webp from "../assets/home/sell-900.webp";
 import sell1200Webp from "../assets/home/sell-1200.webp";
 import buy640Avif from "../assets/home/buy-640.avif";
+import buy900Avif from "../assets/home/buy-900.avif";
 import buy1200Avif from "../assets/home/buy-1200.avif";
 import buy640Webp from "../assets/home/buy-640.webp";
+import buy900Webp from "../assets/home/buy-900.webp";
 import buy1200Webp from "../assets/home/buy-1200.webp";
 import useDocumentTitle from "../hooks/useDocumentTitle";
 
@@ -27,8 +31,8 @@ const sides = [
     label: "Sell",
     tagline: "List items, update stock, track what sold.",
     cta: "Start selling",
-    avif: `${sell640Avif} 640w, ${sell1200Avif} 1200w`,
-    webp: `${sell640Webp} 640w, ${sell1200Webp} 1200w`,
+    avif: `${sell640Avif} 640w, ${sell900Avif} 900w, ${sell1200Avif} 1200w`,
+    webp: `${sell640Webp} 640w, ${sell900Webp} 900w, ${sell1200Webp} 1200w`,
     fallback: sell640Webp,
   },
   {
@@ -37,8 +41,8 @@ const sides = [
     label: "Buy",
     tagline: "Browse the shop, fill your cart, follow your order.",
     cta: "Start shopping",
-    avif: `${buy640Avif} 640w, ${buy1200Avif} 1200w`,
-    webp: `${buy640Webp} 640w, ${buy1200Webp} 1200w`,
+    avif: `${buy640Avif} 640w, ${buy900Avif} 900w, ${buy1200Avif} 1200w`,
+    webp: `${buy640Webp} 640w, ${buy900Webp} 900w, ${buy1200Webp} 1200w`,
     fallback: buy640Webp,
   },
 ];
@@ -92,6 +96,8 @@ const HomePage = () => {
                   alt=""
                   className="photo"
                   decoding="async"
+                  // the largest thing on the page: fetch it first
+                  {...{ fetchpriority: "high" }}
                   draggable={false}
                 />
               </picture>

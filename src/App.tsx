@@ -7,7 +7,6 @@ import GlobalStyle from "./styles/GlobalStyle";
 import ThemeModeProvider from "./styles/ThemeModeProvider";
 import { ErrorBoundary } from "react-error-boundary";
 import ErrorFallback from "./components/ErrorFallback";
-import MotionProvider from "./components/MotionProvider";
 
 function App() {
   return (
@@ -15,16 +14,12 @@ function App() {
       <Provider store={store}>
         <ThemeModeProvider>
           <GlobalStyle />
-          <MotionProvider>
-            {/* last line of defence: a crash in the nav or layout */}
-            <ErrorBoundary
-              fallbackRender={(props) => (
-                <ErrorFallback {...props} isFullPage />
-              )}
-            >
-              <RootApp />
-            </ErrorBoundary>
-          </MotionProvider>
+          {/* last line of defence: a crash in the nav or layout */}
+          <ErrorBoundary
+            fallbackRender={(props) => <ErrorFallback {...props} isFullPage />}
+          >
+            <RootApp />
+          </ErrorBoundary>
         </ThemeModeProvider>
       </Provider>
     </BrowserRouter>

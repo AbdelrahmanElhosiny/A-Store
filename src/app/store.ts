@@ -1,5 +1,5 @@
 import { configureStore, createListenerMiddleware } from "@reduxjs/toolkit";
-import _ from "lodash";
+import throttle from "lodash/throttle";
 import itemSlice from "../features/itemSlice";
 import userSlice from "../features/userSlice";
 import notificationSlice, {
@@ -28,7 +28,7 @@ const store = configureStore({
 let hasWarnedStorageFull = false;
 
 // at most twice a second, so typing in a stepper doesn't write on every key
-const save = _.throttle(() => {
+const save = throttle(() => {
   const { items, users } = store.getState();
   if (saveState({ items, users }) || hasWarnedStorageFull) return;
   hasWarnedStorageFull = true;

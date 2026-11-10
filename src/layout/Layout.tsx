@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import styled from "@emotion/styled";
@@ -10,6 +10,7 @@ import ResetDemoDialog from "../components/ResetDemoDialog";
 import Toaster from "../components/Toaster";
 import ErrorFallback from "../components/ErrorFallback";
 import PageTransition from "../components/PageTransition";
+import MotionProvider from "../components/MotionProvider";
 
 interface Props {
   NavBar: React.ReactElement;
@@ -24,52 +25,62 @@ const Layout: React.FC<Props> = ({ NavBar, MainComponent, Theme }) => {
   const { pathname } = useLocation();
 
   return (
-    <Holder className={`${Theme}`}>
-      <a href="#main" className="skip-link">
-        Skip to content
-      </a>
-      <header className="nav-bar">
-        {/* every page's title is an h2, under this one for the whole side */}
-        <h1 className="visually-hidden">
-          {Theme === "buy" ? "A-Store shop" : "A-Store seller tools"}
-        </h1>
-        {NavBar}
-      </header>
-      <main className="main-component" id="main" tabIndex={-1}>
-        {/* a crashed page keeps the nav; going to another page clears it */}
-        <ErrorBoundary FallbackComponent={ErrorFallback} resetKeys={[pathname]}>
-          <PageTransition>{MainComponent}</PageTransition>
-        </ErrorBoundary>
-      </main>
-      <footer>
-        <div className="about">
-          A-Store <span className="note">· rebuilt with AI</span>
-        </div>
-        <div className="links-holder">
-          <a href={EXTERNAL_LINK.REPO} className="link">
-            Source
-          </a>
-          <a href={EXTERNAL_LINK.CLASSIC_SOURCE} className="link">
-            Classic version
-          </a>
-          <a href={EXTERNAL_LINK.AI_COMPARE} className="link">
-            What AI changed
-          </a>
-          <button
-            type="button"
-            className="link reset"
-            onClick={() => setIsResetOpen(true)}
+    // animations live here, not around the whole app: the home page has
+    // none, so it doesn't download the animation code
+    <MotionProvider>
+      <Holder className={`${Theme}`}>
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
+        <header className="nav-bar">
+          {/* every page's title is an h2, under this one for the whole side */}
+          <h1 className="visually-hidden">
+            {Theme === "buy" ? "A-Store shop" : "A-Store seller tools"}
+          </h1>
+          {NavBar}
+        </header>
+        <main className="main-component" id="main" tabIndex={-1}>
+          {/* a crashed page keeps the nav; going to another page clears it */}
+          <ErrorBoundary
+            FallbackComponent={ErrorFallback}
+            resetKeys={[pathname]}
           >
-            Reset demo data
-          </button>
-        </div>
-      </footer>
-      <ResetDemoDialog
-        isOpen={isResetOpen}
-        onClose={() => setIsResetOpen(false)}
-      />
-      <Toaster />
-    </Holder>
+            {/* a page inside the side is loading: the nav and footer stay */}
+            <Suspense fallback={null}>
+              <PageTransition>{MainComponent}</PageTransition>
+            </Suspense>
+          </ErrorBoundary>
+        </main>
+        <footer>
+          <div className="about">
+            A-Store <span className="note">· rebuilt with AI</span>
+          </div>
+          <div className="links-holder">
+            <a href={EXTERNAL_LINK.REPO} className="link">
+              Source
+            </a>
+            <a href={EXTERNAL_LINK.CLASSIC_SOURCE} className="link">
+              Classic version
+            </a>
+            <a href={EXTERNAL_LINK.AI_COMPARE} className="link">
+              What AI changed
+            </a>
+            <button
+              type="button"
+              className="link reset"
+              onClick={() => setIsResetOpen(true)}
+            >
+              Reset demo data
+            </button>
+          </div>
+        </footer>
+        <ResetDemoDialog
+          isOpen={isResetOpen}
+          onClose={() => setIsResetOpen(false)}
+        />
+        <Toaster />
+      </Holder>
+    </MotionProvider>
   );
 };
 

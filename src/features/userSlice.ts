@@ -1,5 +1,8 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import _ from "lodash";
+import findIndex from "lodash/findIndex";
+import includes from "lodash/includes";
+import map from "lodash/map";
+import remove from "lodash/remove";
 import { Item, removeItem } from "./itemSlice";
 import resetDemoData from "../app/resetDemoData";
 
@@ -135,10 +138,10 @@ const userSlice = createSlice({
 
     // addItemToCart
     addItemToUserCart: (state, action: PayloadAction<Item>) => {
-      const activeUser = _.findIndex(state, { isLoggedIn: true });
+      const activeUser = findIndex(state, { isLoggedIn: true });
       const items = state[activeUser].cart;
-      const isItemAddedToCartBefore = _.includes(
-        _.map(items, "itemId"),
+      const isItemAddedToCartBefore = includes(
+        map(items, "itemId"),
         action.payload.id
       );
       const itemIndex = items.findIndex(
@@ -158,29 +161,29 @@ const userSlice = createSlice({
 
     // setCartItemNum: an exact quantity from the card's stepper; 0 removes it
     setCartItemNum: (state, action: PayloadAction<CartItemStatus>) => {
-      const activeUser = _.findIndex(state, { isLoggedIn: true });
+      const activeUser = findIndex(state, { isLoggedIn: true });
       const items = state[activeUser].cart;
       const { itemId, inCartNum } = action.payload;
       const cartItem = items.find((item) => item.itemId === itemId);
 
-      if (inCartNum <= 0) _.remove(items, { itemId });
+      if (inCartNum <= 0) remove(items, { itemId });
       else if (cartItem) cartItem.inCartNum = inCartNum;
       else items.push({ itemId, inCartNum });
     },
 
     //removeItemFromCart
     removeItemFromCart: (state, action: PayloadAction<string>) => {
-      const activeUser = _.findIndex(state, { isLoggedIn: true });
+      const activeUser = findIndex(state, { isLoggedIn: true });
       const items = state[activeUser].cart;
-      _.remove(items, { itemId: action.payload });
+      remove(items, { itemId: action.payload });
     },
 
     // placeOrder: adds the order's lines and takes them out of the cart
     placeOrder: (state, action: PayloadAction<OrderedItemStatus[]>) => {
-      const activeUser = state[_.findIndex(state, { isLoggedIn: true })];
+      const activeUser = state[findIndex(state, { isLoggedIn: true })];
       const orderedIds = action.payload.map(({ itemId }) => itemId);
       activeUser.orderedItems.push(...action.payload);
-      _.remove(activeUser.cart, ({ itemId }) => orderedIds.includes(itemId));
+      remove(activeUser.cart, ({ itemId }) => orderedIds.includes(itemId));
     },
     // delivery (4)
   },
@@ -188,7 +191,7 @@ const userSlice = createSlice({
     builder.addCase(resetDemoData, () => initialState);
     // a removed item leaves every cart (orders keep their own copy)
     builder.addCase(removeItem, (state, action) => {
-      state.forEach(({ cart }) => _.remove(cart, { itemId: action.payload }));
+      state.forEach(({ cart }) => remove(cart, { itemId: action.payload }));
     });
   },
 });

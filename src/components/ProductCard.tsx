@@ -7,10 +7,11 @@ import font from "../styles/font";
 import formatPrice from "../utils/formatPrice";
 import { LOW_STOCK } from "../constant/stockConstant";
 
-
 interface Props {
   item: Item;
   children?: React.ReactNode; // the buttons at the bottom of the card
+  // the first cards are on screen right away: load their pictures first
+  isPriority?: boolean;
 }
 
 const stockInfo = (stockNum: number) => {
@@ -25,7 +26,11 @@ const stockInfo = (stockNum: number) => {
 // -----------------
 // One product: picture, name, description, price and stock.
 // Buy and Sell pass their own buttons as children.
-const ProductCard: React.FC<Props> = ({ item, children }) => {
+const ProductCard: React.FC<Props> = ({
+  item,
+  children,
+  isPriority = false,
+}) => {
   const { name, description, price, stockNum, image } = item;
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasFailed, setHasFailed] = useState(false);
@@ -48,8 +53,10 @@ const ProductCard: React.FC<Props> = ({ item, children }) => {
             ref={imgRef}
             src={image}
             alt=""
-            loading="lazy"
+            loading={isPriority ? "eager" : "lazy"}
             decoding="async"
+            // lowercase: React 18 doesn't know fetchPriority yet
+            {...{ fetchpriority: isPriority ? "high" : "auto" }}
             draggable={false}
             onLoad={() => setIsLoaded(true)}
             onError={() => setHasFailed(true)}

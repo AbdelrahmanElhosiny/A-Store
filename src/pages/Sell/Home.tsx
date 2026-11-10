@@ -85,9 +85,9 @@ const SellHome = () => {
         <div className="container">
           {/* a removed card shrinks away and the others slide into place */}
           <AnimatePresence initial={false} mode="popLayout">
-            {items.map((item) => (
-              <m.div className="cell" key={item.id} {...listItem}>
-                <ProductCard item={item}>
+            {items.map((item, index) => (
+              <m.div className="cell" key={item.id} {...listItem()}>
+                <ProductCard item={item} isPriority={index < 4}>
                   <Button
                     variant="outlined"
                     startIcon={<EditOutlinedIcon />}

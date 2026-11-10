@@ -79,7 +79,7 @@ const Cart = () => {
           {/* a removed line shrinks away and the ones below move up */}
           <AnimatePresence initial={false} mode="popLayout">
             {cartLines.map(({ item, inCartNum, orderableNum }) => (
-              <m.li className="line" key={item.id} {...listItem}>
+              <m.li className="line" key={item.id} {...listItem()}>
                 <ProductThumb
                   className="thumb"
                   name={item.name}

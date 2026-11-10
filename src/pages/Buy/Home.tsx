@@ -13,6 +13,9 @@ import { AnimatePresence, m } from "motion/react";
 import { listItem } from "../../styles/motion";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
 
+// the first row on a wide screen: their pictures load before the rest
+const PRIORITY_CARDS = 4;
+
 // how long "Added" shows (it fades out at the end) before the stepper
 const ADDED_MS = 1200;
 
@@ -21,6 +24,7 @@ interface CardProps {
   inCartNum: number;
   onAdd: (item: Item) => void;
   onChangeNum: (item: Item, inCartNum: number) => void;
+  isPriority: boolean;
 }
 
 // One card. Not in the cart: "Add to cart". After a click: "Added",
@@ -30,6 +34,7 @@ const BuyCard: React.FC<CardProps> = ({
   inCartNum,
   onAdd,
   onChangeNum,
+  isPriority,
 }) => {
   const [isJustAdded, setIsJustAdded] = useState(false);
   const addRef = useRef<HTMLButtonElement>(null);
@@ -65,7 +70,7 @@ const BuyCard: React.FC<CardProps> = ({
   };
 
   return (
-    <ProductCard item={item}>
+    <ProductCard item={item} isPriority={isPriority}>
       {showStepper ? (
         <CartStepper
           ref={plusRef}
@@ -135,13 +140,14 @@ const BuyHome = () => {
       <div className="container">
         {/* items that sell out leave, new ones pop in */}
         <AnimatePresence initial={false} mode="popLayout">
-          {inStock.map((item) => (
-            <m.div className="cell" key={item.id} {...listItem}>
+          {inStock.map((item, index) => (
+            <m.div className="cell" key={item.id} {...listItem()}>
               <BuyCard
                 item={item}
                 inCartNum={inCartNum(item.id)}
                 onAdd={handleAdd}
                 onChangeNum={handleChangeNum}
+                isPriority={index < PRIORITY_CARDS}
               />
             </m.div>
           ))}

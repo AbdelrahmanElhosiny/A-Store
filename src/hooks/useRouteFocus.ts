@@ -1,18 +1,17 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+import isStartPage from "../app/startPage";
 
 // After an in-app navigation: back to the top of the page, and keyboard and
 // screen-reader focus moves to the new page's heading instead of staying on
 // the link that was clicked (which may not exist any more)
 const useRouteFocus = () => {
   const { pathname } = useLocation();
-  // the first page load keeps the browser's own focus and scroll; comparing
-  // paths (not a "first render" flag) also holds when StrictMode runs this twice
-  const lastPathname = useRef(pathname);
 
   useEffect(() => {
-    if (lastPathname.current === pathname) return;
-    lastPathname.current = pathname;
+    // the page the visit starts on keeps the browser's own focus and scroll
+    // (a path check, not a "first render" flag, so StrictMode can't trip it)
+    if (isStartPage(pathname)) return;
     window.scrollTo(0, 0);
     const frame = requestAnimationFrame(() => {
       // the page's own heading; the home page has no <main>

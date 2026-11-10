@@ -1,5 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import _ from "lodash";
+import findIndex from "lodash/findIndex";
+import remove from "lodash/remove";
 import { CartItemStatus } from "./userSlice";
 import resetDemoData from "../app/resetDemoData";
 import headphones from "../assets/products/headphones.webp";
@@ -85,18 +86,18 @@ const itemSlice = createSlice({
 
     // updateItem
     updateItem: (state, action: PayloadAction<Item>) => {
-      const idIndex = _.findIndex(state, { id: action.payload.id });
+      const idIndex = findIndex(state, { id: action.payload.id });
       state.splice(idIndex, 1, action.payload);
     },
 
     // removeItem
     removeItem: (state, action: PayloadAction<string>) => {
-      _.remove(state, { id: action.payload });
+      remove(state, { id: action.payload });
     },
 
     // buyItem
     buyItem: (state, action: PayloadAction<CartItemStatus>) => {
-      const id = _.findIndex(state, { id: action.payload.itemId });
+      const id = findIndex(state, { id: action.payload.itemId });
       if (id === -1) return state;
       if (state[id].stockNum >= action.payload.inCartNum) {
         state[id].stockNum -= action.payload.inCartNum;
