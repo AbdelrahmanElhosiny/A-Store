@@ -5,6 +5,7 @@ import { color } from "../styles/tokens";
 import { ThemeType } from "../styles/GlobalStyle";
 import { EXTERNAL_LINK } from "../constant/linkConstant";
 import ResetDemoDialog from "../components/ResetDemoDialog";
+import Toaster from "../components/Toaster";
 
 interface Props {
   NavBar: React.ReactElement;
@@ -48,6 +49,7 @@ const Layout: React.FC<Props> = ({ NavBar, MainComponent, Theme }) => {
         isOpen={isResetOpen}
         onClose={() => setIsResetOpen(false)}
       />
+      <Toaster />
     </Holder>
   );
 };

@@ -10,13 +10,38 @@ import { AppDispatch, RootState } from "../../app/store";
 import useNotification from "../../hooks/useNotification";
 import { OrderedItemStatus, User } from "../../features/userSlice";
 
-interface AddItemFormFields {
+// the Add Item and Update forms work with text, the store with numbers
+interface ItemFormFields {
   name: string;
   description: string;
   price: string;
   stockNum: string;
-  image: string; // data URL from the picker, "" when there is none
+  image: string; // a URL, or a data URL from the picker; "" when there is none
 }
+
+const toFormFields = ({
+  name,
+  description,
+  price,
+  stockNum,
+  image,
+}: Item): ItemFormFields => ({
+  name,
+  description,
+  price: String(price),
+  stockNum: String(stockNum),
+  image: image ?? "",
+});
+
+const fromFormFields = (id: string, fields: ItemFormFields): Item => ({
+  id,
+  name: fields.name.trim(),
+  description: fields.description.trim(),
+  // Number keeps cents: parseInt turned 12.50 into 12
+  price: Number(fields.price),
+  stockNum: Number(fields.stockNum),
+  image: fields.image || undefined,
+});
 
 const useSell = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -31,32 +56,26 @@ const useSell = () => {
   //------------------
   // Handlers
   //------------------
-  const addNewItem = (input: AddItemFormFields) => {
-    const { price, stockNum, image, ...rest } = input;
-    dispatch(
-      addNewItemAction({
-        id: uuid(),
-        // Number keeps cents: parseInt turned 12.50 into 12
-        price: Number(price),
-        stockNum: parseInt(stockNum),
-        image: image || undefined,
-        ...rest,
-      })
-    );
-    showNotification({ message: `${input.name} is added successfully!` });
+  const addNewItem = (fields: ItemFormFields) => {
+    const item = fromFormFields(uuid(), fields);
+    dispatch(addNewItemAction(item));
+    showNotification({ message: `${item.name} is now in the shop` });
   };
 
-  const updateItem = (item: Item) => {
+  const updateItem = (id: string, fields: ItemFormFields) => {
+    const item = fromFormFields(id, fields);
     dispatch(updateItemAction(item));
-    showNotification({ message: `${item.name} was updated!` });
+    showNotification({ message: `${item.name} saved` });
   };
 
-  const removeItem = (itemId: string | null) => {
-    itemId && dispatch(removeItemAction(itemId));
+  const removeItem = ({ id, name }: Item) => {
+    dispatch(removeItemAction(id));
+    showNotification({ message: `${name} removed` });
   };
 
   return { addNewItem, updateItem, removeItem, items, soldLines };
 };
 
-export type { AddItemFormFields };
+export type { ItemFormFields };
+export { toFormFields };
 export default useSell;

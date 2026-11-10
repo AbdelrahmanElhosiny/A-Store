@@ -17,7 +17,7 @@ const useNotification = () => {
   // Handlers
   //------------------
   const showNotification = useCallback(
-    (input: Omit<Notification, "isOpen">) => {
+    (input: Omit<Notification, "isOpen" | "id">) => {
       dispatch(showNotificationAction(input));
     },
     [dispatch]

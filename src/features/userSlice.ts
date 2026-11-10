@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import _ from "lodash";
-import { Item } from "./itemSlice";
+import { Item, removeItem } from "./itemSlice";
 import resetDemoData from "../app/resetDemoData";
 
 interface User {
@@ -186,6 +186,10 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(resetDemoData, () => initialState);
+    // a removed item leaves every cart (orders keep their own copy)
+    builder.addCase(removeItem, (state, action) => {
+      state.forEach(({ cart }) => _.remove(cart, { itemId: action.payload }));
+    });
   },
 });
 

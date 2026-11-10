@@ -1,62 +1,52 @@
 import { Button } from "@mui/material";
-import useSell from "../useSell";
-import { useEffect, useRef } from "react";
 import styled from "@emotion/styled";
-import useNotification from "../../../hooks/useNotification";
-import DialogHeader from "../../../components/DialogHeader";
+import useSell from "../useSell";
+import { Item } from "../../../features/itemSlice";
+import AppDialog from "../../../components/AppDialog";
 
 interface Props {
-  itemId: string | null;
-  itemName: string | null;
+  item: Item | null; // kept while the dialog animates out
+  isOpen: boolean;
   closeDialog: () => void;
 }
 
-const RemoveItemModal: React.FC<Props> = ({
-  itemId,
-  itemName,
-  closeDialog,
-}) => {
+const RemoveItemModal: React.FC<Props> = ({ item, isOpen, closeDialog }) => {
   const { removeItem } = useSell();
-  const { showNotification } = useNotification();
 
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    itemId && dialogRef.current?.showModal();
-  }, [itemId]);
-
-  if (!itemId) return; // Quick exit
+  if (!item) return null; // Quick exit
   return (
-    <Holder ref={dialogRef} onClose={closeDialog}>
-      <DialogHeader
-        title="Remove item"
-        subtitle={itemName}
-        onClose={closeDialog}
-      />
-      <p className="text">
-        Remove this item from the store? This can't be undone.
-      </p>
-      <div className="buttons">
-        <Button
-          variant="contained"
-          color="error"
-          onClick={() => {
-            removeItem(itemId);
-            closeDialog();
-            showNotification({ message: `${itemName} was removed!` });
-          }}
-        >
-          Remove
-        </Button>
-        <Button variant="outlined" onClick={closeDialog}>
-          Cancel
-        </Button>
-      </div>
-    </Holder>
+    <AppDialog
+      isOpen={isOpen}
+      onClose={closeDialog}
+      title="Remove item"
+      subtitle={item.name}
+    >
+      <Holder>
+        <p className="text">
+          Remove this item from the shop? It also leaves any carts it's in. Past
+          orders keep it. This can't be undone.
+        </p>
+        <div className="buttons">
+          <Button variant="outlined" onClick={closeDialog}>
+            Cancel
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              removeItem(item);
+              closeDialog();
+            }}
+          >
+            Remove
+          </Button>
+        </div>
+      </Holder>
+    </AppDialog>
   );
 };
 
-const Holder = styled.dialog`
+const Holder = styled.div`
   .text {
     margin: var(--space-m) 0 var(--space-l);
   }

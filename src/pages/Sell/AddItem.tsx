@@ -1,31 +1,18 @@
 import { Form, Formik, FormikConfig, FormikHelpers } from "formik";
-import * as yup from "yup";
-import TextFiled from "../../components/form/TextField";
-import PriceField from "../../components/form/PriceField";
-import ImageField from "../../components/form/ImageField";
 import { Button } from "@mui/material";
-import useSell, { AddItemFormFields } from "./useSell";
+import useSell, { ItemFormFields } from "./useSell";
+import ItemFields from "./components/ItemFields";
+import getItemSchema from "./itemSchema";
 import styled from "@emotion/styled";
 
-const initialValues: AddItemFormFields = {
+const initialValues: ItemFormFields = {
   name: "",
   description: "",
   price: "",
   stockNum: "",
   image: "",
 };
-const validationSchema = yup.object({
-  name: yup.string().required("* Required!"),
-  description: yup.string().required("* Required!"),
-  price: yup
-    .number()
-    .min(1, "Price can't be less than or equal to 0")
-    .required("* Required!"),
-  stockNum: yup
-    .number()
-    .min(1, "At least 1 unit must be in stock")
-    .required("* Required!"),
-});
+const validationSchema = getItemSchema(1);
 
 //------------------
 // JSX
@@ -34,13 +21,13 @@ const AddItem = () => {
   const { addNewItem } = useSell();
 
   const handelSubmit = (
-    values: AddItemFormFields,
-    formikHelpers: FormikHelpers<AddItemFormFields>
+    values: ItemFormFields,
+    formikHelpers: FormikHelpers<ItemFormFields>,
   ) => {
     addNewItem(values);
     formikHelpers.resetForm();
   };
-  const FormProps: FormikConfig<AddItemFormFields> = {
+  const FormProps: FormikConfig<ItemFormFields> = {
     initialValues,
     validationSchema,
     onSubmit: handelSubmit,
@@ -50,17 +37,8 @@ const AddItem = () => {
     <Holder>
       <h2>Add new item</h2>
       <Formik {...FormProps}>
-        <Form>
-          <TextFiled name="name" label="Name" />
-          <TextFiled
-            name="description"
-            label="Description"
-            multiline
-            minRows={2}
-          />
-          <PriceField name="price" label="Price" />
-          <TextFiled name="stockNum" label="Stock" type="number" />
-          <ImageField name="image" label="Picture (optional)" />
+        <Form noValidate>
+          <ItemFields />
           <div className="buttons">
             <Button
               variant="contained"
@@ -68,10 +46,10 @@ const AddItem = () => {
               type="submit"
               className="submit-button"
             >
-              Submit
+              Add item
             </Button>
             <Button
-              variant="contained"
+              variant="outlined"
               size="large"
               type="reset"
               className="clear-button"
@@ -89,7 +67,7 @@ const Holder = styled.div`
   form {
     display: flex;
     flex-direction: column;
-    gap: var(--space-m);
+    gap: var(--space-l);
     max-width: 640px;
   }
   .buttons {

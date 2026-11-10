@@ -8,6 +8,7 @@ import {
 } from "../features/userSlice";
 import { Item } from "../features/itemSlice";
 import { AppDispatch, RootState } from "../app/store";
+import useNotification from "./useNotification";
 
 // what the sign-up form asks for
 interface SignUpFields {
@@ -23,6 +24,7 @@ const useAuth = () => {
   const dispatch = useDispatch<AppDispatch>();
   const users = useSelector<RootState>((store) => store.users) as User[];
   const items = useSelector<RootState>((store) => store.items) as Item[];
+  const { showNotification } = useNotification();
 
   //------------------
   // definers
@@ -54,14 +56,19 @@ const useAuth = () => {
   //------------------
   // Handlers
   //------------------
-  const setLoggedInUser = (userName: string) => {
+  const logIn = (userName: string) => {
     const stockById = Object.fromEntries(
       items.map(({ id, stockNum }) => [id, stockNum]),
     );
     dispatch(setLoggedInUserAction({ userName, stockById }));
   };
+  const setLoggedInUser = (userName: string) => {
+    logIn(userName);
+    showNotification({ message: `Logged in as ${userName}` });
+  };
   const setLoggedOutUser = () => {
     dispatch(setLoggedOutUserAction());
+    showNotification({ message: "Logged out", type: "info" });
   };
   // adds the account and logs straight into it
   const signUp = (fields: SignUpFields) => {
@@ -80,7 +87,10 @@ const useAuth = () => {
         pillingInfo: [],
       }),
     );
-    setLoggedInUser(userName);
+    logIn(userName);
+    showNotification({
+      message: `Welcome, ${userName}! Your account is ready.`,
+    });
   };
   // names are unique, ignoring case and spaces at the ends
   const isNameTaken = (userName: string) =>

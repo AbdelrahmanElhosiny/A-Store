@@ -1,8 +1,7 @@
-import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
-import DialogHeader from "./DialogHeader";
+import AppDialog from "./AppDialog";
 import AccountPicker from "./AccountPicker";
 import useAuth from "../hooks/useAuth";
 import useSide from "../hooks/useSide";
@@ -17,61 +16,37 @@ interface Props {
 const LoginDialog: React.FC<Props> = ({ isOpen, onClose }) => {
   const { setLoggedInUser, carryText } = useAuth();
   const { signUpPath, pathname } = useSide();
-  const dialogRef = useRef<HTMLDialogElement>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (isOpen && !dialog.open) dialog.showModal();
-    if (!isOpen && dialog.open) dialog.close();
-  }, [isOpen]);
 
   const handlePick = (userName: string) => {
     setLoggedInUser(userName);
     onClose();
   };
 
-  // a tap on the dimmed backdrop closes it, like Esc does
-  const handleClick = (event: React.MouseEvent<HTMLDialogElement>) => {
-    const box = event.currentTarget.getBoundingClientRect();
-    const isOutside =
-      event.clientX < box.left ||
-      event.clientX > box.right ||
-      event.clientY < box.top ||
-      event.clientY > box.bottom;
-    // keyboard "clicks" have no position
-    if (isOutside && event.detail > 0) onClose();
-  };
-
   return (
-    <Holder
-      ref={dialogRef}
-      onClose={onClose}
-      onClick={handleClick}
-      aria-labelledby="login-title"
-    >
-      <DialogHeader title="Log in" titleId="login-title" onClose={onClose} />
-      <p className="text">
-        Pick an account. This is a demo store, so there are no passwords.
-      </p>
-      {carryText && (
-        <p className="carry">
-          <ShoppingCartOutlinedIcon aria-hidden="true" />
-          {carryText}
+    <AppDialog isOpen={isOpen} onClose={onClose} title="Log in">
+      <Holder>
+        <p className="text">
+          Pick an account. This is a demo store, so there are no passwords.
         </p>
-      )}
-      <AccountPicker className="accounts" onPick={handlePick} />
-      <p className="sign-up">
-        New here?{" "}
-        <Link to={signUpPath} state={{ from: pathname }} onClick={onClose}>
-          Create an account
-        </Link>
-      </p>
-    </Holder>
+        {carryText && (
+          <p className="carry">
+            <ShoppingCartOutlinedIcon aria-hidden="true" />
+            {carryText}
+          </p>
+        )}
+        <AccountPicker className="accounts" onPick={handlePick} />
+        <p className="sign-up">
+          New here?{" "}
+          <Link to={signUpPath} state={{ from: pathname }} onClick={onClose}>
+            Create an account
+          </Link>
+        </p>
+      </Holder>
+    </AppDialog>
   );
 };
 
-const Holder = styled.dialog`
+const Holder = styled.div`
   .text {
     margin: var(--space-m) 0;
   }

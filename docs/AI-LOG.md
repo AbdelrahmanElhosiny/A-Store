@@ -128,3 +128,21 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** lint and build pass. Chrome at 360 px: guest adds a mug → Log in as Omar (cart moves) → Omar adds a watch → Log out (empty cart) → guest adds 2 watches → Log in as Omar gives mug 1, watch 2 (capped at the stock of 2) → refresh keeps Omar and the cart. Sign up: empty submit shows four errors, " omar " and phone "123" show "taken" and "At least 7 digits", then Sara signs up, lands back on the cart with the guest's 3 lines. Sell: an added item survives a refresh. Reset brings back the five items and the guest, clears storage, and a refresh stays reset. Login dialog closes on Esc and the backdrop. 1280 px dark checked; no sideways scroll; no console errors.
 
 **Changed by hand:** —
+
+## 8. Sell-side dialogs and Snackbar toasts (Claude Code)
+
+**Prompt:** Sell side: item table or grid with edit and remove in MUI dialogs; MUI Snackbar toasts with auto-hide replace the yellow bar. (Also from earlier reviews: the Price label only moved up on focus, and the Update dialog had no picture picker.)
+
+**Changes**
+- New `AppDialog` on MUI `Dialog` (focus trap, Esc, backdrop click, scrolls inside when taller than the screen, no animation under reduced motion) with the sharp Gruvbox look. It renders outside the page, so it adds the side's class itself and keeps the sell/buy colour. Update, Remove, Log in and Reset demo data all use it; the native `<dialog>` code and its global style are gone.
+- Update dialog: the same fields as Add Item through a shared `ItemFields`, including the picture picker (change or remove the picture). "Save changes" stays disabled until something changes. The stock can go down to 0 to mark an item sold out; a new item still needs at least 1.
+- Shared item checks (`pages/Sell/itemSchema.ts`): clear messages ("Enter a price", "At most 2 decimals", "Enter a whole number"); a price like $0.50 is now allowed (the old rule rejected anything under $1 with a message about 0); an empty field shows "required", not "not a number".
+- Price field: the label sits after the "$" while empty and moves up on focus or when it has a value, including a value filled in by the Update dialog. The padding workarounds are gone. Price and stock are text inputs with decimal/numeric keyboards, so the mouse wheel and the spinner can't change them.
+- Toasts: `Toaster` (MUI `Snackbar`) replaces the yellow bar: inverted colours with a coloured bar for the kind, icon, close button, bottom centre (full width on phones). It hides after 4 s, or 8 s for warnings and errors; a click elsewhere doesn't dismiss it; a repeated message restarts the timer. Toasts no longer disappear on page change, so "Welcome, Sara!" survives the redirect after sign up. Messages: item added / saved / removed, logged in / out, account created, demo data reset, storage full.
+- Sell home: a header with the item and unit counts and an "Add item" button; an empty state; the buttons name their item for screen readers ("Update Desk lamp"). One state for the open dialog replaces the mixed `removedItemName` / `updatedItem` state, and the item stays set while its dialog closes.
+- Fix: removing an item now also takes it out of every cart. Before, it stayed in the cart data and still counted in the cart badge.
+- Add Item: "Add item" / outlined "Clear" buttons.
+
+**Check:** lint and build pass. Chrome at 360 px: Update Desk lamp opens with the sell colour, the price label up and Save disabled; "12.345" and "-1" show "At most 2 decimals" and "Can't be below 0"; $49.50 with stock 0 saves, the card shows $49.50 and Sold out, and the toast is gone after 5 s. Removing the mug, which was in the guest's cart, hides the cart badge. Add Item: the empty price label sits inside the box, moves up on a click and stays up with a value; an empty submit shows four messages; Kettle is added and the form clears. Esc closes the dialog; the login and reset toasts show. 1280 px dark checked; no console errors.
+
+**Changed by hand:** —

@@ -1,112 +1,70 @@
-import { Button, InputAdornment } from "@mui/material";
-import useSell from "../useSell";
-import { useEffect, useRef } from "react";
+import { Button } from "@mui/material";
 import styled from "@emotion/styled";
+import { Formik, Form, FormikConfig } from "formik";
+import useSell, { ItemFormFields, toFormFields } from "../useSell";
 import { Item } from "../../../features/itemSlice";
-import * as yup from "yup";
-import { Formik, Form, FormikConfig, FormikHelpers } from "formik";
-import TextFiled from "../../../components/form/TextField";
-import DialogHeader from "../../../components/DialogHeader";
+import AppDialog from "../../../components/AppDialog";
+import ItemFields from "./ItemFields";
+import getItemSchema from "../itemSchema";
 
 interface Props {
-  item: Item | null;
-  itemName: string | null;
+  item: Item | null; // kept while the dialog animates out
+  isOpen: boolean;
   closeDialog: () => void;
 }
 
-const validationSchema = yup.object({
-  name: yup.string().required("Required"),
-  description: yup.string().required("Required"),
-  price: yup
-    .number()
-    .min(1, "Price can't be less than or equal to 0")
-    .required("Required"),
-  stockNum: yup
-    .number()
-    .min(1, "At least 1 unit must be in stock")
-    .required("Required"),
-});
+const validationSchema = getItemSchema(0);
 
-const UpdateItemModal: React.FC<Props> = ({ item, itemName, closeDialog }) => {
+const UpdateItemModal: React.FC<Props> = ({ item, isOpen, closeDialog }) => {
   const { updateItem } = useSell();
-  const dialogRef = useRef<HTMLDialogElement>(null);
 
-  // const toggleDialog = () => {
-  //   if (!dialogRef.current) {
-  //     return;
-  //   }
-  //   dialogRef.current.hasAttribute("open")
-  //     ? dialogRef.current.close()
-  //     : dialogRef.current.showModal();
-  // };
-
-  // useEffect(() => {
-  //   toggleDialog();
-  // }, [item]);
-
-  useEffect(() => {
-    item && dialogRef.current?.showModal();
-  }, [item]);
-
-  if (!item) return; // Quick exit
-  const initialValues = item;
-  const handelSubmit = (values: Item, formikHelpers: FormikHelpers<Item>) => {
-    updateItem(values);
-    formikHelpers.resetForm();
+  if (!item) return null; // Quick exit
+  const handleSubmit = (values: ItemFormFields) => {
+    updateItem(item.id, values);
     closeDialog();
   };
-  const FormProps: FormikConfig<Item> = {
-    initialValues,
+  const FormProps: FormikConfig<ItemFormFields> = {
+    initialValues: toFormFields(item),
     validationSchema,
-    onSubmit: handelSubmit,
+    onSubmit: handleSubmit,
+    // a different item gets a fresh form
+    enableReinitialize: true,
   };
 
   return (
-    <Holder ref={dialogRef} onClose={closeDialog}>
-      <DialogHeader
-        title="Update item"
-        subtitle={itemName}
-        onClose={closeDialog}
-      />
-      <Formik {...FormProps}>
-        <Form>
-          <TextFiled name="name" label="Name" />
-          <TextFiled
-            name="description"
-            label="Description"
-            // multiline
-            minRows={2}
-          />
-          <TextFiled
-            name="price"
-            label="Price"
-            type="number"
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">$</InputAdornment>
-              ),
-            }}
-          />
-          <TextFiled name="stockNum" label="Stock" type="number" />
-          <div className="buttons">
-            <Button type="submit" variant="contained">
-              Update
-            </Button>
-            <Button onClick={closeDialog} variant="outlined">
-              Cancel
-            </Button>
-          </div>
-        </Form>
-      </Formik>
-    </Holder>
+    <AppDialog
+      isOpen={isOpen}
+      onClose={closeDialog}
+      title="Update item"
+      subtitle={item.name}
+      width={560}
+    >
+      <Holder>
+        <Formik {...FormProps}>
+          {({ dirty }) => (
+            <Form noValidate>
+              <ItemFields />
+              <div className="buttons">
+                <Button onClick={closeDialog} variant="outlined">
+                  Cancel
+                </Button>
+                <Button type="submit" variant="contained" disabled={!dirty}>
+                  Save changes
+                </Button>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      </Holder>
+    </AppDialog>
   );
 };
 
-const Holder = styled.dialog`
+const Holder = styled.div`
   form {
     display: flex;
     flex-direction: column;
-    gap: var(--space-m);
+    gap: var(--space-l);
     margin-top: var(--space-m);
   }
   .buttons {
