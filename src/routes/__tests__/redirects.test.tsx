@@ -1,17 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { useLocation } from "react-router-dom";
+import { LocationProbe } from "../../test/LocationProbe";
 import RouterIndex from "../Index";
 import { LEGACY_REDIRECTS, ROUTES } from "../../constant/routes";
 import { renderWithStore } from "../../test/renderWithStore";
 import { saveState, loadState } from "../../app/persist";
 import { buildSeed } from "../../seed/buildSeed";
 
-const LocationProbe = () => {
-  const { pathname, search } = useLocation();
-  return <output data-testid="location">{pathname + search}</output>;
-};
 const app = <><RouterIndex /><LocationProbe /></>;
 
 beforeEach(() => {
@@ -23,7 +19,7 @@ describe("legacy redirects", () => {
   it.each(Object.entries(LEGACY_REDIRECTS))("redirects %s to %s", async (from, to) => {
     renderWithStore(app, { route: from });
     await waitFor(() => expect(screen.getByTestId("location").textContent).toBe(to));
-    await screen.findByRole("heading", { level: 2 });
+    await within(await screen.findByRole("main")).findByRole("heading", { level: 2 });
   });
 
   it.each([
@@ -32,7 +28,7 @@ describe("legacy redirects", () => {
   ])("preserves queries and accepts trailing slashes: %s", async (from, to) => {
     renderWithStore(app, { route: from });
     await waitFor(() => expect(screen.getByTestId("location").textContent).toBe(to));
-    await screen.findByRole("heading", { level: 2 });
+    await within(await screen.findByRole("main")).findByRole("heading", { level: 2 });
   });
 });
 
@@ -120,11 +116,10 @@ describe("route coverage", () => {
       },
     });
     await screen.findAllByRole("button", { name: "Add to cart" });
-    const nav = within(screen.getByRole("navigation", { name: "Main" }));
-    expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute("href", ROUTES.home);
-    expect(nav.getByRole("link", { name: /Cart/ })).toHaveAttribute("href", ROUTES.cart);
-    expect(nav.getByRole("link", { name: /Cart/ })).toHaveTextContent("2");
-    expect(nav.getByRole("link", { name: "Orders" })).toHaveAttribute("href", ROUTES.accountOrders);
+    expect(screen.getByRole("link", { name: "A-Store home" })).toHaveAttribute("href", ROUTES.home);
+    expect(screen.getByRole("link", { name: "Cart, 2 items" })).toHaveAttribute("href", ROUTES.cart);
+    expect(screen.getByRole("link", { name: "Cart, 2 items" })).toHaveTextContent("2");
+    expect(screen.getByRole("link", { name: "Your orders" })).toHaveAttribute("href", ROUTES.accountOrders);
   });
 
   it("saves a product and returns to the seller product grid", async () => {
@@ -132,11 +127,10 @@ describe("route coverage", () => {
     const seed = buildSeed(Date.now());
     const { store } = renderWithStore(app, { route: ROUTES.sellerProductNew, preloadedState: { ...seed, session: { ...seed.session, sellerId: "acc-mona" } } });
     await screen.findByRole("heading", { name: "Add new item" });
-    const nav = within(screen.getByRole("navigation", { name: "Main" }));
+    const nav = within(screen.getByRole("navigation", { name: "Seller centre" }));
     expect(nav.getByRole("link", { name: "Home" })).toHaveAttribute("href", ROUTES.seller);
     expect(nav.getByRole("link", { name: "Products" })).toHaveAttribute("href", ROUTES.sellerProducts);
-    expect(nav.getByRole("link", { name: "Add product" })).toHaveAttribute("href", ROUTES.sellerProductNew);
-    expect(nav.getByRole("link", { name: "Orders" })).toHaveAttribute("href", ROUTES.sellerOrders);
+    expect(nav.getByRole("link", { name: "Orders, 2 open" })).toHaveAttribute("href", ROUTES.sellerOrders);
     await user.type(screen.getByRole("textbox", { name: "Name" }), "Route test product");
     await user.type(screen.getByRole("textbox", { name: "Description" }), "A product for the route test.");
     await user.type(screen.getByRole("textbox", { name: "Price" }), "12.50");
@@ -163,10 +157,11 @@ describe("mode sessions across navigation", () => {
     expect(await screen.findByText("Logged in to Hearth Lane")).toBeVisible();
     await waitFor(() => expect(heading).toHaveFocus());
     expect(store.getState().session).toMatchObject({ buyerId: null, sellerId: "acc-laila", guestCart: cart });
-    expect(screen.getByRole("link", { name: "A-Store home" })).toHaveAttribute("href", ROUTES.seller);
+    expect(screen.getByRole("link", { name: "A-Store seller centre home" })).toHaveAttribute("href", ROUTES.seller);
     await user.click(screen.getByRole("link", { name: "Switch to shopping" }));
     await user.click(await screen.findByRole("button", { name: "Log in" }));
-    await user.click(screen.getByRole("button", { name: /Log in as Ahmed/ }));
+    await user.click(await screen.findByRole("menuitem", { name: "Log in" }));
+    await user.click(await screen.findByRole("button", { name: /Log in as Ahmed/ }));
     expect(store.getState().session.buyerId).toBe("acc-ahmed");
     await user.click(await screen.findByRole("link", { name: "Switch to selling" }));
     await screen.findByRole("heading", { name: "Orders", level: 2 });
@@ -177,10 +172,11 @@ describe("mode sessions across navigation", () => {
     expect(saved?.session).toMatchObject({ buyerId: "acc-ahmed", sellerId: "acc-laila", lastPath: { seller: route } });
     unmount();
     const reloaded = renderWithStore(app, { route, preloadedState: saved });
-    await user.click(await screen.findByRole("button", { name: "Log out" }));
+    await user.click(await screen.findByRole("button", { name: "Account menu, Laila" }));
+    await user.click(await screen.findByRole("menuitem", { name: "Log out" }));
     await screen.findByRole("heading", { name: "Pick your store" });
     await user.click(screen.getByRole("link", { name: "Switch to shopping" }));
-    await screen.findByText("Ahmed");
+    await screen.findByRole("button", { name: "Hello, Ahmed" });
     expect(reloaded.store.getState().session).toMatchObject({ buyerId: "acc-ahmed", sellerId: null });
     const buyer = reloaded.store.getState().accounts.find(({ id }) => id === "acc-ahmed");
     expect(buyer?.role === "buyer" && buyer.cart).toEqual(cart);

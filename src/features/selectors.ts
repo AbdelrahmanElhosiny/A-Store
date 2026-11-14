@@ -4,6 +4,7 @@ import sumBy from "lodash/sumBy";
 import type { RootState } from "../app/store";
 import { lineKey } from "./cart";
 import {
+  Address,
   BuyerAccount,
   Item,
   Order,
@@ -137,4 +138,17 @@ export const selectShipmentsForStore = createSelector(
         .filter((shipment) => shipment.storeId === storeId)
         .map((shipment) => ({ order, shipment })),
     ),
+);
+
+// Only placed and packed shipments are waiting for the seller.
+export const selectToShipCount = createSelector(
+  [selectShipmentsForStore],
+  (list): number => list.filter(({ shipment }) =>
+    shipment.status === "placed" || shipment.status === "packed",
+  ).length,
+);
+
+export const selectDefaultAddress = createSelector(
+  [selectActiveBuyer],
+  (buyer): Address | null => buyer?.addresses.find(({ isDefault }) => isDefault) ?? null,
 );

@@ -4,6 +4,8 @@ import { buildSeed } from "../../seed/buildSeed";
 import { buildOrder } from "../orderBuild";
 import {
   selectBuyerAccounts,
+  selectToShipCount,
+  selectDefaultAddress,
   selectCart,
   selectCartCount,
   selectItemsById,
@@ -118,4 +120,23 @@ describe("selectors", () => {
       selectShipmentsForStore(state, "store-tick-tock"),
     );
   });
+});
+
+it("selectToShipCount counts placed and packed shipments", () => {
+  const state = setupStore().getState();
+  expect(selectToShipCount(state, "store-tick-tock")).toBe(2);
+  expect(selectToShipCount(state, "store-carry-co")).toBe(1);
+  expect(selectToShipCount(state, "store-hearth-lane")).toBe(2);
+  expect(selectToShipCount(state, "store-pocket-signal")).toBe(1);
+  expect(selectToShipCount(state, "store-nope")).toBe(0);
+  const seed = buildSeed(0);
+  seed.orders.find(({ number }) => number === "A-10013")!.shipments
+    .find(({ storeId }) => storeId === "store-tick-tock")!.status = "shipped";
+  expect(selectToShipCount(setupStore(seed).getState(), "store-tick-tock")).toBe(1);
+});
+it("selectDefaultAddress", () => {
+  const seed = buildSeed(0);
+  expect(selectDefaultAddress(setupStore().getState())).toBeNull();
+  seed.session.buyerId = "acc-ahmed";
+  expect(selectDefaultAddress(setupStore(seed).getState())).toMatchObject({ city: "Cairo", label: "Home" });
 });

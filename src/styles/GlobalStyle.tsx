@@ -1,4 +1,6 @@
 import { Global, css } from "@emotion/react";
+import { NAV_ROW, navHeight } from "./navHeight";
+import { media } from "./breakpoints";
 import size from "./size";
 import { Mode, Palette, palettes, fontMono, fontSans } from "./theme";
 import { color } from "./tokens";
@@ -53,7 +55,7 @@ const style = css`
 
     /* layout */
     --page-gutter: clamp(16px, 4vw, 48px);
-    --nav-height: 56px;
+    --nav-height: ${navHeight("sell", false)}px;
 
     /* sharp edges: square corners, hard shadows */
     --radius: 0;
@@ -94,7 +96,13 @@ const style = css`
   }
 
   .buy {
+    --nav-height: ${navHeight("buy", false)}px;
     --primary-color: ${color.buy};
+  }
+
+  ${media.phone} {
+    /* phones still have the one-row NavBar; Task 2 sets navHeight("buy", true) */
+    .buy { --nav-height: ${NAV_ROW.bar}px; }
   }
 
   .sell {

@@ -263,3 +263,51 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** `npm test` passes (129 tests, 19 files), `npm run lint` passes with max-warnings 0, and `npm run build` passes without warnings. The existing Emotion duplicate-instance warning remains visible in Vitest. Executed the built preload script without a server: seller sign-up and its trailing-slash form preload the real SellerSignUp and SellerLayout, and all 18 assets exist. `git diff --check` passes. Browser checks not run: the brief's complete 360 px and 1280 px guest-cart → seller picker → Hearth Lane products → Ahmed → seller logout flow, refresh after each step, new-tab seller-order deep link, and Paper Trail creation; visual layout, keyboard focus and actual browser preload timing remain for a human. No long-lived server was started.
 
 **Changed by hand:** —
+
+## 15. Store header, account menu and seller bar on wide screens (Codex + Claude Code)
+
+**Prompt:** Phase C, task 1: on screens wider than 767 px, replace the one-row navbar with a two-row store header (logo, scoped search, mode switch, account menu, cart, then a category row with "Ship to"), a one-row seller bar, and a seller sidebar with an open-orders badge. Move the theme switch into a lazy account menu and add footer columns in buyer mode. Phones keep today's navbar until Task 2. Codex started the task and hit its usage limit. Claude Code checked the unfinished work against the brief, fixed it and finished it.
+
+**Changes**
+- `styles/breakpoints.ts` (`BREAKPOINT`, `media`, `PHONE_QUERY`) and `styles/navHeight.ts` (`NAV_ROW`, `navHeight`) give the sizes in one place. `--nav-height` is 96 px for buyers and 56 px for sellers on wide screens. Phones stay at 56 px until Task 2. `useIsPhone` wraps `useMediaQuery(PHONE_QUERY)`.
+- New `components/header/` files:
+  - `searchPaths`: store and seller search URLs.
+  - `HeaderSearch`: a native form with a "Search in" select. It doesn't use MUI Select, so `Popover` stays out of the first load.
+  - `CategoryRow`: a "Categories" nav, plus "Ship to <city>" from the new `selectDefaultAddress`.
+  - `AccountAvatar`: a square letter avatar.
+  - `AccountMenu`: a button with `aria-haspopup`, `aria-expanded` and `aria-controls`, and truncated long names.
+  - `AccountMenuList`: a lazy MUI `Menu` prefetched when the browser is idle. Its paper has the mode class. Focus returns to the button by hand after Escape, Tab or a backdrop click.
+  - `ThemeMenuItem`: a "Dark mode" `menuitemcheckbox`.
+  - `BuyerHeader`, `SellerHeader` and `SellerNav`: the sidebar's "Orders, N open" badge comes from the new `selectToShipCount`, which counts placed and packed shipments.
+  - `useHeaderLogin`: the shared lazy `LoginDialog`.
+- `ModeSwitch` becomes a contained 36 px button in the other mode's accent. The link-bar style moved from `NavBar` to `headerStyles`.
+- The phone `NavBar` keeps its look and is still a static import of the layouts. Its login dialog is now the same lazy chunk, so the dialog stays out of the first load.
+- `Layout`:
+  - It takes an optional `Sidebar`, rendered as a sticky `<aside>` beside `<main>`.
+  - The h1 texts are "A-Store shop" and "A-Store seller centre".
+  - On wide buyer screens the footer has three columns: Shop by category, Help and About. `EXTERNAL_LINK.AI_LOG` is added for the Help column.
+- Test helpers: `setViewportWidth` stubs `matchMedia`, and `setup.ts` resets the stub after each test. `LocationProbe` moved out of the redirects test. The redirects test now finds the new header, account menu and sidebar.
+- Fixes Claude Code made to Codex's version:
+  - Codex lazy-loaded the phone `NavBar`, which left phones without a header until a chunk that isn't preloaded arrived. It is a static import again, with only its dialog lazy.
+  - The search scope kept resetting on every navigation. A picked category now stays until the route leaves a category page, and `/search?category=` sets the scope as well.
+  - `main` fills the column again.
+  - The search field no longer shows a double focus ring.
+  - Two test assertions are now exact.
+
+**Check:** `npm test` passes (173 tests, 26 files). The only stderr is the known Emotion "already loaded" warning. `npm run lint` passes with max-warnings 0, and `npm run build` passes without warnings. The new search-scope test failed before the fix. Codex's tests were already written when Claude Code took over, so there is no RED run for them. First-load cost was measured against 4c391cc, built in a temporary worktree, using node gzip:
+- The `BuyerLayout` chunk with its static imports, minus the entry and vendor chunks, went from 46.22 to 49.14 kB (+2.92 kB).
+- `/`'s modulepreload list went from 54.99 to 57.92 kB (+2.93 kB).
+- No preloaded chunk contains `MuiMenu-` or `MuiPopover-`.
+- `AccountMenuList`, `LoginDialog` and `Menu` are separate lazy chunks.
+
+Browser checks not run, all six from the brief, at 768 px and 1280 px in light and dark:
+1. `/` shows two rows, the search scope works, and "Ship to" is hidden for a guest.
+2. Logging in as Ahmed shows "Hello, Ahmed" and "Ship to Cairo".
+3. The cart summary sticks under the 96 px header, and `offsetHeight` equals `--nav-height`.
+4. At 768 px the category row scrolls inside itself with no sideways page scroll, and the avatar shows while the name and "Ship to" are hidden.
+5. `/seller` as Mona shows the top bar, the sticky sidebar with "Orders 2" and Switch to shopping.
+6. The account menu works with the keyboard only.
+
+The avatar colour and the Gruvbox look in both themes are also unchecked. No long-lived server was started.
+
+**Changed by hand:** —

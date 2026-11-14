@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import SVG from "../assets/svg";
 import styled from "@emotion/styled";
-import { css } from "@emotion/react";
+import { linkStyle } from "./header/headerStyles";
 import { color } from "../styles/tokens";
 import font from "../styles/font";
 import { Badge, Button, Drawer, IconButton } from "@mui/material";
@@ -13,7 +13,8 @@ import useAuth from "../hooks/useAuth";
 import useSide from "../hooks/useSide";
 import ModeSwitch from "./ModeSwitch";
 import ThemeSwitch from "./ThemeSwitch";
-import LoginDialog from "./LoginDialog";
+// the dialog is its own chunk, shared with the wide headers
+import useHeaderLogin, { HeaderLoginDialog } from "./header/useHeaderLogin";
 
 interface LinkProp {
   path: string;
@@ -32,13 +33,13 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
   const { logOut, activeName, isSignedIn } = useAuth();
   const { signUpPath, pathname, homePath } = useSide();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const { isLoginOpen, hasOpened, openLogin: showLogin, closeLogin } = useHeaderLogin();
 
   const cartLink = navLinks.find(({ badge }) => badge !== undefined);
   const closeMenu = () => setIsMenuOpen(false);
   const openLogin = () => {
     closeMenu();
-    setIsLoginOpen(true);
+    showLogin();
   };
 
   const links = navLinks.map(({ path, label, badge }) => (
@@ -151,7 +152,7 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
           {account}
         </DrawerHolder>
       </Drawer>
-      <LoginDialog isOpen={isLoginOpen} onClose={() => setIsLoginOpen(false)} />
+      {hasOpened && <Suspense fallback={null}><HeaderLoginDialog isOpen={isLoginOpen} onClose={closeLogin} /></Suspense>}
     </Holder>
   );
 };
@@ -159,53 +160,6 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
 // -----------------
 // Styled component
 // -----------------
-// shared look of a nav link: a bar that fills on hover
-const linkStyle = css`
-  .link {
-    --color: ${color.fg};
-
-    /* nav text can't be selected or dragged away */
-    user-select: none;
-    -webkit-user-drag: none;
-
-    position: relative;
-    font-size: 1.1em;
-    text-decoration: none;
-    color: var(--color);
-    transition: color 0.3s;
-    z-index: 0;
-    padding: 0.15em 0.6em;
-    white-space: nowrap;
-
-    &::after {
-      content: "";
-      position: absolute;
-      background-color: var(--color);
-      width: 0.3em;
-      inset: 0;
-      z-index: -1;
-      transition: width 0.4s;
-    }
-
-    &:hover,
-    &:focus-visible {
-      color: ${color.bg};
-      &::after {
-        width: 100%;
-      }
-    }
-
-    &.active {
-      --color: var(--primary-color);
-    }
-
-    .badge .MuiBadge-badge {
-      ${font.Bold}
-      right: -0.6em;
-    }
-  }
-`;
-
 const Holder = styled.div`
   background-color: ${color.bg1};
   border-bottom: 1px solid ${color.bg2};
@@ -232,6 +186,8 @@ const Holder = styled.div`
     gap: var(--space-l);
   }
   ${linkStyle}
+  .link { font-size: 1.1em; }
+  .link .badge .MuiBadge-badge { ${font.Bold} right: -0.6em; }
 
   .actions {
     display: flex;
@@ -300,6 +256,8 @@ const DrawerHolder = styled.div`
     width: 100%;
   }
   ${linkStyle}
+  .link { font-size: 1.1em; }
+  .link .badge .MuiBadge-badge { ${font.Bold} right: -0.6em; }
 
   .account {
     display: flex;

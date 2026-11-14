@@ -1,3 +1,4 @@
+import { color } from "../styles/tokens";
 import { Button, ThemeProvider } from "@mui/material";
 import { Link } from "react-router-dom";
 import { useAppSelector } from "../app/hooks";
@@ -19,11 +20,18 @@ const ModeSwitch: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
       <Button
         component={Link}
         to={lastPath || (toSeller ? ROUTES.seller : ROUTES.home)}
-        variant="outlined"
+        variant="contained"
         color="primary"
         className={otherSide}
         aria-label={label}
-        sx={{ whiteSpace: "nowrap", borderRadius: 0 }}
+        sx={{
+          "--primary-color": toSeller ? color.sell : color.buy,
+          fontFamily: "var(--font-mono)", fontWeight: 700,
+          whiteSpace: "nowrap", borderRadius: 0, height: 36,
+          color: color.bg, backgroundColor: color.primary,
+          boxShadow: "var(--shadow-1)",
+          "&:hover": { backgroundColor: color.primary, boxShadow: "var(--shadow-1)" },
+        }}
       >
         {compact ? (toSeller ? "Sell" : "Shop") : label}
       </Button>
