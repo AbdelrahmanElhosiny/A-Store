@@ -7,8 +7,9 @@ export const LATE_AFTER_MS = 60_000;
 // Auto-ship (demo) moves a shipment one step this often
 export const AUTO_SHIP_STEP_MS = 20_000;
 
-// Delivery isn't stored as an event: a shipped shipment reads as delivered
-// once its time comes. Without a deliverAt it waits (seeded shipped orders).
+// Delivery comes in two forms: seed shipments store status "delivered" (with
+// a delivered history event), while a live shipped shipment reads as delivered
+// once its deliverAt passes. Without a deliverAt it waits (seeded shipped orders).
 export const effectiveStatus = (s: Shipment, now: number): ShipmentStatus =>
   s.status === "shipped" && s.deliverAt !== undefined && now >= s.deliverAt
     ? "delivered"

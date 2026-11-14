@@ -20,13 +20,21 @@ const seedNameByUrl = new Map(
   Object.entries(seedImageByName).map(([name, url]) => [url, name]),
 );
 
-const toSaved = (_key: string, value: unknown) =>
-  typeof value === "string" && seedNameByUrl.has(value)
+// Only picture fields are translated: user text that happens to start with
+// "seed:" (a name, an address line) must come back as typed.
+const PICTURE_KEYS = ["image", "banner"];
+
+const toSaved = (key: string, value: unknown) =>
+  PICTURE_KEYS.includes(key) &&
+  typeof value === "string" &&
+  seedNameByUrl.has(value)
     ? `${SEED_PREFIX}${seedNameByUrl.get(value)}`
     : value;
 
-const fromSaved = (_key: string, value: unknown) =>
-  typeof value === "string" && value.startsWith(SEED_PREFIX)
+const fromSaved = (key: string, value: unknown) =>
+  PICTURE_KEYS.includes(key) &&
+  typeof value === "string" &&
+  value.startsWith(SEED_PREFIX)
     ? seedImageByName[value.slice(SEED_PREFIX.length)]
     : value;
 

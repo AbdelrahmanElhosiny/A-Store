@@ -17,6 +17,25 @@ describe("saved data", () => {
     expect(loaded.state?.items[0].image).toBe(SEED_IMAGES.headphones);
   });
 
+  it("keeps user text that starts with seed: as typed", () => {
+    const seed = buildSeed(0);
+    const item = { ...seed.items[0], name: "seed:mug" };
+    const order = {
+      ...seed.orders[0],
+      shipTo: { ...seed.orders[0].shipTo, line1: "seed:watch" },
+    };
+    const state = {
+      ...seed,
+      items: [item, ...seed.items.slice(1)],
+      orders: [order, ...seed.orders.slice(1)],
+    };
+    saveState(state);
+    const loaded = loadState().state;
+    expect(loaded?.items[0].name).toBe("seed:mug");
+    expect(loaded?.orders[0].shipTo.line1).toBe("seed:watch");
+    expect(loaded?.items[0].image).toBe(SEED_IMAGES.headphones);
+  });
+
   it("drops a version 1 save and reports it", () => {
     localStorage.setItem(STORAGE_KEY, '{"version":1,"items":[],"users":[]}');
     expect(loadState()).toEqual({ state: undefined, droppedOld: true });

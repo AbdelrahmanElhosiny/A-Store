@@ -144,4 +144,72 @@ describe("buildSeed", () => {
       });
     });
   });
+
+  it("pins the seed ids later phases use", () => {
+    const NOW = 1_000_000_000_000;
+    const { orders, items, accounts } = buildSeed(NOW);
+
+    const first = orders.find(({ id }) => id === "order-A-10001");
+    expect(first?.number).toBe("A-10001");
+    expect(orders[orders.length - 1].number).toBe("A-10013");
+
+    const a10002 = orders.find(({ number }) => number === "A-10002");
+    expect(a10002?.shipments.map(({ id }) => id)).toContain("ship-A-10002-cc");
+
+    const buyerList = accounts.filter(
+      (account): account is BuyerAccount => account.role === "buyer",
+    );
+    const addressIds = buyerList.flatMap((b) =>
+      b.addresses.map(({ id }) => id),
+    );
+    expect(addressIds).toEqual(
+      expect.arrayContaining([
+        "addr-ahmed-home",
+        "addr-omar-parents",
+        "addr-nour-work",
+      ]),
+    );
+    const methodIds = buyerList.flatMap((b) =>
+      b.paymentMethods.map(({ id }) => id),
+    );
+    expect(methodIds).toEqual(
+      expect.arrayContaining(["pm-ahmed-4242", "pm-nour-4444", "cod"]),
+    );
+
+    const itemIds = items.map(({ id }) => id);
+    expect(itemIds).toContain("item-tt-field-watch-38-mm");
+    expect(itemIds).toContain("item-ps-65-w-usb-c-charger");
+
+    const skus = (storeId: string) =>
+      items.filter((item) => item.storeId === storeId).map(({ sku }) => sku);
+    expect(skus("store-tick-tock")).toEqual(
+      Array.from({ length: 8 }, (_, i) => `T-00${i + 1}`),
+    );
+    expect(skus("store-hearth-lane")).toEqual(
+      Array.from({ length: 6 }, (_, i) => `H-00${i + 1}`),
+    );
+
+    const HOUR = 3_600_000;
+    orders.forEach((order) =>
+      order.shipments.forEach((shipment) => {
+        const times = shipment.history.map(({ at }) => at);
+        expect(times[0]).toBe(order.placedAt);
+        times.slice(1).forEach((at, i) => expect(at - times[i]).toBe(6 * HOUR));
+        const sent = ["shipped", "delivered"].includes(shipment.status);
+        expect(Boolean(shipment.carrier)).toBe(sent);
+        expect(Boolean(shipment.trackingNo)).toBe(sent);
+      }),
+    );
+
+    const labelOf = (buyerId: string) => [
+      ...new Set(
+        orders
+          .filter((order) => order.buyerId === buyerId)
+          .map(({ payment }) => payment.label),
+      ),
+    ];
+    expect(labelOf("acc-ahmed")).toEqual(["Visa ending 4242"]);
+    expect(labelOf("acc-omar")).toEqual(["Cash on delivery"]);
+    expect(labelOf("acc-nour")).toEqual(["Visa ending 4242"]);
+  });
 });
