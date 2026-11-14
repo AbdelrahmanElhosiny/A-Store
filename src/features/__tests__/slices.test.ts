@@ -17,10 +17,15 @@ const MUG = "item-hl-ceramic-mug";
 const shipTo = { id: "guest", name: "", line1: "" } as Address;
 const payment: Order["payment"] = { kind: "cod", label: "Cash on delivery" };
 
-// the seed at time 0, with the guest's cart filled in
+// the seed at time 0 without its past orders (these tests count their own),
+// with the guest's cart filled in
 const makeStore = (guestCart: CartLine[] = []) => {
   const seed = buildSeed(0);
-  return setupStore({ ...seed, session: { ...seed.session, guestCart } });
+  return setupStore({
+    ...seed,
+    orders: [],
+    session: { ...seed.session, guestCart },
+  });
 };
 type TestStore = ReturnType<typeof makeStore>;
 

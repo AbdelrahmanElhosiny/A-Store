@@ -214,3 +214,18 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** `npm run lint`, `npm run build` and `npm test` pass with no warnings (55 tests: cart helpers, order building, shipment status, seed shape, slices and thunks, selectors, saved data, `renderWithStore`). A throwaway render test on the new data also passed: Buy listed 5 items, Add filled the guest cart, Log in as Ahmed carried "Your cart (1 item)" and moved it, Place order showed "Order A-10001 placed" with Ahmed's Cairo address, Track Shipment showed the order, Track Sold counted 2 units in 1 order, and Sell counted 5 items. Left to check in a browser at 360 and 1280 px: the timer going Ordered → Delivered, adding an item on Sell and seeing it on Buy, Reset, and the one-time "demo was updated" toast over a version 1 save.
 
 **Changed by hand:** —
+
+## 12. Seed catalogue: four stores, 30 products, past orders (Claude Code)
+
+**Prompt:** Phase A, task 2 of the marketplace overhaul: grow the seed to 30 products across the four stores with a picture each, add Nour as a third buyer, give every buyer two addresses and saved cards, and add 13 past orders in every status, with no change to the pages.
+
+**Changes**
+- Products: 25 new items appended after today's five (Tick & Tock 8, Carry Co. 8, Pocket Signal 8, Hearth Lane 6), each with a one-sentence description, a price and a stock, and a `createdAt` spread over the last 60 days so Newest sorts in a mixed order. Four are sold out and several sit at or under the low-stock line. Ids are `item-<store letters>-<kebab name>` and SKUs count per store (`T-001`, `C-001`, `P-001`, `H-001`).
+- Pictures: 25 Unsplash photos, each checked at full size to show no brand name or logo (photos with a readable mark were swapped out), cropped to 640 × 480 and saved as WebP of 2-10 KB (re-encoded to fit), in `src/assets/products/` with a row each in `CREDITS.md`. `SEED_IMAGES` has them by kebab name.
+- Buyers: Nour (`acc-nour`) joins Ahmed and Omar. Each buyer has two addresses (Home default, plus Work or Parents) with ids like `addr-omar-parents`, and cards with ids like `pm-nour-4444`, next to cash on delivery. Card expiries are month offsets from now (25, 9, 28 and 6 months), so the seed never ages into expired cards. Only brand, last 4, expiry, holder and nickname are stored.
+- Orders (`seed/seedOrders.ts`): 13 orders, A-10001 to A-10013, from 25 days to 2 hours back, with 18 shipments in placed, packed, shipped and delivered states, one shipment per store. Each shipment's history steps 6 hours apart from the order time. Shipped and delivered shipments carry a carrier ("Nile Express" or "Delta Post") and a fixed tracking number; shipped ones have no delivery time, so they wait. Every store has a placed or packed shipment waiting. Seed orders don't lower stock.
+- Tests: new seed tests for the catalogue, pictures, buyers, dates as offsets from now, waiting work per store, and consistent orders. The slice and selector tests now start from the seed without its past orders (they count their own), and expect six Hearth Lane items and three buyers.
+
+**Check:** `npm run lint`, `npm run build` and `npm test` pass (the seed tests failed first: 5 items, 2 buyers, no orders). Left to check in a browser: Buy shows 26 in-stock items with pictures and hides the 4 sold-out ones; Nour sees 4 orders in Track; Track Sold shows units from the seed orders; Reset brings it all back; `fetchpriority=high` on the first 4 pictures.
+
+**Changed by hand:** —

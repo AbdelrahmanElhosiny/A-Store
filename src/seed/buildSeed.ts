@@ -3,12 +3,14 @@ import {
   BuyerAccount,
   Item,
   Order,
+  PaymentMethod,
   SellerAccount,
   SessionState,
   Store,
 } from "../features/types";
 import { SEED_BUYERS, SEED_ITEMS, SEED_STORES } from "./catalogue";
 import { SEED_IMAGES } from "./images";
+import { buildSeedOrders } from "./seedOrders";
 
 // what the five saved slices hold
 export interface SeedData {
@@ -34,25 +36,49 @@ export const buildSeed = (now: number): SeedData => {
     storeId: store.id,
   }));
 
-  const buyers: BuyerAccount[] = SEED_BUYERS.map((buyer) => ({
-    id: buyer.id,
-    role: "buyer",
-    name: buyer.name,
-    avatarColor: buyer.avatarColor,
-    createdAt: now - 60 * DAY_MS,
-    notificationsSeenAt: now,
-    addresses: buyer.addresses.map((address, index) => ({
-      id: `${buyer.id}-address-${index + 1}`,
-      label: "Home",
+  const buyers: BuyerAccount[] = SEED_BUYERS.map((buyer) => {
+    const firstName = buyer.name.toLowerCase();
+    const start = new Date(now);
+    const cards: PaymentMethod[] = buyer.cards.map((card, index) => {
+      // count months from now so the card is never expired
+      const months =
+        start.getFullYear() * 12 + start.getMonth() + card.monthsAhead;
+      const method: PaymentMethod = {
+        id: `pm-${firstName}-${card.last4}`,
+        kind: "card",
+        brand: card.brand,
+        last4: card.last4,
+        expMonth: (months % 12) + 1,
+        expYear: Math.floor(months / 12),
+        isDefault: !buyer.codIsDefault && index === 0,
+      };
+      if (card.holder) method.holder = card.holder;
+      if (card.nickname) method.nickname = card.nickname;
+      return method;
+    });
+    return {
+      id: buyer.id,
+      role: "buyer",
       name: buyer.name,
-      ...address,
-      isDefault: index === 0,
-    })),
-    paymentMethods: [{ id: "cod", kind: "cod", isDefault: true }],
-    cart: [],
-    wishlist: [],
-    recentlyViewed: [],
-  }));
+      avatarColor: buyer.avatarColor,
+      createdAt: now - 60 * DAY_MS,
+      notificationsSeenAt: now,
+      addresses: buyer.addresses.map(({ label, ...address }, index) => ({
+        id: `addr-${firstName}-${label.toLowerCase()}`,
+        label,
+        name: buyer.name,
+        ...address,
+        isDefault: index === 0,
+      })),
+      paymentMethods: [
+        ...cards,
+        { id: "cod", kind: "cod", isDefault: buyer.codIsDefault },
+      ],
+      cart: [],
+      wishlist: [],
+      recentlyViewed: [],
+    };
+  });
 
   const stores: Store[] = SEED_STORES.map((store) => ({
     id: store.id,
@@ -71,11 +97,11 @@ export const buildSeed = (now: number): SeedData => {
     freeDeliveryOver: null,
   }));
 
-  const items: Item[] = SEED_ITEMS.map((item, index) => ({
+  const items: Item[] = SEED_ITEMS.map(({ daysAgo, ...item }) => ({
     ...item,
     image: SEED_IMAGES[item.image],
     status: "active",
-    createdAt: now - (30 - index) * DAY_MS,
+    createdAt: now - daysAgo * DAY_MS,
   }));
 
   return {
@@ -88,7 +114,7 @@ export const buildSeed = (now: number): SeedData => {
     },
     stores,
     items,
-    orders: [],
+    orders: buildSeedOrders(now, items, buyers),
   };
 };
 

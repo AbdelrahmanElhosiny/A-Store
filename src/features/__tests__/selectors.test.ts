@@ -21,7 +21,7 @@ const shipTo = { id: "a", name: "", line1: "" } as Address;
 
 // a store's state, from the seed with the given changes
 const stateWith = (changes: Partial<RootState> = {}) =>
-  setupStore({ ...buildSeed(0), ...changes }).getState();
+  setupStore({ ...buildSeed(0), orders: [], ...changes }).getState();
 
 const orderAt = (state: RootState, id: string, placedAt: number, cart: CartLine[]) =>
   buildOrder({
@@ -75,7 +75,7 @@ describe("selectors", () => {
       seed.items.slice(2).map(({ id }) => id),
     );
     // the store's own list keeps every status
-    expect(selectItemsForStore(state, "store-hearth-lane")).toHaveLength(2);
+    expect(selectItemsForStore(state, "store-hearth-lane")).toHaveLength(6);
   });
 
   it("selectShipmentsForStore returns only that store's shipments, newest first", () => {
@@ -100,7 +100,7 @@ describe("selectors", () => {
 
   it("splits accounts by role and keys stock by line key", () => {
     const state = stateWith();
-    expect(selectBuyerAccounts(state).map(({ id }) => id)).toEqual(["acc-ahmed", "acc-omar"]);
+    expect(selectBuyerAccounts(state).map(({ id }) => id)).toEqual(["acc-ahmed", "acc-omar", "acc-nour"]);
     expect(selectSellerAccounts(state)).toHaveLength(4);
     expect(selectStockById(state)["item-hl-desk-lamp"]).toBe(3);
   });
