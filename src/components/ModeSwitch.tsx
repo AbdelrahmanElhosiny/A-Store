@@ -6,7 +6,7 @@ import { ROUTES } from "../constant/routes";
 import useSide from "../hooks/useSide";
 import { useSideTheme } from "../hooks/useThemeMode";
 
-const ModeSwitch: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
+const ModeSwitch: React.FC<{ compact?: boolean; onNavigate?: () => void }> = ({ compact = false, onNavigate }) => {
   const { role } = useSide();
   const toSeller = role === "buyer";
   const otherRole = toSeller ? "seller" : "buyer";
@@ -24,6 +24,7 @@ const ModeSwitch: React.FC<{ compact?: boolean }> = ({ compact = false }) => {
         color="primary"
         className={otherSide}
         aria-label={label}
+        onClick={onNavigate}
         sx={{
           "--primary-color": toSeller ? color.sell : color.buy,
           fontFamily: "var(--font-mono)", fontWeight: 700,

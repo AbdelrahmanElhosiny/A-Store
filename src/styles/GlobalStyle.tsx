@@ -1,5 +1,5 @@
 import { Global, css } from "@emotion/react";
-import { NAV_ROW, navHeight } from "./navHeight";
+import { navHeight } from "./navHeight";
 import { media } from "./breakpoints";
 import size from "./size";
 import { Mode, Palette, palettes, fontMono, fontSans } from "./theme";
@@ -101,11 +101,11 @@ const style = css`
   }
 
   ${media.phone} {
-    /* phones still have the one-row NavBar; Task 2 sets navHeight("buy", true) */
-    .buy { --nav-height: ${NAV_ROW.bar}px; }
+    .buy { --nav-height: ${navHeight("buy", true)}px; }
   }
 
   .sell {
+    --nav-height: ${navHeight("sell", false)}px;
     --primary-color: ${color.sell};
   }
 

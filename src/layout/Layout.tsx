@@ -1,4 +1,4 @@
-import { Suspense, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import styled from "@emotion/styled";
@@ -9,11 +9,12 @@ import font from "../styles/font";
 import { color } from "../styles/tokens";
 import { ThemeType } from "../styles/GlobalStyle";
 import { EXTERNAL_LINK } from "../constant/linkConstant";
-import ResetDemoDialog from "../components/ResetDemoDialog";
 import Toaster from "../components/Toaster";
 import ErrorFallback from "../components/ErrorFallback";
 import PageTransition from "../components/PageTransition";
 import MotionProvider from "../components/MotionProvider";
+
+const ResetDemoDialog = lazy(() => import("../components/ResetDemoDialog"));
 
 interface LayoutProps {
   NavBar: React.ReactElement;
@@ -103,10 +104,10 @@ const Layout: React.FC<LayoutProps> = ({ NavBar, MainComponent, Theme, Sidebar }
           </div>
           </section>
         </footer>
-        <ResetDemoDialog
+        {isResetOpen && <Suspense fallback={null}><ResetDemoDialog
           isOpen={isResetOpen}
           onClose={() => setIsResetOpen(false)}
-        />
+        /></Suspense>}
         <Toaster />
       </Holder>
     </MotionProvider>

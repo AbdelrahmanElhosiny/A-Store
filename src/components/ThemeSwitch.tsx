@@ -4,19 +4,22 @@ import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import useThemeMode from "../hooks/useThemeMode";
 import { color } from "../styles/tokens";
+import font from "../styles/font";
 
 interface Props {
   className?: string;
+  label?: string;
 }
 
 // Light/dark switch. Starts from the browser/system setting;
 // once flipped, the choice is remembered.
-const ThemeSwitch: React.FC<Props> = ({ className }) => {
+const ThemeSwitch: React.FC<Props> = ({ className, label }) => {
   const { mode, setPreference } = useThemeMode();
   const isDark = mode === "dark";
 
   return (
     <Holder className={className || ""}>
+      {label && <span className="label">{label}</span>}
       <LightModeOutlinedIcon className={`icon ${isDark ? "" : "on"}`} />
       <Switch
         className="switch"
@@ -37,6 +40,7 @@ const Holder = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  .label { ${font.Bold} margin-right: var(--space-s); }
 
   .icon {
     font-size: 1.15em;

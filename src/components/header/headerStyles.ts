@@ -75,4 +75,28 @@ export const HeaderBar = styled.div`
     gap: var(--space-s);
     .cart-label { display: none; }
   }
+  &.phone {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto auto auto;
+    gap: var(--space-xs);
+    .spacer { min-width: 0; }
+    .logo { min-width: 44px; min-height: 44px; justify-content: center; }
+    .MuiButton-root, .MuiIconButton-root { min-width: 44px; min-height: 44px; border-radius: 0; }
+    .MuiIconButton-root { color: ${color.fg}; }
+    .MuiSvgIcon-root { font-size: 28px; }
+    &.seller { grid-template-columns: auto auto 1fr auto auto; }
+  }
+`;
+
+export const PhoneSearchRow = styled.div`
+  box-sizing: border-box;
+  height: ${NAV_ROW.search}px;
+  display: flex;
+  align-items: center;
+  padding-inline: var(--page-gutter);
+  background: ${color.bg1};
+  border-bottom: 1px solid ${color.bg2};
+  form { max-width: none; height: 46px; }
+  .MuiIconButton-root { min-width: 44px; min-height: 44px; padding: 8px; }
+  .MuiSvgIcon-root { font-size: 28px; }
 `;

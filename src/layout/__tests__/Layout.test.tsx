@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { cleanup, screen, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { Route, Routes } from "react-router-dom";
 import BuyerLayout from "../BuyerLayout";
 import SellerLayout from "../SellerLayout";
@@ -54,11 +55,12 @@ it("seller footer stays one row", () => {
   renderWithStore(layout("sell"), { route: ROUTES.seller, preloadedState: signedIn() });
   expect(screen.queryByRole("heading", { name: "Shop by category" })).toBeNull();
 });
-it("phones keep the existing navbar and footer", async () => {
+it("767 pixels uses the phone headers and compact footer", async () => {
   setViewportWidth(767);
   const buyer = renderWithStore(layout("buy"));
   expect(await screen.findByRole("button", { name: "Open menu", hidden: true })).toBeInTheDocument();
-  expect(screen.queryByRole("searchbox")).toBeNull();
+  expect(screen.getByRole("searchbox", { name: "Search A-Store" })).toBeInTheDocument();
+  expect(screen.queryByRole("combobox", { name: "Search in" })).toBeNull();
   expect(screen.queryByRole("heading", { name: "Shop by category" })).toBeNull();
   buyer.unmount();
   renderWithStore(layout("sell"), { route: ROUTES.seller, preloadedState: signedIn() });
@@ -70,4 +72,14 @@ it("768 pixels uses the wide header", () => {
   renderWithStore(layout("buy"));
   expect(screen.getByRole("searchbox", { name: "Search A-Store" })).toBeInTheDocument();
   expect(screen.queryByRole("button", { name: "Open menu" })).toBeNull();
+});
+it("the lazy footer reset dialog still opens and cancels", async () => {
+  const user = userEvent.setup();
+  renderWithStore(layout("buy"));
+  const reset = within(screen.getByRole("contentinfo")).getByRole("button", { name: "Reset demo data" });
+  await user.click(reset);
+  const dialog = await screen.findByRole("dialog", { name: "Reset demo data" });
+  await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
+  expect(reset).toHaveFocus();
 });

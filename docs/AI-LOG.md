@@ -311,3 +311,26 @@ Browser checks not run, all six from the brief, at 768 px and 1280 px in light a
 The avatar colour and the Gruvbox look in both themes are also unchecked. No long-lived server was started.
 
 **Changed by hand:** —
+
+## 16. Phone header and side menu (Codex)
+
+**Prompt:** Implement Phase C Task 2 from its brief: replace the old phone navbar with buyer and seller phone headers and a lazy left menu, preserve the wide headers, centralised routes, Gruvbox accents and sharp edges, follow failing-tests-first TDD, verify tests/lint/build and first-load size, and leave the changes uncommitted.
+
+**Changes**
+- Buyer phones have menu, logo, Sell, compact account menu and cart, then a full-width unscoped search row. Seller phones have menu, logo, Shop and compact account menu, with no search or outside sidebar. Phone actions use 28 px icons and at least 44 px header touch targets.
+- Added lazy `MenuDrawer`, loaded on first open and prefetched on idle only on phones. Its left paper carries the URL-selected buy/sell class. It shows greeting/login, full mode switch, categories or SellerNav, then account links/logout, the labelled Dark mode switch and Reset demo data. Sign-up links preserve the current pathname.
+- Added `useHeaderMenu` to share header-owned drawer/reset state and focus handling. All drawer links and pathname changes close for navigation without restoring focus. Escape, Close and backdrop restore the menu button after the drawer closes. Login/reset dialogs outlive the drawer; ModeSwitch accepts an optional navigation callback.
+- `ThemeSwitch` accepts a visible bold label while keeping the Dark mode checkbox name. Shared phone styles use NAV_ROW. GlobalStyle now sets phone buyer height to 112 px, wide buyer to 96 px and seller to 56 px.
+- Both layouts always use the new headers; removed NavBar and its obsolete nav arrays. The footer reset dialog is also lazy so Modal stays out of the initial load.
+- Added all 13 required phone tests with their exact names, plus Close/backdrop focus coverage and a lazy footer reset regression. Updated the 767 px layout assertion; the 768 px wide test and existing navHeight tests still pass. Login/reset tests also verify focus stays in the new modal and Tab reaches Close.
+
+**Check:** RED: `npx vitest run src/components/header` failed all 13 new phone tests with missing accessible Open menu controls; the existing 29 tests passed. GREEN: `npm test` passes 189 tests in 28 files, `npm run lint` passes with max-warnings 0, and `npm run build` passes without warnings. Vitest stderr contains only the known Emotion already-loaded warning. `git diff --check` passes and `grep -rn "components/NavBar" src` has no matches.
+
+Production size, using Node gzip on the emitted static imports and executing the built `/` preload script with width 360:
+- BuyerLayout plus static imports, excluding entry/vendor: 50,317 → 39,002 bytes (49.14 → 38.09 KiB, down 11.05 KiB; below the 8 KiB growth limit).
+- `/` route modulepreloads, excluding entry/vendor: 59,312 → 47,987 bytes (57.92 → 46.86 KiB, down 11.06 KiB).
+- MenuDrawer, AccountMenuList and LoginDialog remain separate lazy chunks. No initial file, including entry/vendor, contains Drawer, Modal, Menu or Popover markers. All preload targets exist.
+
+Browser checks not run: the brief's 360/390/768/1280 px light/dark checks on `/`, `/cart`, `/seller` and `/seller/orders` for horizontal overflow, measured header heights and sticky cart summary; long buyer/store names; left-slide appearance and category-to-heading focus; browser Back with the drawer open; real keyboard/Escape behavior; reset/login handoff; seller Shop and Orders 2; and the 767 → 768 resize/reload flash check. Visual theme, truncation, touch targets, scrolling and actual browser preload timing remain for a human. No server was started and no commit was made. Full evidence and self-review are in `.superpowers/sdd/2026-11-13-phase-c-navbar/task-2-report.md`.
+
+**Changed by hand:** —
