@@ -8,6 +8,7 @@ import { color } from "../styles/tokens";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onExited?: () => void;
   title: string;
   subtitle?: string | null; // e.g. the item's name
   width?: number; // px, on screens wide enough
@@ -19,6 +20,7 @@ interface Props {
 const AppDialog: React.FC<Props> = ({
   isOpen,
   onClose,
+  onExited,
   title,
   subtitle,
   width = 480,
@@ -33,6 +35,8 @@ const AppDialog: React.FC<Props> = ({
     <Holder
       open={isOpen}
       onClose={onClose}
+      disableRestoreFocus={Boolean(onExited)}
+      TransitionProps={{ onExited }}
       aria-labelledby={titleId}
       transitionDuration={isReducedMotion ? 0 : undefined}
       PaperProps={{

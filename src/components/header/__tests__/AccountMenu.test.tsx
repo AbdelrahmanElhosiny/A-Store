@@ -1,6 +1,9 @@
 import { afterEach, beforeEach, expect, it } from "vitest";
-import { cleanup, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, screen, waitFor, waitForElementToBeRemoved, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { useEffect, useRef } from "react";
+import { Route, Routes } from "react-router-dom";
+import { ROUTES } from "../../../constant/routes";
 import BuyerHeader from "../BuyerHeader";
 import { renderWithStore } from "../../../test/renderWithStore";
 import { setViewportWidth } from "../../../test/viewport";
@@ -85,15 +88,81 @@ it("keyboard: arrows, Escape, Tab", async () => {
   await user.keyboard("{Escape}");
   await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
   expect(button).toHaveFocus();
+  expect(button).toHaveAttribute("aria-expanded", "false");
   await user.keyboard("{Enter}");
   await screen.findByRole("menu");
   await user.tab();
   await waitFor(() => expect(screen.queryByRole("menu")).toBeNull());
   expect(button).toHaveFocus();
+  expect(button).toHaveAttribute("aria-expanded", "false");
 });
 it("menu paper carries the mode class", async () => {
   const user = userEvent.setup();
   renderWithStore(header);
   await user.click(screen.getByRole("button", { name: "Log in" }));
   expect((await screen.findByRole("menu")).closest(".MuiPaper-root")).toHaveClass("buy");
+});
+
+it("login Escape returns focus to the account button", async () => {
+  const user = userEvent.setup();
+  renderWithStore(header);
+  const button = screen.getByRole("button", { name: "Log in" });
+  await user.click(button);
+  await user.click(await screen.findByRole("menuitem", { name: "Log in" }));
+  const dialog = await screen.findByRole("dialog", { name: "Log in" });
+  const removed = waitForElementToBeRemoved(dialog);
+  await user.keyboard("{Escape}");
+  await removed;
+  expect(button).toHaveFocus();
+  expect(button).toHaveAttribute("aria-expanded", "false");
+});
+it("logout returns focus to the account button", async () => {
+  const user = userEvent.setup();
+  renderWithStore(header, { preloadedState: signedIn() });
+  const button = screen.getByRole("button", { name: "Hello, Ahmed" });
+  await user.click(button);
+  const menu = await screen.findByRole("menu");
+  const removed = waitForElementToBeRemoved(menu);
+  await user.click(within(menu).getByRole("menuitem", { name: "Log out" }));
+  await removed;
+  expect(button).toHaveAccessibleName("Log in");
+  expect(button).toHaveFocus();
+  expect(button).toHaveAttribute("aria-expanded", "false");
+});
+it("account links leave focus on the new page after the menu exits", async () => {
+  const Destination = () => {
+    const ref = useRef<HTMLHeadingElement>(null);
+    useEffect(() => { ref.current?.focus(); }, []);
+    return <h2 ref={ref} tabIndex={-1}>Orders page</h2>;
+  };
+  const user = userEvent.setup();
+  renderWithStore(<><BuyerHeader /><Routes>
+    <Route path={ROUTES.home} element={<h2>Home</h2>} />
+    <Route path={ROUTES.accountOrders} element={<Destination />} />
+  </Routes></>, { preloadedState: signedIn() });
+  const button = screen.getByRole("button", { name: "Hello, Ahmed" });
+  await user.click(button);
+  const menu = await screen.findByRole("menu");
+  const removed = waitForElementToBeRemoved(menu);
+  await user.click(within(menu).getByRole("menuitem", { name: "Orders" }));
+  await removed;
+  expect(screen.getByRole("heading", { name: "Orders page" })).toHaveFocus();
+  expect(button).toHaveAttribute("aria-expanded", "false");
+});
+it("guests keep visible Log in text at 900 pixels", () => {
+  setViewportWidth(900);
+  renderWithStore(header);
+  const label = within(screen.getByRole("button", { name: "Log in" })).getByText("Log in");
+  expect(label.closest(".visually-hidden")).toBeNull();
+  // jsdom does not apply media queries; check matching responsive rules directly.
+  const responsiveRules = Array.from(document.styleSheets).flatMap((sheet) => Array.from(sheet.cssRules))
+    .filter((rule): rule is CSSMediaRule => rule instanceof CSSMediaRule && matchMedia(rule.conditionText).matches)
+    .flatMap((rule) => Array.from(rule.cssRules))
+    .filter((rule): rule is CSSStyleRule => rule instanceof CSSStyleRule);
+  for (const rule of responsiveRules) {
+    if (label.matches(rule.selectorText) || label.parentElement!.matches(rule.selectorText)) {
+      expect(rule.style.getPropertyValue("clip-path")).not.toBe("inset(50%)");
+      expect(rule.style.display).not.toBe("none");
+    }
+  }
 });

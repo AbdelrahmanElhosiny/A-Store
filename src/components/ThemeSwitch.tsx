@@ -1,3 +1,4 @@
+import { useId } from "react";
 import styled from "@emotion/styled";
 import { Switch } from "@mui/material";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -14,14 +15,16 @@ interface Props {
 // Light/dark switch. Starts from the browser/system setting;
 // once flipped, the choice is remembered.
 const ThemeSwitch: React.FC<Props> = ({ className, label }) => {
+  const id = useId();
   const { mode, setPreference } = useThemeMode();
   const isDark = mode === "dark";
 
   return (
     <Holder className={className || ""}>
-      {label && <span className="label">{label}</span>}
+      {label && <label className="label" htmlFor={id}>{label}</label>}
       <LightModeOutlinedIcon className={`icon ${isDark ? "" : "on"}`} />
       <Switch
+        id={id}
         className="switch"
         checked={isDark}
         onChange={(event) =>

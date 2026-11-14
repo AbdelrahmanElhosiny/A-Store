@@ -47,19 +47,19 @@ const Layout: React.FC<LayoutProps> = ({ NavBar, MainComponent, Theme, Sidebar }
           {NavBar}
         </header>
         <div className={`body${Sidebar ? " with-sidebar" : ""}`}>
-        {Sidebar && <aside className="sidebar">{Sidebar}</aside>}
-        <main className="main-component" id="main" tabIndex={-1}>
-          {/* a crashed page keeps the nav; going to another page clears it */}
-          <ErrorBoundary
-            FallbackComponent={ErrorFallback}
-            resetKeys={[pathname]}
-          >
-            {/* a page inside the side is loading: the nav and footer stay */}
-            <Suspense fallback={null}>
-              <PageTransition>{MainComponent}</PageTransition>
-            </Suspense>
-          </ErrorBoundary>
-        </main>
+          {Sidebar && <aside className="sidebar">{Sidebar}</aside>}
+          <main className="main-component" id="main" tabIndex={-1}>
+            {/* a crashed page keeps the nav; going to another page clears it */}
+            <ErrorBoundary
+              FallbackComponent={ErrorFallback}
+              resetKeys={[pathname]}
+            >
+              {/* a page inside the side is loading: the nav and footer stay */}
+              <Suspense fallback={null}>
+                <PageTransition>{MainComponent}</PageTransition>
+              </Suspense>
+            </ErrorBoundary>
+          </main>
         </div>
         <footer className={wideBuyer ? "columns" : undefined}>
           {wideBuyer && <>

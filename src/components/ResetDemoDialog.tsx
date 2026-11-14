@@ -8,10 +8,11 @@ import useNotification from "../hooks/useNotification";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onExited?: () => void;
 }
 
 // Asks before putting the shop back to its starter data
-const ResetDemoDialog: React.FC<Props> = ({ isOpen, onClose }) => {
+const ResetDemoDialog: React.FC<Props> = ({ isOpen, onClose, onExited }) => {
   const dispatch = useAppDispatch();
   const { showNotification } = useNotification();
 
@@ -22,7 +23,7 @@ const ResetDemoDialog: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <AppDialog isOpen={isOpen} onClose={onClose} title="Reset demo data">
+    <AppDialog isOpen={isOpen} onClose={onClose} onExited={onExited} title="Reset demo data">
       <Holder>
         <p className="text">
           This brings back the starter stores, products and accounts and

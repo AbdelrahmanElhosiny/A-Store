@@ -2,6 +2,7 @@ import { afterEach, beforeEach, expect, it } from "vitest";
 import { act, cleanup, screen, waitFor, waitForElementToBeRemoved, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useNavigate } from "react-router-dom";
+import { HeaderBar } from "../headerStyles";
 import BuyerHeader from "../BuyerHeader";
 import { renderWithStore } from "../../../test/renderWithStore";
 import { setViewportWidth } from "../../../test/viewport";
@@ -51,6 +52,7 @@ it("drawer opens from the left with focus inside", async () => {
   const dialog = await openMenu(user);
   expect(dialog.closest(".MuiDrawer-paper")).toHaveClass("MuiDrawer-paperAnchorLeft", "buy");
   expect(button).toHaveAttribute("aria-expanded", "true");
+  expect(document.getElementById(button.getAttribute("aria-controls")!)).toBe(dialog);
   await waitFor(() => expect(within(dialog).getByRole("button", { name: "Close menu" })).toHaveFocus());
 });
 it("drawer order: greeting, switch, categories, then account links", async () => {
@@ -150,7 +152,67 @@ it.each(["Close menu", "backdrop"])("%s returns focus to the menu button", async
   const removed = waitForElementToBeRemoved(dialog);
   await user.click(target === "Close menu"
     ? within(dialog).getByRole("button", { name: "Close menu" })
-    : document.querySelector<HTMLElement>("#site-menu .MuiBackdrop-root")!);
+    : dialog.closest(".MuiDrawer-root")!.querySelector<HTMLElement>(".MuiBackdrop-root")!);
+  await removed;
+  expect(button).toHaveFocus();
+});
+
+it.each(["Log in", "Reset demo data"])("%s returns focus to Open menu after its dialog exits", async (action) => {
+  const user = userEvent.setup();
+  renderWithStore(header);
+  const button = screen.getByRole("button", { name: "Open menu" });
+  const drawer = await openMenu(user);
+  const drawerRemoved = waitForElementToBeRemoved(drawer);
+  await user.click(within(drawer).getByRole("button", { name: action }));
+  await drawerRemoved;
+  const dialog = await screen.findByRole("dialog", { name: action });
+  const removed = waitForElementToBeRemoved(dialog);
+  if (action === "Log in") await user.keyboard("{Escape}");
+  else await user.click(within(dialog).getByRole("button", { name: "Cancel" }));
+  await removed;
+  expect(button).toHaveFocus();
+});
+it("drawer logout returns focus to Open menu", async () => {
+  const user = userEvent.setup();
+  renderWithStore(header, { preloadedState: signedIn() });
+  const button = screen.getByRole("button", { name: "Open menu" });
+  const drawer = await openMenu(user);
+  const removed = waitForElementToBeRemoved(drawer);
+  await user.click(within(drawer).getByRole("button", { name: "Log out" }));
+  await removed;
+  expect(screen.getByRole("button", { name: "Log in" })).toBeInTheDocument();
+  expect(button).toHaveFocus();
+});
+it.each([-1, 1])("history step %s between search queries closes the drawer", async (step) => {
+  const user = userEvent.setup();
+  renderWithStore(header, { route: ROUTES.search("a") });
+  act(() => navRef(ROUTES.search("b")));
+  if (step === 1) act(() => navRef(-1));
+  const drawer = await openMenu(user);
+  const removed = waitForElementToBeRemoved(drawer);
+  act(() => navRef(step));
+  await removed;
+  expect(screen.getByTestId("location")).toHaveTextContent(ROUTES.search(step === -1 ? "a" : "b"));
+});
+it.each(["phone", "phone seller"])("%s bar accepts an extra trailing action in the same row", (className) => {
+  renderWithStore(<HeaderBar className={className} data-testid="bar">
+    <button>Menu</button><span>Logo</span><span className="spacer" />
+    <button>Mode</button><button>Account</button><button>Cart</button><button>Notifications</button>
+  </HeaderBar>);
+  const bar = screen.getByTestId("bar");
+  expect(getComputedStyle(bar).display).toBe("flex");
+  expect(getComputedStyle(bar).flexWrap).toBe("nowrap");
+  expect(getComputedStyle(bar.querySelector(".spacer")!).flexGrow).toBe("1");
+  expect(bar.lastElementChild).toBe(screen.getByRole("button", { name: "Notifications" }));
+});
+it("account menu logout on phones returns focus to Open menu", async () => {
+  const user = userEvent.setup();
+  renderWithStore(header, { preloadedState: signedIn() });
+  const button = screen.getByRole("button", { name: "Open menu" });
+  await user.click(screen.getByRole("button", { name: "Hello, Ahmed" }));
+  const menu = await screen.findByRole("menu");
+  const removed = waitForElementToBeRemoved(menu);
+  await user.click(within(menu).getByRole("menuitem", { name: "Log out" }));
   await removed;
   expect(button).toHaveFocus();
 });

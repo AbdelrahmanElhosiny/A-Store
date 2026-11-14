@@ -21,6 +21,10 @@ const HeaderSearch: React.FC<{ mode: "buyer" | "seller"; showScope?: boolean; cl
   const navigate = useNavigate();
   const scopeId = useId();
   const [query, setQuery] = useState("");
+  useEffect(() => {
+    const onSearch = pathname.toLowerCase().replace(/\/+$/, "") === ROUTES.search();
+    setQuery(onSearch ? new URLSearchParams(search).get("q") ?? "" : "");
+  }, [pathname, search]);
   const [scope, setScope] = useState<SearchScope>("all");
   const buyer = mode === "buyer";
 

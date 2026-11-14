@@ -45,6 +45,8 @@ const Holder = styled.div`
     align-items: center;
     gap: var(--space-m);
     overflow-x: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
     white-space: nowrap;
     height: 100%;
   }

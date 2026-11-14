@@ -13,6 +13,7 @@ import { color } from "../../styles/tokens";
 import ModeSwitch from "../ModeSwitch";
 import ThemeSwitch from "../ThemeSwitch";
 import AccountAvatar from "./AccountAvatar";
+import accountAvatarProps from "./accountAvatarProps";
 import SellerNav from "./SellerNav";
 import { truncate } from "./headerStyles";
 
@@ -21,8 +22,9 @@ interface Props {
   onClose: (reason: "user" | "navigation") => void;
   onLogIn: () => void;
   onResetDemo: () => void;
+  onExited: () => void;
 }
-const MenuDrawer: React.FC<Props> = ({ open, onClose, onLogIn, onResetDemo }) => {
+const MenuDrawer: React.FC<Props> = ({ open, onClose, onLogIn, onResetDemo, onExited }) => {
   const { side, role, signUpPath, pathname } = useSide();
   const { activeAccount, activeName, isSignedIn, logOut } = useAuth();
   const store = useAppSelector(selectActiveStore);
@@ -34,14 +36,13 @@ const MenuDrawer: React.FC<Props> = ({ open, onClose, onLogIn, onResetDemo }) =>
     { name: "Payment methods", path: ROUTES.accountPayments },
   ] : [];
 
-  return <Holder id="site-menu" anchor="left" open={open} disableRestoreFocus
+  return <Holder SlideProps={{ onExited }} anchor="left" open={open} disableRestoreFocus
     onClose={() => onClose("user")}
-    PaperProps={{ className: side, "aria-label": "Menu", role: "dialog", "aria-modal": true }}>
+    PaperProps={{ id: "site-menu", className: side, "aria-label": "Menu", role: "dialog", "aria-modal": true }}>
     <IconButton className="close" aria-label="Close menu" autoFocus onClick={() => onClose("user")}><CloseIcon /></IconButton>
     <div className="greeting">
       {isSignedIn && activeAccount ? <>
-        <AccountAvatar size={40} letter={!buyer && store ? store.logoLetter : activeAccount.name.charAt(0)}
-          color={!buyer && store ? store.logoColor : activeAccount.avatarColor} />
+        <AccountAvatar size={40} {...accountAvatarProps(activeAccount, store)} />
         <span className="truncate" title={activeName ?? undefined}>{buyer ? `Hello, ${activeName}` : activeName}</span>
       </> : <>
         <Button variant="contained" onClick={() => { navigate(); onLogIn(); }}>Log in</Button>
@@ -53,11 +54,11 @@ const MenuDrawer: React.FC<Props> = ({ open, onClose, onLogIn, onResetDemo }) =>
       <Link to={ROUTES.search()} onClick={navigate}>All categories</Link>
       {CATEGORIES.map(({ id, label }) => <Link key={id} to={ROUTES.category(id)} onClick={navigate}>{label}</Link>)}
     </nav> : isSignedIn && store && <SellerNav onNavigate={navigate} />}
-    <Divider role="separator" />
+    <Divider />
     <div className="secondary">
       {isSignedIn && <>
         {accountLinks.map(({ name, path }) => <Link key={path} to={path} onClick={navigate}>{name}</Link>)}
-        <button type="button" onClick={() => { navigate(); logOut(); }}>Log out</button>
+        <button type="button" onClick={() => { onClose("user"); logOut(); }}>Log out</button>
       </>}
       <ThemeSwitch label="Dark mode" />
       <button className="reset" type="button" onClick={() => { navigate(); onResetDemo(); }}>Reset demo data</button>

@@ -22,7 +22,7 @@ const BuyerHeader: React.FC = () => {
   const count = useAppSelector(selectCartCount);
   const isPhone = useIsPhone();
   const menu = useHeaderMenu(isPhone);
-  const { isLoginOpen, hasOpened, openLogin, closeLogin } = useHeaderLogin();
+  const { isLoginOpen, hasOpened, openLogin, closeLogin, onLoginExited } = useHeaderLogin();
   return <>
     <HeaderBar className={isPhone ? "phone" : undefined}>
       {isPhone && <IconButton edge="start" ref={menu.menuButtonRef} aria-label="Open menu"
@@ -30,7 +30,7 @@ const BuyerHeader: React.FC = () => {
       <Link className="logo" to={homePath} aria-label="A-Store home"><SVG.Icons.logo /></Link>
       {isPhone ? <span className="spacer" /> : <HeaderSearch mode="buyer" />}
       <ModeSwitch compact={isPhone} />
-      <AccountMenu compact={isPhone} onLogIn={openLogin} />
+      <AccountMenu compact={isPhone} onLogIn={openLogin} getLogoutTarget={isPhone ? () => menu.menuButtonRef.current : undefined} />
       {isPhone ? <IconButton className="cart" component={Link} to={ROUTES.cart} aria-label={`Cart, ${count} items`}>
         <Badge badgeContent={count} color="primary"><ShoppingCartOutlined /></Badge>
       </IconButton> : <Link className="cart" to={ROUTES.cart} aria-label={`Cart, ${count} items`}>
@@ -40,9 +40,9 @@ const BuyerHeader: React.FC = () => {
     </HeaderBar>
     {isPhone ? <PhoneSearchRow data-row="search"><HeaderSearch mode="buyer" showScope={false} /></PhoneSearchRow> : <CategoryRow />}
     {menu.hasOpened && <Suspense fallback={null}><HeaderMenuDrawer open={menu.isMenuOpen} onClose={menu.closeMenu}
-      onLogIn={openLogin} onResetDemo={menu.openReset} /></Suspense>}
-    {menu.isResetOpen && <Suspense fallback={null}><HeaderResetDialog isOpen onClose={menu.closeReset} /></Suspense>}
-    {hasOpened && <Suspense fallback={null}><HeaderLoginDialog isOpen={isLoginOpen} onClose={closeLogin} /></Suspense>}
+      onLogIn={() => openLogin(menu.menuButtonRef.current)} onResetDemo={menu.openReset} onExited={menu.onMenuExited} /></Suspense>}
+    {menu.hasResetOpened && <Suspense fallback={null}><HeaderResetDialog isOpen={menu.isResetOpen} onClose={menu.closeReset} onExited={menu.onResetExited} /></Suspense>}
+    {hasOpened && <Suspense fallback={null}><HeaderLoginDialog isOpen={isLoginOpen} onClose={closeLogin} onExited={onLoginExited} /></Suspense>}
   </>;
 };
 export default BuyerHeader;

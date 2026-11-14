@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import useReturnFocus from "./useReturnFocus";
 import { Link } from "react-router-dom";
 import { Menu } from "@mui/material";
 import { MenuItem } from "@mui/material";
@@ -15,15 +15,10 @@ interface Props {
   anchorEl: HTMLElement | null;
   onClose: () => void;
   onLogIn: () => void;
+  getLogoutTarget?: () => HTMLElement | null;
 }
-const AccountMenuList: React.FC<Props> = ({ anchorEl, onClose, onLogIn }) => {
-  const restoreFocus = useRef(false);
-  useEffect(() => {
-    if (!anchorEl && restoreFocus.current) {
-      restoreFocus.current = false;
-      document.getElementById("account-button")?.focus();
-    }
-  }, [anchorEl]);
+const AccountMenuList: React.FC<Props> = ({ anchorEl, onClose, onLogIn, getLogoutTarget }) => {
+  const focus = useReturnFocus();
   const { isSignedIn, logOut } = useAuth();
   const { side, role, signUpPath, pathname } = useSide();
   const links = role === "buyer" ? [
@@ -39,10 +34,9 @@ const AccountMenuList: React.FC<Props> = ({ anchorEl, onClose, onLogIn }) => {
       // The controlled id belongs to the actual menu list, not the modal wrapper.
       MenuListProps={{ id: "account-menu", "aria-labelledby": "account-button" }}
       slotProps={{ paper: { className: side, sx: { borderRadius: 0, boxShadow: "var(--shadow-2)" } } }}
-      onClose={(_, reason) => {
-        // Wait for the closed render: the still-open FocusTrap would take
-        // synchronous focus back into the menu. Links/log out never set this.
-        restoreFocus.current = ["escapeKeyDown", "backdropClick", "tabKeyDown"].includes(reason);
+      TransitionProps={{ onExited: focus.restore }}
+      onClose={() => {
+        focus.remember(anchorEl);
         onClose();
       }}
     >
@@ -56,7 +50,7 @@ const AccountMenuList: React.FC<Props> = ({ anchorEl, onClose, onLogIn }) => {
       ]}
       {isSignedIn && <Divider role="separator" />}
       <ThemeMenuItem />
-      {isSignedIn && <MenuItem className="secondary" onClick={() => { onClose(); logOut(); }}>Log out</MenuItem>}
+      {isSignedIn && <MenuItem className="secondary" onClick={() => { focus.remember(getLogoutTarget ? getLogoutTarget() : anchorEl); onClose(); logOut(); }}>Log out</MenuItem>}
     </Holder>
   );
 };

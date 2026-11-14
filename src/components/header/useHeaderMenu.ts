@@ -1,5 +1,6 @@
 import { lazy, useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
+import useReturnFocus from "./useReturnFocus";
 import whenIdle from "../../utils/whenIdle";
 
 const loadMenu = () => import("./MenuDrawer");
@@ -9,28 +10,23 @@ let prefetch: Promise<unknown> | undefined;
 
 // State belongs to the header, so login/reset dialogs outlive the drawer.
 const useHeaderMenu = (isPhone: boolean) => {
-  const { pathname } = useLocation();
+  const { key } = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
+  const [hasResetOpened, setHasResetOpened] = useState(false);
+  const resetFocus = useReturnFocus();
+  const { remember, restore } = useReturnFocus();
   const [isResetOpen, setIsResetOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
-  const restoreFocus = useRef(false);
   const closeMenu = useCallback((reason: "user" | "navigation") => {
-    restoreFocus.current = reason === "user";
+    remember(reason === "user" ? menuButtonRef.current : null);
     setIsMenuOpen(false);
-  }, []);
+  }, [remember]);
 
-  useEffect(() => { closeMenu("navigation"); }, [pathname, closeMenu]);
+  useEffect(() => { closeMenu("navigation"); }, [key, closeMenu]);
   useEffect(() => {
     if (!isPhone) closeMenu("navigation");
   }, [isPhone, closeMenu]);
-  useEffect(() => {
-    if (!isMenuOpen && restoreFocus.current) {
-      restoreFocus.current = false;
-      // Focus only after the closed render disables the drawer's focus trap.
-      menuButtonRef.current?.focus();
-    }
-  }, [isMenuOpen]);
   useEffect(() => {
     if (!isPhone) return;
     let cancelled = false;
@@ -41,9 +37,14 @@ const useHeaderMenu = (isPhone: boolean) => {
   }, [isPhone]);
 
   return {
-    isMenuOpen, hasOpened, isResetOpen, menuButtonRef, closeMenu,
+    isMenuOpen, hasOpened, isResetOpen, hasResetOpened, menuButtonRef, closeMenu,
+    onMenuExited: restore, onResetExited: resetFocus.restore,
     openMenu: () => { setHasOpened(true); setIsMenuOpen(true); },
-    openReset: () => setIsResetOpen(true),
+    openReset: () => {
+      resetFocus.remember(menuButtonRef.current);
+      setHasResetOpened(true);
+      setIsResetOpen(true);
+    },
     closeReset: () => setIsResetOpen(false),
   };
 };

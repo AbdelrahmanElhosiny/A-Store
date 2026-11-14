@@ -20,7 +20,7 @@ const SellerHeader: React.FC = () => {
   const store = useAppSelector(selectActiveStore);
   const isPhone = useIsPhone();
   const menu = useHeaderMenu(isPhone);
-  const { isLoginOpen, hasOpened, openLogin, closeLogin } = useHeaderLogin();
+  const { isLoginOpen, hasOpened, openLogin, closeLogin, onLoginExited } = useHeaderLogin();
   return <>
     <Holder className={isPhone ? "phone seller" : undefined}>
       {isPhone && <IconButton edge="start" ref={menu.menuButtonRef} aria-label="Open menu"
@@ -29,12 +29,12 @@ const SellerHeader: React.FC = () => {
       {!isPhone && store && <span className="truncate" title={store.name}>{store.name}</span>}
       {!isPhone && store ? <HeaderSearch mode="seller" /> : <span className="spacer" />}
       <ModeSwitch compact={isPhone} />
-      <AccountMenu compact onLogIn={openLogin} />
+      <AccountMenu compact onLogIn={openLogin} getLogoutTarget={isPhone ? () => menu.menuButtonRef.current : undefined} />
     </Holder>
     {menu.hasOpened && <Suspense fallback={null}><HeaderMenuDrawer open={menu.isMenuOpen} onClose={menu.closeMenu}
-      onLogIn={openLogin} onResetDemo={menu.openReset} /></Suspense>}
-    {menu.isResetOpen && <Suspense fallback={null}><HeaderResetDialog isOpen onClose={menu.closeReset} /></Suspense>}
-    {hasOpened && <Suspense fallback={null}><HeaderLoginDialog isOpen={isLoginOpen} onClose={closeLogin} /></Suspense>}
+      onLogIn={() => openLogin(menu.menuButtonRef.current)} onResetDemo={menu.openReset} onExited={menu.onMenuExited} /></Suspense>}
+    {menu.hasResetOpened && <Suspense fallback={null}><HeaderResetDialog isOpen={menu.isResetOpen} onClose={menu.closeReset} onExited={menu.onResetExited} /></Suspense>}
+    {hasOpened && <Suspense fallback={null}><HeaderLoginDialog isOpen={isLoginOpen} onClose={closeLogin} onExited={onLoginExited} /></Suspense>}
   </>;
 };
 const Holder = styled(HeaderBar)`

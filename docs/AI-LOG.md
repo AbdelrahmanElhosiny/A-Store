@@ -297,7 +297,7 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** `npm test` passes (173 tests, 26 files). The only stderr is the known Emotion "already loaded" warning. `npm run lint` passes with max-warnings 0, and `npm run build` passes without warnings. The new search-scope test failed before the fix. Codex's tests were already written when Claude Code took over, so there is no RED run for them. First-load cost was measured against 4c391cc, built in a temporary worktree, using node gzip:
 - The `BuyerLayout` chunk with its static imports, minus the entry and vendor chunks, went from 46.22 to 49.14 kB (+2.92 kB).
 - `/`'s modulepreload list went from 54.99 to 57.92 kB (+2.93 kB).
-- No preloaded chunk contains `MuiMenu-` or `MuiPopover-`.
+- There is no MuiPopover, MuiModal or MuiDrawer in the files `/` preloads.
 - `AccountMenuList`, `LoginDialog` and `Menu` are separate lazy chunks.
 
 Browser checks not run, all six from the brief, at 768 px and 1280 px in light and dark:
@@ -314,23 +314,21 @@ The avatar colour and the Gruvbox look in both themes are also unchecked. No lon
 
 ## 16. Phone header and side menu (Codex)
 
-**Prompt:** Implement Phase C Task 2 from its brief: replace the old phone navbar with buyer and seller phone headers and a lazy left menu, preserve the wide headers, centralised routes, Gruvbox accents and sharp edges, follow failing-tests-first TDD, verify tests/lint/build and first-load size, and leave the changes uncommitted.
+**Prompt:** Phase C, task 2 and final review: replace the old phone navbar with buyer and seller phone headers and a left menu. Keep the wide headers, centralised routes, Gruvbox colours and sharp edges. Write the regression tests before fixing the reported issues, then check tests, lint, build and first-load size.
 
 **Changes**
-- Buyer phones have menu, logo, Sell, compact account menu and cart, then a full-width unscoped search row. Seller phones have menu, logo, Shop and compact account menu, with no search or outside sidebar. Phone actions use 28 px icons and at least 44 px header touch targets.
-- Added lazy `MenuDrawer`, loaded on first open and prefetched on idle only on phones. Its left paper carries the URL-selected buy/sell class. It shows greeting/login, full mode switch, categories or SellerNav, then account links/logout, the labelled Dark mode switch and Reset demo data. Sign-up links preserve the current pathname.
-- Added `useHeaderMenu` to share header-owned drawer/reset state and focus handling. All drawer links and pathname changes close for navigation without restoring focus. Escape, Close and backdrop restore the menu button after the drawer closes. Login/reset dialogs outlive the drawer; ModeSwitch accepts an optional navigation callback.
-- `ThemeSwitch` accepts a visible bold label while keeping the Dark mode checkbox name. Shared phone styles use NAV_ROW. GlobalStyle now sets phone buyer height to 112 px, wide buyer to 96 px and seller to 56 px.
-- Both layouts always use the new headers; removed NavBar and its obsolete nav arrays. The footer reset dialog is also lazy so Modal stays out of the initial load.
-- Added all 13 required phone tests with their exact names, plus Close/backdrop focus coverage and a lazy footer reset regression. Updated the 767 px layout assertion; the 768 px wide test and existing navHeight tests still pass. Login/reset tests also verify focus stays in the new modal and Tab reaches Close.
+- Buyer phones have menu, logo, Sell, account and cart buttons, then a full-width search row. Seller phones have menu, logo, Shop and account buttons, with no search or outside sidebar. Header icons are 28 px and touch targets are at least 44 px.
+- The left menu loads when first opened, or when the browser is idle on a phone. It shows the greeting or login buttons, mode switch, categories or seller navigation, then account links, Log out, Dark mode and Reset demo data. Its colours follow the current mode, and sign-up links remember the current page.
+- Both headers share the menu and dialog state. Links and history changes close the menu and leave focus to the destination page. Escape, Close and the backdrop return focus to Open menu. The menu button identifies the actual drawer dialog through aria-controls.
+- Both layouts now use the new headers, and the old NavBar and its navigation arrays are removed. The buyer header is 112 px tall on phones and 96 px on wide screens; the seller header is 56 px. The footer reset dialog also loads separately.
+- The mode switch uses the shared bold font. Account buttons and the drawer share avatar colours and letters, and hidden account names use the global visually-hidden class. Layout indentation and the viewport-test comment are corrected.
+- Tests cover phone order, menu contents and navigation, dialog focus, Back and Forward between search queries, extra header actions, search text, the guest label at 900 px and clicking the theme label. Account-menu tests also check that aria-expanded becomes false and links leave focus on the new page. Layout queries now require accessible controls.
+- Review fixes: focus returns to the account or menu button after the log-in, reset and log-out actions, the header bars take extra items, the drawer closes on any history step, the search box shows the current query, the category row no longer shows a scrollbar at 768 px, guests keep the "Log in" text on mid-size screens, and the "Dark mode" text toggles the switch.
 
-**Check:** RED: `npx vitest run src/components/header` failed all 13 new phone tests with missing accessible Open menu controls; the existing 29 tests passed. GREEN: `npm test` passes 189 tests in 28 files, `npm run lint` passes with max-warnings 0, and `npm run build` passes without warnings. Vitest stderr contains only the known Emotion already-loaded warning. `git diff --check` passes and `grep -rn "components/NavBar" src` has no matches.
+**Check:** The original phone-header tests failed before implementation. The final review tests also reproduced the reported failures before the fixes. `npm test` passes (203 tests in 29 files), `npm run lint` passes with max-warnings 0, and `npm run build` passes. Vitest emits only the existing Emotion duplicate-instance warning. `git diff --check` passes.
 
-Production size, using Node gzip on the emitted static imports and executing the built `/` preload script with width 360:
-- BuyerLayout plus static imports, excluding entry/vendor: 50,317 → 39,002 bytes (49.14 → 38.09 KiB, down 11.05 KiB; below the 8 KiB growth limit).
-- `/` route modulepreloads, excluding entry/vendor: 59,312 → 47,987 bytes (57.92 → 46.86 KiB, down 11.06 KiB).
-- MenuDrawer, AccountMenuList and LoginDialog remain separate lazy chunks. No initial file, including entry/vendor, contains Drawer, Modal, Menu or Popover markers. All preload targets exist.
+Before the final review fixes, the production build was compared with the wide-header version using Node gzip. BuyerLayout and its imports, excluding entry and vendor files, fell from 49.14 to 38.09 KiB. The files preloaded for `/`, with the same exclusions, fell from 57.92 to 46.86 KiB. MenuDrawer, AccountMenuList and LoginDialog were separate files loaded when needed, all preload targets existed, and no initial file contained MuiDrawer, MuiModal, MuiMenu or MuiPopover. These size measurements have not been repeated for the final review fixes.
 
-Browser checks not run: the brief's 360/390/768/1280 px light/dark checks on `/`, `/cart`, `/seller` and `/seller/orders` for horizontal overflow, measured header heights and sticky cart summary; long buyer/store names; left-slide appearance and category-to-heading focus; browser Back with the drawer open; real keyboard/Escape behavior; reset/login handoff; seller Shop and Orders 2; and the 767 → 768 resize/reload flash check. Visual theme, truncation, touch targets, scrolling and actual browser preload timing remain for a human. No server was started and no commit was made. Full evidence and self-review are in `.superpowers/sdd/2026-11-13-phase-c-navbar/task-2-report.md`.
+Browser checks remain for the 360, 390, 768 and 1280 px layouts in both themes: horizontal overflow, header heights, sticky cart summary, long names, menu animation, scrolling, touch targets and loading behaviour when resizing across 767 px. Automated focus and history tests pass, but real-browser keyboard and transition behaviour has not been checked. The final review results are recorded in `.superpowers/sdd/2026-11-13-phase-c-navbar/final-fix-report.md`.
 
 **Changed by hand:** —

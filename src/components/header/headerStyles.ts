@@ -46,8 +46,11 @@ export const HeaderBar = styled.div`
   height: ${NAV_ROW.bar}px;
   background: ${color.bg1};
   border-bottom: 1px solid ${color.bg2};
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+  display: flex;
+  flex-wrap: nowrap;
+  > * { flex-shrink: 0; }
+  > form { flex-shrink: 1; margin-right: auto; }
+  .spacer { flex: 1; min-width: 0; }
   align-items: center;
   gap: var(--space-m);
   padding-inline: var(--page-gutter);
@@ -76,15 +79,12 @@ export const HeaderBar = styled.div`
     .cart-label { display: none; }
   }
   &.phone {
-    display: grid;
-    grid-template-columns: auto auto 1fr auto auto auto;
     gap: var(--space-xs);
     .spacer { min-width: 0; }
     .logo { min-width: 44px; min-height: 44px; justify-content: center; }
     .MuiButton-root, .MuiIconButton-root { min-width: 44px; min-height: 44px; border-radius: 0; }
     .MuiIconButton-root { color: ${color.fg}; }
     .MuiSvgIcon-root { font-size: 28px; }
-    &.seller { grid-template-columns: auto auto 1fr auto auto; }
   }
 `;
 

@@ -10,10 +10,11 @@ import { color } from "../styles/tokens";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onExited?: () => void;
 }
 
 // Log in by picking one of the accounts: this is a demo, there are no passwords
-const LoginDialog: React.FC<Props> = ({ isOpen, onClose }) => {
+const LoginDialog: React.FC<Props> = ({ isOpen, onClose, onExited }) => {
   const { logIn, carryText } = useAuth();
   const { signUpPath, pathname, role } = useSide();
 
@@ -23,7 +24,7 @@ const LoginDialog: React.FC<Props> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <AppDialog isOpen={isOpen} onClose={onClose} title={role === "seller" ? "Log in to your store" : "Log in"}>
+    <AppDialog isOpen={isOpen} onClose={onClose} onExited={onExited} title={role === "seller" ? "Log in to your store" : "Log in"}>
       <Holder>
         <p className="text">
           Pick an account. This is a demo store, so there are no passwords.

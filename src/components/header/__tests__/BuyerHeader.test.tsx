@@ -126,3 +126,12 @@ it("a picked scope stays until the route leaves a category", async () => {
   await user.click(screen.getByRole("link", { name: "A-Store home" }));
   expect(scope).toHaveValue("all");
 });
+
+it("search input shows the current query and clears when leaving search", async () => {
+  const user = userEvent.setup();
+  renderWithStore(header, { route: ROUTES.search("lamp") });
+  const input = screen.getByRole("searchbox", { name: "Search A-Store" });
+  expect(input).toHaveValue("lamp");
+  await user.click(screen.getByRole("link", { name: "A-Store home" }));
+  expect(input).toHaveValue("");
+});

@@ -1,3 +1,5 @@
+import styled from "@emotion/styled";
+import font from "../styles/font";
 import { color } from "../styles/tokens";
 import { Button, ThemeProvider } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -17,7 +19,7 @@ const ModeSwitch: React.FC<{ compact?: boolean; onNavigate?: () => void }> = ({ 
 
   return (
     <ThemeProvider theme={theme}>
-      <Button
+      <StyledButton
         component={Link}
         to={lastPath || (toSeller ? ROUTES.seller : ROUTES.home)}
         variant="contained"
@@ -27,7 +29,6 @@ const ModeSwitch: React.FC<{ compact?: boolean; onNavigate?: () => void }> = ({ 
         onClick={onNavigate}
         sx={{
           "--primary-color": toSeller ? color.sell : color.buy,
-          fontFamily: "var(--font-mono)", fontWeight: 700,
           whiteSpace: "nowrap", borderRadius: 0, height: 36,
           color: color.bg, backgroundColor: color.primary,
           boxShadow: "var(--shadow-1)",
@@ -35,9 +36,13 @@ const ModeSwitch: React.FC<{ compact?: boolean; onNavigate?: () => void }> = ({ 
         }}
       >
         {compact ? (toSeller ? "Sell" : "Shop") : label}
-      </Button>
+      </StyledButton>
     </ThemeProvider>
   );
 };
+
+const StyledButton = styled(Button)`
+  ${font.Bold}
+` as typeof Button;
 
 export default ModeSwitch;

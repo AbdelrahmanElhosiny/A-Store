@@ -1,4 +1,5 @@
 import { lazy, useEffect, useState } from "react";
+import useReturnFocus from "./useReturnFocus";
 import whenIdle from "../../utils/whenIdle";
 
 const loadLogin = () => import("../LoginDialog");
@@ -7,6 +8,7 @@ let prefetch: Promise<unknown> | undefined;
 
 // Both headers keep the dialog mounted after its first opening.
 const useHeaderLogin = () => {
+  const focus = useReturnFocus();
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [hasOpened, setHasOpened] = useState(false);
   useEffect(() => {
@@ -14,7 +16,12 @@ const useHeaderLogin = () => {
   }, []);
   return {
     isLoginOpen, hasOpened,
-    openLogin: () => { setHasOpened(true); setIsLoginOpen(true); },
+    openLogin: (target = document.getElementById("account-button")) => {
+      focus.remember(target);
+      setHasOpened(true);
+      setIsLoginOpen(true);
+    },
+    onLoginExited: focus.restore,
     closeLogin: () => setIsLoginOpen(false),
   };
 };

@@ -58,13 +58,13 @@ it("seller footer stays one row", () => {
 it("767 pixels uses the phone headers and compact footer", async () => {
   setViewportWidth(767);
   const buyer = renderWithStore(layout("buy"));
-  expect(await screen.findByRole("button", { name: "Open menu", hidden: true })).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: "Open menu" })).toBeInTheDocument();
   expect(screen.getByRole("searchbox", { name: "Search A-Store" })).toBeInTheDocument();
   expect(screen.queryByRole("combobox", { name: "Search in" })).toBeNull();
   expect(screen.queryByRole("heading", { name: "Shop by category" })).toBeNull();
   buyer.unmount();
   renderWithStore(layout("sell"), { route: ROUTES.seller, preloadedState: signedIn() });
-  expect(await screen.findByRole("button", { name: "Open menu", hidden: true })).toBeInTheDocument();
+  expect(await screen.findByRole("button", { name: "Open menu" })).toBeInTheDocument();
   expect(screen.queryByRole("navigation", { name: "Seller centre" })).toBeNull();
 });
 it("768 pixels uses the wide header", () => {
