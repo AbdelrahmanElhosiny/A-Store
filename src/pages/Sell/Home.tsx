@@ -3,7 +3,7 @@ import useSell from "./useSell";
 import { Button } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { SELL_ROUTE } from "../../constant/routeConstant";
+import { ROUTES } from "../../constant/routes";
 import { color } from "../../styles/tokens";
 import RemoveItemModal from "./components/RemoveItemModal";
 import UpdateItemModal from "./components/UpdateItemModal";
@@ -49,7 +49,7 @@ const SellHome = () => {
           variant="contained"
           startIcon={<AddIcon />}
           component={Link}
-          to={SELL_ROUTE.ADD_ITEM}
+          to={ROUTES.sellerProductNew}
         >
           Add item
         </Button>
@@ -76,7 +76,7 @@ const SellHome = () => {
             variant="contained"
             startIcon={<AddIcon />}
             component={Link}
-            to={SELL_ROUTE.ADD_ITEM}
+            to={ROUTES.sellerProductNew}
           >
             Add item
           </Button>

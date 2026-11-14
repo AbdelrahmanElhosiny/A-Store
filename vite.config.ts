@@ -1,24 +1,23 @@
 import { defineConfig, Plugin } from "vite";
 import react from "@vitejs/plugin-react";
+import { ROUTES } from "./src/constant/routes";
 
 import type { OutputBundle, OutputChunk } from "rollup";
 
-// Must match SIZES in src/pages/HomePage.tsx
-const HERO_SIZES = "(max-width: 767px) 100vw, 50vw";
-
 // The code each route needs, as source files (mirrors START_CODE in
-// src/routes/Index.tsx). The home page is in the main bundle already.
+// src/routes/Index.tsx). Every page and layout is lazy-loaded.
 const ROUTE_SOURCES: Record<string, string[]> = {
-  "/buy": ["pages/Buy/index.tsx", "pages/Buy/Home.tsx"],
-  "/buy/cart": ["pages/Buy/index.tsx", "pages/Buy/Cart.tsx"],
-  "/buy/track-bought": ["pages/Buy/index.tsx", "pages/Buy/TrackBought.tsx"],
-  "/buy/sign-up": ["pages/Buy/index.tsx", "pages/SignUp.tsx"],
-  "/sell": ["pages/Sell/index.tsx", "pages/Sell/Home.tsx"],
-  "/sell/add-item": ["pages/Sell/index.tsx", "pages/Sell/AddItem.tsx"],
-  "/sell/track-sold": ["pages/Sell/index.tsx", "pages/Sell/TrackSold.tsx"],
-  "/sell/sign-up": ["pages/Sell/index.tsx", "pages/SignUp.tsx"],
+  [ROUTES.home]: ["layout/BuyerLayout.tsx", "pages/Buy/Home.tsx"],
+  [ROUTES.cart]: ["layout/BuyerLayout.tsx", "pages/Buy/Cart.tsx"],
+  [ROUTES.accountOrders]: ["layout/BuyerLayout.tsx", "pages/Buy/TrackBought.tsx"],
+  [ROUTES.signUp]: ["layout/BuyerLayout.tsx", "pages/SignUp.tsx"],
+  [ROUTES.seller]: ["layout/SellerLayout.tsx", "pages/Sell/TrackSold.tsx"],
+  [ROUTES.sellerProducts]: ["layout/SellerLayout.tsx", "pages/Sell/Home.tsx"],
+  [ROUTES.sellerProductNew]: ["layout/SellerLayout.tsx", "pages/Sell/AddItem.tsx"],
+  [ROUTES.sellerSignUp]: ["layout/SellerLayout.tsx", "pages/ComingSoon.tsx"],
 };
-// the first product's picture is the largest paint on the item grids
+// The first product picture is the largest paint on the item grids.
+// Phase D's store home must update this regex if its first picture changes.
 const FIRST_PRODUCT_IMAGE = /^assets\/headphones-[\w-]+\.webp$/;
 
 // a chunk's file and every file it imports, so the page's code arrives in
@@ -37,8 +36,8 @@ const withImports = (
 // Every route shares index.html, and the browser only finds a page's code
 // and pictures after the main JavaScript has run. This adds a small script
 // to the built index.html that, for the page being opened, starts those
-// downloads straight away: the home photos, or the page's code (and the
-// first product picture on Buy and Sell). Build only: file names have hashes.
+// downloads straight away: the page's code and the first product picture
+// on the buyer home and seller product grid. Build only: file names have hashes.
 const preloadStartPage = (): Plugin => ({
   name: "preload-start-page",
   apply: "build",
@@ -54,17 +53,6 @@ const preloadStartPage = (): Plugin => ({
           withImports(bundle, item.fileName, mainFiles);
       });
 
-      const srcset = (side: string) =>
-        [640, 900, 1200]
-          .map((width) => {
-            const file = files.find((name) =>
-              new RegExp(`^assets/${side}-${width}-[\\w-]+\\.avif$`).test(name),
-            );
-            return file && `/${file} ${width}w`;
-          })
-          .filter(Boolean)
-          .join(", ");
-      const heroSets = ["sell", "buy"].map(srcset).filter(Boolean);
       const productImage = files.find((name) => FIRST_PRODUCT_IMAGE.test(name));
 
       const routeCode: Record<string, string[]> = {};
@@ -87,19 +75,16 @@ const preloadStartPage = (): Plugin => ({
       });
 
       const script = `(function () {
-  var path = location.pathname.replace(/\\/+$/, "") || "/";
+  var path = location.pathname.replace(/\\/+$/, "") || ${JSON.stringify(ROUTES.home)};
   function add(attrs) {
     var link = document.createElement("link");
     for (var key in attrs) link.setAttribute(key, attrs[key]);
     document.head.appendChild(link);
   }
-  if (path === "/") ${JSON.stringify(heroSets)}.forEach(function (set) {
-    add({ rel: "preload", as: "image", type: "image/avif", imagesrcset: set, imagesizes: ${JSON.stringify(HERO_SIZES)}, fetchpriority: "high" });
-  });
   (${JSON.stringify(routeCode)}[path] || []).forEach(function (file) {
     add({ rel: "modulepreload", href: file, crossorigin: "" });
   });
-  if (${JSON.stringify(productImage ? `/${productImage}` : "")} && (path === "/buy" || path === "/sell"))
+  if (${JSON.stringify(productImage ? `/${productImage}` : "")} && (path === ${JSON.stringify(ROUTES.home)} || path === ${JSON.stringify(ROUTES.sellerProducts)}))
     add({ rel: "preload", as: "image", href: ${JSON.stringify(productImage ? `/${productImage}` : "")}, fetchpriority: "high" });
 })();`;
       // end of <head>: <meta charset> must come first; module scripts run later

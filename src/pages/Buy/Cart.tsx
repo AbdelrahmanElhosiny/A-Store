@@ -7,7 +7,7 @@ import CheckIcon from "@mui/icons-material/Check";
 import CartStepper from "../../components/CartStepper";
 import ProductThumb from "../../components/ProductThumb";
 import EmptyState from "../../components/EmptyState";
-import { BUY_ROUTE, ROUTE_INDEX } from "../../constant/routeConstant";
+import { ROUTES } from "../../constant/routes";
 import { color } from "../../styles/tokens";
 import font from "../../styles/font";
 import formatPrice from "../../utils/formatPrice";
@@ -18,8 +18,6 @@ import { Address, GUEST_ID } from "../../features/types";
 import { AnimatePresence, m } from "motion/react";
 import { listItem } from "../../styles/motion";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
-
-const TRACK_PATH = `${ROUTE_INDEX.BUY}/${BUY_ROUTE.TRACK_BOUGHT}`;
 
 // a guest has no address yet; checkout asks for one from Phase D on
 const GUEST_ADDRESS: Address = {
@@ -71,10 +69,10 @@ const Cart = () => {
             title={`Order ${placedOrderNumber} placed`}
             text="It ships in a few seconds. Follow it on Track Shipment."
           >
-            <Button variant="contained" component={Link} to={TRACK_PATH}>
+            <Button variant="contained" component={Link} to={ROUTES.accountOrders}>
               Track shipment
             </Button>
-            <Button variant="outlined" component={Link} to={ROUTE_INDEX.BUY}>
+            <Button variant="outlined" component={Link} to={ROUTES.home}>
               Keep shopping
             </Button>
           </EmptyState>
@@ -84,7 +82,7 @@ const Cart = () => {
             title="Your cart is empty"
             text="Find something you like in the shop."
           >
-            <Button variant="contained" component={Link} to={ROUTE_INDEX.BUY}>
+            <Button variant="contained" component={Link} to={ROUTES.home}>
               Browse the shop
             </Button>
           </EmptyState>

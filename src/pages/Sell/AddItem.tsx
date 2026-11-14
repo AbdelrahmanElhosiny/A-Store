@@ -1,4 +1,6 @@
-import { Form, Formik, FormikConfig, FormikHelpers } from "formik";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "../../constant/routes";
+import { Form, Formik, FormikConfig } from "formik";
 import { Button } from "@mui/material";
 import useSell, { ItemFormFields } from "./useSell";
 import ItemFields from "./components/ItemFields";
@@ -21,13 +23,11 @@ const validationSchema = getItemSchema(1);
 const AddItem = () => {
   useDocumentTitle("Add item");
   const { addNewItem } = useSell();
+  const navigate = useNavigate();
 
-  const handelSubmit = (
-    values: ItemFormFields,
-    formikHelpers: FormikHelpers<ItemFormFields>,
-  ) => {
+  const handelSubmit = (values: ItemFormFields) => {
     addNewItem(values);
-    formikHelpers.resetForm();
+    navigate(ROUTES.sellerProducts);
   };
   const FormProps: FormikConfig<ItemFormFields> = {
     initialValues,

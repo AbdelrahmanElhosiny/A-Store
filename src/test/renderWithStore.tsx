@@ -1,3 +1,4 @@
+import { ROUTES } from "../constant/routes";
 import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
@@ -15,7 +16,7 @@ export const renderWithStore = (
   const result = render(
     <Provider store={store}>
       <ThemeModeProvider>
-        <MemoryRouter initialEntries={[opts.route ?? "/"]}>{ui}</MemoryRouter>
+        <MemoryRouter initialEntries={[opts.route ?? ROUTES.home]}>{ui}</MemoryRouter>
       </ThemeModeProvider>
     </Provider>,
   );

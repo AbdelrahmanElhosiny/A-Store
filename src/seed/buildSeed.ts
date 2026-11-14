@@ -1,3 +1,4 @@
+import { ROUTES } from "../constant/routes";
 import {
   Account,
   BuyerAccount,
@@ -110,7 +111,7 @@ export const buildSeed = (now: number): SeedData => {
       buyerId: null,
       sellerId: null,
       guestCart: [],
-      lastPath: { buyer: "/", seller: "/seller" },
+      lastPath: { buyer: ROUTES.home, seller: ROUTES.seller },
     },
     stores,
     items,

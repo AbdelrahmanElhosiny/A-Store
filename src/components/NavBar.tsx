@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { ROUTE_INDEX } from "../constant/routeConstant";
+import { ROUTES } from "../constant/routes";
 import SVG from "../assets/svg";
 import styled from "@emotion/styled";
 import { css } from "@emotion/react";
@@ -94,7 +94,7 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
   return (
     <Holder className={className || ""}>
       <Link
-        to={ROUTE_INDEX.HOME}
+        to={ROUTES.home}
         className="logo"
         aria-label="A-Store home"
         draggable={false}

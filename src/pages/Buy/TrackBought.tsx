@@ -4,7 +4,7 @@ import { Button } from "@mui/material";
 import LocalShippingOutlinedIcon from "@mui/icons-material/LocalShippingOutlined";
 import ProductThumb from "../../components/ProductThumb";
 import EmptyState from "../../components/EmptyState";
-import { ROUTE_INDEX } from "../../constant/routeConstant";
+import { ROUTES } from "../../constant/routes";
 import useNow from "../../hooks/useNow";
 import { color } from "../../styles/tokens";
 import font from "../../styles/font";
@@ -59,7 +59,7 @@ const TrackBought = () => {
           title="No orders yet"
           text="When you place an order, you can follow it here."
         >
-          <Button variant="contained" component={Link} to={ROUTE_INDEX.BUY}>
+          <Button variant="contained" component={Link} to={ROUTES.home}>
             Browse the shop
           </Button>
         </EmptyState>

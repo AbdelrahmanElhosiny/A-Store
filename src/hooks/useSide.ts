@@ -1,17 +1,17 @@
 import { useLocation } from "react-router-dom";
-import { BUY_ROUTE, ROUTE_INDEX, SELL_ROUTE } from "../constant/routeConstant";
+import { ROUTES, isSellerPath } from "../constant/routes";
+import type { Role } from "../features/types";
 
-// Which side of the store the page is on, and its home and sign-up paths.
-// Pages shared by both sides (like sign up) use it to stay on their side.
+// The URL alone decides the mode; shared pages and dialogs keep its accent.
 const useSide = () => {
   const { pathname } = useLocation();
-  const side: "sell" | "buy" = pathname.startsWith(ROUTE_INDEX.SELL)
-    ? "sell"
-    : "buy";
-  const homePath = side === "sell" ? ROUTE_INDEX.SELL : ROUTE_INDEX.BUY;
-  const signUpPath = `${homePath}/${side === "sell" ? SELL_ROUTE.SIGN_UP : BUY_ROUTE.SIGN_UP}`;
+  const seller = isSellerPath(pathname);
+  const side: "buy" | "sell" = seller ? "sell" : "buy";
+  const role: Role = seller ? "seller" : "buyer";
+  const homePath = seller ? ROUTES.seller : ROUTES.home;
+  const signUpPath = seller ? ROUTES.sellerSignUp : ROUTES.signUp;
 
-  return { side, homePath, signUpPath, pathname };
+  return { side, role, homePath, signUpPath, pathname };
 };
 
 export default useSide;

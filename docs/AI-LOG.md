@@ -230,3 +230,19 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** `npm run lint`, `npm run build` and `npm test` pass (the seed tests failed first: 5 items, 2 buyers, no orders). Left to check in a browser: Buy shows 26 in-stock items with pictures and hides the 4 sold-out ones; Nour sees 4 orders in Track; Track Sold shows units from the seed orders; Reset brings it all back; `fetchpriority=high` on the first 4 pictures.
 
 **Changed by hand:** —
+
+## 13. Route tree: store at /, seller centre at /seller (Claude Code)
+
+**Prompt:** Phase B, task 1: move the buyer shop to `/` and the seller centre to `/seller`, centralise the routes, redirect old links, add layouts and future-page placeholders, and update route preloading. Follow the brief's RED/GREEN steps; leave mode switching, per-mode login, Pick your store and seller sign-up to Task 2.
+
+**Changes**
+- `constant/routes.ts` owns route builders, dynamic child patterns, the eight legacy redirects and the seller-path boundary check. `useSide` derives buy/sell, role, home and sign-up paths from the URL; seed home paths and the test render helper reuse these constants.
+- Buyer and seller layouts keep the existing Gruvbox themes and sharp edges. Buyer navigation has Home, Cart with the selected count, and Orders; seller navigation has Home, Products, Add product and Orders. The seller outlet has a pass-through `RequireSeller` stub, with sign-up outside the guard.
+- Every page is lazy-loaded. The buyer grid is the home page, Sold items is the seller dashboard placeholder, and `ComingSoon` supplies future buyer and seller pages. Seller sign-up remains a Task 2 placeholder. Both modes keep their own 404 and return link. Legacy links redirect with replacement history, preserve queries and accept trailing slashes.
+- Removed the split home page, old layout entry points and old route constants. Repointed navigation and in-page links; saving an item now opens the seller product grid. SignUp, AppDialog and TrackSold keep their existing behaviour through the updated hook and route tree.
+- Rewrote start-page and build preload mappings for the eight new entry routes, including root-path normalisation. Idle loading fetches both layouts, the buyer grid and seller dashboard. Removed hero-photo preloads; headphones preload at high priority on the buyer home and seller product grid. A comment marks the Phase D image update.
+- Added route, mode, redirect, layout, placeholder, cart badge and save-navigation tests. The required tests failed before implementation, then passed.
+
+**Check:** `npm test` passes (103 tests, 11 files), `npm run lint` passes with max-warnings 0, and `npm run build` passes without build warnings. The route suite emits an Emotion duplicate-instance warning under Vitest; it is not suppressed. Executed the built preload script without a server: all eight routes and their trailing-slash forms preload existing layout/page assets; only the two grids preload headphones with `fetchpriority=high`; no hero preloads remain. `git diff --check` passes and searches find no old route imports. Browser checks not run: `/`, `/seller/products`, every old address, `/c/watches` and `/seller/zzz` at 360 px and 1280 px; fresh-load DevTools verification of headphones priority and page `modulepreload`. No long-lived server was started.
+
+**Changed by hand:** —
