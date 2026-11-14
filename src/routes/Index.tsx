@@ -15,7 +15,7 @@ const load = {
   addItem: () => import("../pages/Sell/AddItem"),
   trackSold: () => import("../pages/Sell/TrackSold"),
   signUp: () => import("../pages/SignUp"),
-  sellerSignUp: () => import("../pages/ComingSoon"),
+  sellerSignUp: () => import("../pages/Seller/SellerSignUp"),
   comingSoon: () => import("../pages/ComingSoon"),
   error404: () => import("../pages/Error404"),
   legacyRedirect: () => import("../pages/LegacyRedirect"),
@@ -134,7 +134,7 @@ const RouterIndex = () => {
           <Route index element={<TrackSold />} />
           <Route
             path={ROUTES.sellerSignUp}
-            element={<SellerSignUp title="Seller sign-up" phase="Task 2" />}
+            element={<SellerSignUp />}
           />
           <Route
             path={ROUTES.sellerProducts}

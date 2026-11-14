@@ -14,16 +14,16 @@ interface Props {
 
 // Log in by picking one of the accounts: this is a demo, there are no passwords
 const LoginDialog: React.FC<Props> = ({ isOpen, onClose }) => {
-  const { setLoggedInUser, carryText } = useAuth();
-  const { signUpPath, pathname } = useSide();
+  const { logIn, carryText } = useAuth();
+  const { signUpPath, pathname, role } = useSide();
 
   const handlePick = (accountId: string) => {
-    setLoggedInUser(accountId);
+    logIn(accountId);
     onClose();
   };
 
   return (
-    <AppDialog isOpen={isOpen} onClose={onClose} title="Log in">
+    <AppDialog isOpen={isOpen} onClose={onClose} title={role === "seller" ? "Log in to your store" : "Log in"}>
       <Holder>
         <p className="text">
           Pick an account. This is a demo store, so there are no passwords.
@@ -36,9 +36,8 @@ const LoginDialog: React.FC<Props> = ({ isOpen, onClose }) => {
         )}
         <AccountPicker className="accounts" onPick={handlePick} />
         <p className="sign-up">
-          New here?{" "}
           <Link to={signUpPath} state={{ from: pathname }} onClick={onClose}>
-            Create an account
+            {role === "seller" ? "New here? Create a store" : "New here? Create an account"}
           </Link>
         </p>
       </Holder>

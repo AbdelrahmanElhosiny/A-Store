@@ -1,5 +1,7 @@
 import styled from "@emotion/styled";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import { useAppSelector } from "../app/hooks";
+import { selectStoresById } from "../features/selectors";
 import useAuth from "../hooks/useAuth";
 import { Address } from "../features/types";
 import font from "../styles/font";
@@ -19,27 +21,35 @@ const shortAddress = (addresses: Address[]) => {
 // One button per account; used by the login dialog and the sign-up page
 const AccountPicker: React.FC<Props> = ({ onPick, className }) => {
   const { accounts } = useAuth();
+  const stores = useAppSelector(selectStoresById);
 
   return (
     <Holder className={className} aria-label="Accounts">
-      {accounts.map(({ id, name, addresses }) => (
-        <li key={id}>
-          <button
-            type="button"
-            className="account"
-            onClick={() => onPick(id)}
-          >
-            <span className="avatar" aria-hidden="true">
-              {name.charAt(0).toUpperCase()}
-            </span>
-            <span className="text">
-              <span className="name">Log in as {name}</span>
-              <span className="address">{shortAddress(addresses)}</span>
-            </span>
-            <ArrowForwardIcon className="arrow" aria-hidden="true" />
-          </button>
-        </li>
-      ))}
+      {accounts.map((account) => {
+        const { id, name } = account;
+        const store = account.role === "seller" ? stores[account.storeId] : null;
+        const logoColor = store?.logoColor ?? account.avatarColor;
+        return (
+          <li key={id}>
+            <button type="button" className="account" onClick={() => onPick(id)}>
+              <span
+                className="avatar"
+                aria-hidden="true"
+                style={{ backgroundColor: logoColor }}
+              >
+                {store?.logoLetter ?? name.charAt(0).toUpperCase()}
+              </span>
+              <span className="text">
+                <span className="name">{store?.name ?? `Log in as ${name}`}</span>
+                <span className="address">
+                  {account.role === "buyer" ? shortAddress(account.addresses) : name}
+                </span>
+              </span>
+              <ArrowForwardIcon className="arrow" aria-hidden="true" />
+            </button>
+          </li>
+        );
+      })}
     </Holder>
   );
 };

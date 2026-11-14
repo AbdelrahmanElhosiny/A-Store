@@ -2,14 +2,18 @@ import { v4 as uuid } from "uuid";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { addBuyer } from "../features/accountsSlice";
 import { logInAs } from "../features/cartActions";
-import { logOut } from "../features/sessionSlice";
+import { logOut as logOutAction } from "../features/sessionSlice";
 import {
   selectActiveBuyer,
+  selectActiveSeller,
+  selectActiveStore,
+  selectSellerAccounts,
   selectBuyerAccounts,
   selectCartCount,
 } from "../features/selectors";
-import { BuyerAccount } from "../features/types";
+import { Account, BuyerAccount } from "../features/types";
 import { color } from "../styles/tokens";
+import useSide from "./useSide";
 import useNotification from "./useNotification";
 
 // what the sign-up form asks for
@@ -24,40 +28,39 @@ interface SignUpFields {
 // the signed-out shopper; nobody can sign up with this name
 const GUEST_NAME = "Guest";
 
-// Shared buyer login state, used by the NavBar on both the Sell and Buy sides.
+// The URL selects the role; both sessions remain independent.
 const useAuth = () => {
   const dispatch = useAppDispatch();
+  const { role } = useSide();
   const activeBuyer = useAppSelector(selectActiveBuyer);
-  // everyone who can log in
-  const accounts = useAppSelector(selectBuyerAccounts);
+  const activeSeller = useAppSelector(selectActiveSeller);
+  const activeStore = useAppSelector(selectActiveStore);
+  const buyers = useAppSelector(selectBuyerAccounts);
+  const sellers = useAppSelector(selectSellerAccounts);
+  const stores = useAppSelector((state) => state.stores);
+  const accounts: Account[] = role === "buyer" ? buyers : sellers;
+  const activeAccount: Account | null = role === "buyer" ? activeBuyer : activeSeller;
+  const activeName = role === "buyer" ? activeAccount?.name ?? null : activeStore?.name ?? null;
+  const isSignedIn = activeAccount !== null;
   const cartCount = useAppSelector(selectCartCount);
   const { showNotification } = useNotification();
+  const carryText = role === "buyer" && !isSignedIn && cartCount > 0
+    ? `Your cart (${cartCount} ${cartCount === 1 ? "item" : "items"}) comes with you.`
+    : null;
 
-  //------------------
-  // definers
-  //------------------
-  const isGuest = activeBuyer === null;
-  const activeUserName = activeBuyer?.name ?? GUEST_NAME;
-  // what moves to an account on login, e.g. "Your cart (3 items) comes with you."
-  const carryText =
-    isGuest && cartCount > 0
-      ? `Your cart (${cartCount} ${cartCount === 1 ? "item" : "items"}) comes with you.`
-      : null;
-
-  //------------------
-  // Handlers
-  //------------------
-  const setLoggedInUser = (accountId: string) => {
+  const logIn = (accountId: string) => {
     const account = accounts.find(({ id }) => id === accountId);
-    if (!account || !dispatch(logInAs("buyer", accountId))) return;
-    showNotification({ message: `Logged in as ${account.name}` });
+    if (!account || !dispatch(logInAs(role, accountId))) return;
+    const store = account.role === "seller" ? stores.find(({ id }) => id === account.storeId) : null;
+    showNotification({ message: store ? `Logged in to ${store.name}` : `Logged in as ${account.name}` });
   };
-  const setLoggedOutUser = () => {
-    dispatch(logOut({ role: "buyer" }));
+  const logOut = () => {
+    dispatch(logOutAction({ role }));
     showNotification({ message: "Logged out", type: "info" });
   };
   // adds the account and logs straight into it
   const signUp = (fields: SignUpFields) => {
+    if (role !== "buyer" || isNameTaken(fields.userName)) return;
     const name = fields.userName.trim();
     const now = Date.now();
     const optAddress = fields.optAddress.trim();
@@ -93,22 +96,24 @@ const useAuth = () => {
       message: `Welcome, ${name}! Your account is ready.`,
     });
   };
-  // buyer names are unique, ignoring case and spaces at the ends
+  // Names are unique within the current role, ignoring case and outer spaces.
   const isNameTaken = (userName: string) => {
     const name = userName.trim().toLowerCase();
     return (
-      name === GUEST_NAME.toLowerCase() ||
-      accounts.some((account) => account.name.toLowerCase() === name)
+      (role === "buyer" && name === GUEST_NAME.toLowerCase()) ||
+      accounts.some((account) => account.name.trim().toLowerCase() === name)
     );
   };
 
   return {
     accounts,
-    activeUserName,
-    isGuest,
+    role,
+    activeAccount,
+    activeName,
+    isSignedIn,
     carryText,
-    setLoggedInUser,
-    setLoggedOutUser,
+    logIn,
+    logOut,
     signUp,
     isNameTaken,
   };

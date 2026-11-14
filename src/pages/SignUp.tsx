@@ -69,13 +69,13 @@ const getValidationSchema = (isNameTaken: (userName: string) => boolean) =>
 const SignUp = () => {
   useDocumentTitle("Create an account");
   const {
-    isGuest,
-    activeUserName,
+    isSignedIn,
+    activeName,
     carryText,
     signUp,
     isNameTaken,
-    setLoggedInUser,
-    setLoggedOutUser,
+    logIn,
+    logOut,
   } = useAuth();
   const { side, homePath, signUpPath } = useSide();
   const navigate = useNavigate();
@@ -90,7 +90,7 @@ const SignUp = () => {
     navigate(backTo, { replace: true });
   };
   const handlePick = (accountId: string) => {
-    setLoggedInUser(accountId);
+    logIn(accountId);
     navigate(backTo, { replace: true });
   };
 
@@ -100,19 +100,19 @@ const SignUp = () => {
     onSubmit: handleSubmit,
   };
 
-  if (!isGuest)
+  if (isSignedIn)
     return (
       <Holder>
         <h2>Create an account</h2>
         <EmptyState
           icon={<PersonOutlineIcon />}
-          title={`You're logged in as ${activeUserName}`}
+          title={`You're logged in as ${activeName}`}
           text="Log out first if you want to create another account."
         >
           <Button variant="contained" component={Link} to={homePath}>
             {side === "buy" ? "Browse the shop" : "Go to your items"}
           </Button>
-          <Button variant="outlined" onClick={setLoggedOutUser}>
+          <Button variant="outlined" onClick={logOut}>
             Log out
           </Button>
         </EmptyState>

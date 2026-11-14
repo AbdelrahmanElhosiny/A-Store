@@ -33,6 +33,8 @@ const SellHome = () => {
   };
   const closeDialog = () => setOpenDialog(null);
 
+  const ownedSelection = items.find(({ id }) => id === selectedItem?.id) ?? null;
+
   const unitNum = items.reduce((sum, { stockNum }) => sum + stockNum, 0);
 
   return (
@@ -56,13 +58,13 @@ const SellHome = () => {
       </div>
 
       <UpdateItemModal
-        item={selectedItem}
-        isOpen={openDialog === "update"}
+        item={ownedSelection}
+        isOpen={openDialog === "update" && ownedSelection !== null}
         closeDialog={closeDialog}
       />
       <RemoveItemModal
-        item={selectedItem}
-        isOpen={openDialog === "remove"}
+        item={ownedSelection}
+        isOpen={openDialog === "remove" && ownedSelection !== null}
         closeDialog={closeDialog}
       />
 

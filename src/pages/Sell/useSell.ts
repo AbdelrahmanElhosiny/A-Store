@@ -6,7 +6,7 @@ import {
 import { v4 as uuid } from "uuid";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import useNotification from "../../hooks/useNotification";
-import { selectAllOrders } from "../../features/selectors";
+import { selectActiveStore, selectItemsForStore, selectShipmentsForStore } from "../../features/selectors";
 import { Item } from "../../features/types";
 
 // the Add Item and Update forms work with text, the store with numbers
@@ -45,21 +45,21 @@ const fromFormFields = (item: Item, fields: ItemFormFields): Item => ({
 
 const useSell = () => {
   const dispatch = useAppDispatch();
-  const items = useAppSelector((state) => state.items);
-  // every order: until stores have their own pages, the seller is the shop
-  const orders = useAppSelector(selectAllOrders);
+  const store = useAppSelector(selectActiveStore);
+  const items = useAppSelector((state) => selectItemsForStore(state, store?.id ?? ""));
+  const shipments = useAppSelector((state) => selectShipmentsForStore(state, store?.id ?? ""));
   const { showNotification } = useNotification();
 
   //------------------
   // Handlers
   //------------------
   const addNewItem = (fields: ItemFormFields) => {
+    if (!store) return;
     const item = fromFormFields(
       {
         id: uuid(),
-        // Phase B: active seller's store
-        storeId: "store-hearth-lane",
-        category: "home-kitchen",
+        storeId: store.id,
+        category: store.categoryFocus,
         status: "active",
         sku: "",
         createdAt: Date.now(),
@@ -75,17 +75,20 @@ const useSell = () => {
   };
 
   const updateItem = (current: Item, fields: ItemFormFields) => {
-    const item = fromFormFields(current, fields);
+    const ownedItem = items.find(({ id }) => id === current.id);
+    if (!ownedItem) return;
+    const item = fromFormFields(ownedItem, fields);
     dispatch(updateItemAction(item));
     showNotification({ message: `${item.name} saved` });
   };
 
   const removeItem = ({ id, name }: Item) => {
+    if (!items.some((item) => item.id === id)) return;
     dispatch(removeItemAction(id));
     showNotification({ message: `${name} removed` });
   };
 
-  return { addNewItem, updateItem, removeItem, items, orders };
+  return { addNewItem, updateItem, removeItem, items, shipments };
 };
 
 export type { ItemFormFields };

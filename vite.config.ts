@@ -14,7 +14,7 @@ const ROUTE_SOURCES: Record<string, string[]> = {
   [ROUTES.seller]: ["layout/SellerLayout.tsx", "pages/Sell/TrackSold.tsx"],
   [ROUTES.sellerProducts]: ["layout/SellerLayout.tsx", "pages/Sell/Home.tsx"],
   [ROUTES.sellerProductNew]: ["layout/SellerLayout.tsx", "pages/Sell/AddItem.tsx"],
-  [ROUTES.sellerSignUp]: ["layout/SellerLayout.tsx", "pages/ComingSoon.tsx"],
+  [ROUTES.sellerSignUp]: ["layout/SellerLayout.tsx", "pages/Seller/SellerSignUp.tsx"],
 };
 // The first product picture is the largest paint on the item grids.
 // Phase D's store home must update this regex if its first picture changes.

@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { ROUTES } from "../constant/routes";
 import SVG from "../assets/svg";
 import styled from "@emotion/styled";
 import { css } from "@emotion/react";
@@ -12,6 +11,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import useAuth from "../hooks/useAuth";
 import useSide from "../hooks/useSide";
+import ModeSwitch from "./ModeSwitch";
 import ThemeSwitch from "./ThemeSwitch";
 import LoginDialog from "./LoginDialog";
 
@@ -29,8 +29,8 @@ interface NavbarProps {
 // JSX
 // -----------------
 const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
-  const { setLoggedOutUser, activeUserName, isGuest } = useAuth();
-  const { signUpPath, pathname } = useSide();
+  const { logOut, activeName, isSignedIn } = useAuth();
+  const { signUpPath, pathname, homePath } = useSide();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
 
@@ -60,7 +60,7 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
     </NavLink>
   ));
 
-  const account = isGuest ? (
+  const account = !isSignedIn ? (
     <div className="account">
       <Button variant="contained" onClick={openLogin}>
         Log in
@@ -78,12 +78,12 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
     </div>
   ) : (
     <div className="account">
-      <span className="user-name">{activeUserName}</span>
+      <span className="user-name">{activeName}</span>
       <Button
         variant="outlined"
         onClick={() => {
           closeMenu();
-          setLoggedOutUser();
+          logOut();
         }}
       >
         Log out
@@ -94,7 +94,7 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
   return (
     <Holder className={className || ""}>
       <Link
-        to={ROUTES.home}
+        to={homePath}
         className="logo"
         aria-label="A-Store home"
         draggable={false}
@@ -108,6 +108,7 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
       </nav>
       <div className="actions">
         <ThemeSwitch />
+        <ModeSwitch />
         {account}
       </div>
 
@@ -146,6 +147,7 @@ const NavBar: React.FC<NavbarProps> = ({ navLinks, className }) => {
             {links}
           </nav>
           <ThemeSwitch />
+          <ModeSwitch />
           {account}
         </DrawerHolder>
       </Drawer>

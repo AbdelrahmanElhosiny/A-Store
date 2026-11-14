@@ -246,3 +246,19 @@ Plan: see the "A-Store: AI upgrade, deploy and backend plan" doc.
 **Check:** `npm test` passes (103 tests, 11 files), `npm run lint` passes with max-warnings 0, and `npm run build` passes without build warnings. The route suite emits an Emotion duplicate-instance warning under Vitest; it is not suppressed. Executed the built preload script without a server: all eight routes and their trailing-slash forms preload existing layout/page assets; only the two grids preload headphones with `fetchpriority=high`; no hero preloads remain. `git diff --check` passes and searches find no old route imports. Browser checks not run: `/`, `/seller/products`, every old address, `/c/watches` and `/seller/zzz` at 360 px and 1280 px; fresh-load DevTools verification of headphones priority and page `modulepreload`. No long-lived server was started.
 
 **Changed by hand:** —
+
+## 14. Mode switch, logins per mode, Pick your store, store sign-up (Claude Code)
+
+**Prompt:** Implement Phase B Task 2 from its brief: the mode switch, independent buyer and seller logins, Pick your store, seller sign-up and store-scoped seller pages. Keep routes centralised, preserve the Gruvbox themes and sharp edges, follow RED/GREEN, and verify tests, lint and build.
+
+**Changes**
+- Both layouts remember their URL including its query. The outlined mode switch sits before the account block in the wide header and in the drawer, uses the destination mode's accent, and returns to that mode's last page. Compact text is supported with full accessible labels. The header logo opens the current mode's home.
+- `useAuth` derives its role from the URL, logs in by account id, lists that role's accounts, names the active seller's store, and logs out only that role. Updated every caller. Seller choices show the store's letter, colour and name, with the owner's name underneath. Buyer login keeps its cart carry text; seller login has its own title and create-store link.
+- The real `RequireSeller` shows Pick your store for signed-out seller routes, including unknown URLs, and keeps seller sign-up public with or without a trailing slash. Store buttons show taglines and product counts; choosing one preserves the deep link and its query.
+- Seller sign-up uses Formik and Yup, seller-name uniqueness ignoring case, slug-based store-name uniqueness, the shared categories, and the required defaults. It creates the seller and store, signs in, opens the seller home and toasts the required message. Logo/avatar colour is the first unused value in the `color` tokens, falling back to yellow. Existing sellers see their running store with Log out and Back. Added `slugify`, `addStore` and `updateStore`.
+- Seller products, Update/Remove and sold totals are scoped to the active store. Add Item gets the store id and default category through `useSell`. Foreign-item mutations and stale selections are rejected. The real seller sign-up lazy loader and build preload mapping now agree.
+- Tests cover the required RED cases, role isolation, store ownership, sign-up validation/defaults, real public sign-up and guarded seller 404s, remembered queries, and independent sessions/cart through a saved-data reload.
+
+**Check:** `npm test` passes (129 tests, 19 files), `npm run lint` passes with max-warnings 0, and `npm run build` passes without warnings. The existing Emotion duplicate-instance warning remains visible in Vitest. Executed the built preload script without a server: seller sign-up and its trailing-slash form preload the real SellerSignUp and SellerLayout, and all 18 assets exist. `git diff --check` passes. Browser checks not run: the brief's complete 360 px and 1280 px guest-cart → seller picker → Hearth Lane products → Ahmed → seller logout flow, refresh after each step, new-tab seller-order deep link, and Paper Trail creation; visual layout, keyboard focus and actual browser preload timing remain for a human. No long-lived server was started.
+
+**Changed by hand:** —

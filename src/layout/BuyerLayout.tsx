@@ -1,3 +1,4 @@
+import useRememberPath from "../hooks/useRememberPath";
 import { Outlet } from "react-router-dom";
 import { ThemeProvider } from "@mui/material";
 import Layout from "./Layout";
@@ -8,6 +9,7 @@ import { useAppSelector } from "../app/hooks";
 import { selectCartCount } from "../features/selectors";
 
 const BuyerLayout = () => {
+  useRememberPath();
   const theme = useSideTheme("buy");
   const cartCount = useAppSelector(selectCartCount);
   const navLinks = [

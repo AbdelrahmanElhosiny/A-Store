@@ -21,10 +21,8 @@ interface SoldRow {
 // -----------------
 const TrackSold = () => {
   useDocumentTitle("Sold items");
-  const { items, orders } = useSell();
-  const soldLines = orders.flatMap(({ shipments }) =>
-    shipments.flatMap(({ lines }) => lines),
-  );
+  const { items, shipments } = useSell();
+  const soldLines = shipments.flatMap(({ shipment }) => shipment.lines);
 
   // one row per listed item (sold or not), plus removed items that sold
   const rows = new Map<string, SoldRow>(
@@ -55,7 +53,7 @@ const TrackSold = () => {
     (sum, line) => sum + line.quantity * line.price,
     0,
   );
-  const orderCount = orders.length;
+  const orderCount = new Set(shipments.map(({ order }) => order.id)).size;
 
   return (
     <Holder>
