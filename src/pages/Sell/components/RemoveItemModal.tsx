@@ -1,7 +1,7 @@
 import { Button } from "@mui/material";
 import styled from "@emotion/styled";
 import useSell from "../useSell";
-import { Item } from "../../../features/itemSlice";
+import { Item } from "../../../features/types";
 import AppDialog from "../../../components/AppDialog";
 
 interface Props {

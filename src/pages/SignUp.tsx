@@ -89,8 +89,8 @@ const SignUp = () => {
     signUp(values);
     navigate(backTo, { replace: true });
   };
-  const handlePick = (userName: string) => {
-    setLoggedInUser(userName);
+  const handlePick = (accountId: string) => {
+    setLoggedInUser(accountId);
     navigate(backTo, { replace: true });
   };
 

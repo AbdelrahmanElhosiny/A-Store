@@ -1,5 +1,3 @@
-import { OrderedItemStatus } from "../features/userSlice";
-
 // Delivery is simulated from the time the order was placed:
 // it ships after IN_DELIVERY_AFTER and arrives after DELIVERED_AFTER.
 const IN_DELIVERY_AFTER = 15_000;
@@ -39,41 +37,10 @@ const orderProgress = (orderedAt: number, now: number) => {
 const secondsUntil = (orderedAt: number, step: number, now: number) =>
   Math.max(Math.ceil((orderedAt + step - now) / 1000), 0);
 
-// "#3F9A1C": short enough to read out, from the uuid
-const shortOrderId = (orderId: string) =>
-  `#${orderId.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
-
 const formatTime = (time: number) =>
   new Date(time).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-interface Order {
-  orderId: string;
-  orderedAt: number;
-  lines: OrderedItemStatus[];
-  units: number;
-  total: number;
-}
-
-// order lines grouped into orders, newest first
-const groupOrders = (lines: OrderedItemStatus[]): Order[] => {
-  const orders = new Map<string, Order>();
-  lines.forEach((line) => {
-    const order = orders.get(line.orderId) ?? {
-      orderId: line.orderId,
-      orderedAt: line.orderedAt,
-      lines: [],
-      units: 0,
-      total: 0,
-    };
-    order.lines.push(line);
-    order.units += line.orderedNum;
-    order.total += line.orderedNum * line.price;
-    orders.set(line.orderId, order);
-  });
-  return [...orders.values()].sort((a, b) => b.orderedAt - a.orderedAt);
-};
-
-export type { Status, Order };
+export type { Status };
 export {
   IN_DELIVERY_AFTER,
   DELIVERED_AFTER,
@@ -81,7 +48,5 @@ export {
   orderStatus,
   orderProgress,
   secondsUntil,
-  shortOrderId,
   formatTime,
-  groupOrders,
 };

@@ -7,7 +7,7 @@ import { SELL_ROUTE } from "../../constant/routeConstant";
 import { color } from "../../styles/tokens";
 import RemoveItemModal from "./components/RemoveItemModal";
 import UpdateItemModal from "./components/UpdateItemModal";
-import { Item } from "../../features/itemSlice";
+import { Item } from "../../features/types";
 import ProductCard from "../../components/ProductCard";
 import EmptyState from "../../components/EmptyState";
 import AddIcon from "@mui/icons-material/Add";

@@ -17,8 +17,8 @@ const LoginDialog: React.FC<Props> = ({ isOpen, onClose }) => {
   const { setLoggedInUser, carryText } = useAuth();
   const { signUpPath, pathname } = useSide();
 
-  const handlePick = (userName: string) => {
-    setLoggedInUser(userName);
+  const handlePick = (accountId: string) => {
+    setLoggedInUser(accountId);
     onClose();
   };
 

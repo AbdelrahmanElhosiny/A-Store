@@ -21,7 +21,10 @@ interface SoldRow {
 // -----------------
 const TrackSold = () => {
   useDocumentTitle("Sold items");
-  const { items, soldLines } = useSell();
+  const { items, orders } = useSell();
+  const soldLines = orders.flatMap(({ shipments }) =>
+    shipments.flatMap(({ lines }) => lines),
+  );
 
   // one row per listed item (sold or not), plus removed items that sold
   const rows = new Map<string, SoldRow>(
@@ -30,7 +33,7 @@ const TrackSold = () => {
       { itemId: id, name, image, soldNum: 0, revenue: 0, stockNum },
     ]),
   );
-  soldLines.forEach(({ itemId, name, image, orderedNum, price }) => {
+  soldLines.forEach(({ itemId, name, image, quantity, price }) => {
     const row = rows.get(itemId) ?? {
       itemId,
       name,
@@ -39,20 +42,20 @@ const TrackSold = () => {
       revenue: 0,
       stockNum: null,
     };
-    row.soldNum += orderedNum;
-    row.revenue += orderedNum * price;
+    row.soldNum += quantity;
+    row.revenue += quantity * price;
     rows.set(itemId, row);
   });
   const sortedRows = [...rows.values()].sort(
     (a, b) => b.soldNum - a.soldNum || a.name.localeCompare(b.name),
   );
 
-  const totalSold = soldLines.reduce((sum, line) => sum + line.orderedNum, 0);
+  const totalSold = soldLines.reduce((sum, line) => sum + line.quantity, 0);
   const totalRevenue = soldLines.reduce(
-    (sum, line) => sum + line.orderedNum * line.price,
+    (sum, line) => sum + line.quantity * line.price,
     0,
   );
-  const orderCount = new Set(soldLines.map(({ orderId }) => orderId)).size;
+  const orderCount = orders.length;
 
   return (
     <Holder>

@@ -11,42 +11,64 @@ import { BUY_ROUTE, ROUTE_INDEX } from "../../constant/routeConstant";
 import { color } from "../../styles/tokens";
 import font from "../../styles/font";
 import formatPrice from "../../utils/formatPrice";
-import { shortOrderId } from "../../utils/orders";
 import useBuy from "./useBuy";
+import { useAppSelector } from "../../app/hooks";
+import { selectActiveBuyer } from "../../features/selectors";
+import { Address, GUEST_ID } from "../../features/types";
 import { AnimatePresence, m } from "motion/react";
 import { listItem } from "../../styles/motion";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
 
 const TRACK_PATH = `${ROUTE_INDEX.BUY}/${BUY_ROUTE.TRACK_BOUGHT}`;
 
+// a guest has no address yet; checkout asks for one from Phase D on
+const GUEST_ADDRESS: Address = {
+  id: GUEST_ID,
+  label: "",
+  name: "",
+  line1: "",
+  city: "",
+  zipCode: "",
+  phoneNum: "",
+  isDefault: false,
+};
+
 // -----------------
 // JSX
 // -----------------
 const Cart = () => {
-  const { cartLines, setCartItemNum, placeOrder } = useBuy();
-  const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);
+  const { cartRows, setCartQuantity, placeOrder } = useBuy();
+  const buyer = useAppSelector(selectActiveBuyer);
+  const [placedOrderNumber, setPlacedOrderNumber] = useState<string | null>(
+    null,
+  );
   useDocumentTitle("Cart");
 
-  const units = cartLines.reduce((sum, line) => sum + line.orderableNum, 0);
-  const subtotal = cartLines.reduce(
+  const units = cartRows.reduce((sum, row) => sum + row.orderableNum, 0);
+  const subtotal = cartRows.reduce(
     (sum, { item, orderableNum }) => sum + item.price * orderableNum,
     0,
   );
 
   const handleOrder = () => {
-    const orderId = placeOrder();
-    if (orderId) setPlacedOrderId(orderId);
+    const shipTo =
+      buyer?.addresses.find(({ isDefault }) => isDefault) ?? GUEST_ADDRESS;
+    const order = placeOrder({
+      shipTo,
+      payment: { kind: "cod", label: "Cash on delivery" },
+    });
+    if (order) setPlacedOrderNumber(order.number);
   };
 
   // nothing in the cart: either the order just went through, or it's empty
-  if (cartLines.length === 0) {
+  if (cartRows.length === 0) {
     return (
       <Holder>
         <h2>Cart</h2>
-        {placedOrderId ? (
+        {placedOrderNumber ? (
           <EmptyState
             icon={<CheckIcon />}
-            title={`Order ${shortOrderId(placedOrderId)} placed`}
+            title={`Order ${placedOrderNumber} placed`}
             text="It ships in a few seconds. Follow it on Track Shipment."
           >
             <Button variant="contained" component={Link} to={TRACK_PATH}>
@@ -78,7 +100,7 @@ const Cart = () => {
         <ul className="lines">
           {/* a removed line shrinks away and the ones below move up */}
           <AnimatePresence initial={false} mode="popLayout">
-            {cartLines.map(({ item, inCartNum, orderableNum }) => (
+            {cartRows.map(({ item, quantity, orderableNum }) => (
               <m.li className="line" key={item.id} {...listItem()}>
                 <ProductThumb
                   className="thumb"
@@ -88,7 +110,7 @@ const Cart = () => {
                 <div className="info">
                   <h3 className="name">{item.name}</h3>
                   <span className="each">{formatPrice(item.price)} each</span>
-                  {orderableNum < inCartNum && (
+                  {orderableNum < quantity && (
                     <span className="warning">
                       {item.stockNum > 0
                         ? `Only ${item.stockNum} in stock: ${orderableNum} will be ordered`
@@ -99,9 +121,9 @@ const Cart = () => {
                 <CartStepper
                   className="stepper"
                   itemName={item.name}
-                  value={inCartNum}
-                  max={Math.max(item.stockNum, inCartNum)}
-                  onChange={(next) => setCartItemNum(item.id, next)}
+                  value={quantity}
+                  max={Math.max(item.stockNum, quantity)}
+                  onChange={(next) => setCartQuantity(item.id, next)}
                 />
                 <span className="line-total">
                   {formatPrice(item.price * orderableNum)}

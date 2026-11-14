@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import styled from "@emotion/styled";
 import { keyframes } from "@emotion/react";
-import { Item } from "../features/itemSlice";
+import { Item } from "../features/types";
 import { color } from "../styles/tokens";
 import font from "../styles/font";
 import formatPrice from "../utils/formatPrice";

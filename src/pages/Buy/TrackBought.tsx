@@ -12,20 +12,21 @@ import formatPrice from "../../utils/formatPrice";
 import {
   DELIVERED_AFTER,
   IN_DELIVERY_AFTER,
-  Order,
   STEPS,
   formatTime,
-  groupOrders,
   orderProgress,
   orderStatus,
   secondsUntil,
-  shortOrderId,
 } from "../../utils/orders";
-import useBuy from "./useBuy";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
+import { useAppSelector } from "../../app/hooks";
+import { lineKey } from "../../features/cart";
+import { selectOrdersForBuyer } from "../../features/selectors";
+import { GUEST_ID } from "../../features/types";
 
 // one line under the order's title, e.g. "In delivery · arrives in 12 s"
-const statusText = ({ orderedAt }: Order, now: number) => {
+// (the status still comes from the clock; sellers move it from Phase D on)
+const statusText = (orderedAt: number, now: number) => {
   const status = orderStatus(orderedAt, now);
   if (status === "ordered")
     return `Packing · ships in ${secondsUntil(orderedAt, IN_DELIVERY_AFTER, now)} s`;
@@ -39,11 +40,13 @@ const statusText = ({ orderedAt }: Order, now: number) => {
 // -----------------
 const TrackBought = () => {
   useDocumentTitle("Track shipment");
-  const { orderedItems } = useBuy();
-  const orders = groupOrders(orderedItems);
+  const buyerId = useAppSelector((state) => state.session.buyerId);
+  const orders = useAppSelector((state) =>
+    selectOrdersForBuyer(state, buyerId ?? GUEST_ID),
+  );
   // the clock only ticks while something is still on its way
   const now = useNow(
-    orders.some(({ orderedAt }) => Date.now() - orderedAt < DELIVERED_AFTER),
+    orders.some(({ placedAt }) => Date.now() - placedAt < DELIVERED_AFTER),
   );
 
   return (
@@ -69,27 +72,32 @@ const TrackBought = () => {
           </p>
           <ol className="orders">
             {orders.map((order) => {
-              const status = orderStatus(order.orderedAt, now);
+              const lines = order.shipments.flatMap((shipment) => shipment.lines);
+              const units = lines.reduce((sum, line) => sum + line.quantity, 0);
+              const total = lines.reduce(
+                (sum, line) => sum + line.quantity * line.price,
+                0,
+              );
+              const status = orderStatus(order.placedAt, now);
               const currentStep = STEPS.findIndex(
                 (step) => step.status === status,
               );
               return (
-                <li className={`order ${status}`} key={order.orderId}>
+                <li className={`order ${status}`} key={order.id}>
                   <header className="order-head">
                     <div>
-                      <h3>Order {shortOrderId(order.orderId)}</h3>
+                      <h3>Order {order.number}</h3>
                       <span className="meta">
-                        Placed at {formatTime(order.orderedAt)} · {order.units}{" "}
-                        {order.units === 1 ? "item" : "items"} ·{" "}
-                        {formatPrice(order.total)}
+                        Placed at {formatTime(order.placedAt)} · {units}{" "}
+                        {units === 1 ? "item" : "items"} · {formatPrice(total)}
                       </span>
                     </div>
                     <span className="status-text">
-                      {statusText(order, now)}
+                      {statusText(order.placedAt, now)}
                     </span>
                     {/* screen readers hear the step changes, not every second */}
                     <span className="visually-hidden" aria-live="polite">
-                      {`Order ${shortOrderId(order.orderId)}: ${STEPS[currentStep].label}`}
+                      {`Order ${order.number}: ${STEPS[currentStep].label}`}
                     </span>
                   </header>
 
@@ -98,7 +106,7 @@ const TrackBought = () => {
                     className="progress"
                     style={
                       {
-                        "--progress": orderProgress(order.orderedAt, now),
+                        "--progress": orderProgress(order.placedAt, now),
                       } as React.CSSProperties
                     }
                   >
@@ -127,8 +135,8 @@ const TrackBought = () => {
                   </div>
 
                   <ul className="lines">
-                    {order.lines.map((line) => (
-                      <li className="line" key={line.itemId}>
+                    {lines.map((line) => (
+                      <li className="line" key={lineKey(line)}>
                         <ProductThumb
                           className="thumb"
                           name={line.name}
@@ -136,7 +144,7 @@ const TrackBought = () => {
                         />
                         <span className="name">{line.name}</span>
                         <span className="qty">
-                          {line.orderedNum} × {formatPrice(line.price)}
+                          {line.quantity} × {formatPrice(line.price)}
                         </span>
                       </li>
                     ))}

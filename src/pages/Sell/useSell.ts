@@ -1,14 +1,13 @@
-import { useDispatch, useSelector } from "react-redux";
 import {
-  Item,
   addNewItem as addNewItemAction,
   updateItem as updateItemAction,
   removeItem as removeItemAction,
 } from "../../features/itemSlice";
 import { v4 as uuid } from "uuid";
-import { AppDispatch, RootState } from "../../app/store";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import useNotification from "../../hooks/useNotification";
-import { OrderedItemStatus, User } from "../../features/userSlice";
+import { selectAllOrders } from "../../features/selectors";
+import { Item } from "../../features/types";
 
 // the Add Item and Update forms work with text, the store with numbers
 interface ItemFormFields {
@@ -33,8 +32,9 @@ const toFormFields = ({
   image: image ?? "",
 });
 
-const fromFormFields = (id: string, fields: ItemFormFields): Item => ({
-  id,
+// the form's fields on top of the rest of the item
+const fromFormFields = (item: Item, fields: ItemFormFields): Item => ({
+  ...item,
   name: fields.name.trim(),
   description: fields.description.trim(),
   // Number keeps cents: parseInt turned 12.50 into 12
@@ -44,26 +44,38 @@ const fromFormFields = (id: string, fields: ItemFormFields): Item => ({
 });
 
 const useSell = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const items = useSelector<RootState>((store) => store.items) as Item[];
-  const users = useSelector<RootState>((store) => store.users) as User[];
-  // every buyer's order lines: in this demo there's one seller, the store
-  const soldLines: OrderedItemStatus[] = users.flatMap(
-    ({ orderedItems }) => orderedItems,
-  );
+  const dispatch = useAppDispatch();
+  const items = useAppSelector((state) => state.items);
+  // every order: until stores have their own pages, the seller is the shop
+  const orders = useAppSelector(selectAllOrders);
   const { showNotification } = useNotification();
 
   //------------------
   // Handlers
   //------------------
   const addNewItem = (fields: ItemFormFields) => {
-    const item = fromFormFields(uuid(), fields);
+    const item = fromFormFields(
+      {
+        id: uuid(),
+        // Phase B: active seller's store
+        storeId: "store-hearth-lane",
+        category: "home-kitchen",
+        status: "active",
+        sku: "",
+        createdAt: Date.now(),
+        name: "",
+        description: "",
+        price: 0,
+        stockNum: 0,
+      },
+      fields,
+    );
     dispatch(addNewItemAction(item));
     showNotification({ message: `${item.name} is now in the shop` });
   };
 
-  const updateItem = (id: string, fields: ItemFormFields) => {
-    const item = fromFormFields(id, fields);
+  const updateItem = (current: Item, fields: ItemFormFields) => {
+    const item = fromFormFields(current, fields);
     dispatch(updateItemAction(item));
     showNotification({ message: `${item.name} saved` });
   };
@@ -73,7 +85,7 @@ const useSell = () => {
     showNotification({ message: `${name} removed` });
   };
 
-  return { addNewItem, updateItem, removeItem, items, soldLines };
+  return { addNewItem, updateItem, removeItem, items, orders };
 };
 
 export type { ItemFormFields };

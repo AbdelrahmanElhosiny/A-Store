@@ -1,9 +1,8 @@
-import { useDispatch } from "react-redux";
 import styled from "@emotion/styled";
 import { Button } from "@mui/material";
 import AppDialog from "./AppDialog";
 import resetDemoData from "../app/resetDemoData";
-import { AppDispatch } from "../app/store";
+import { useAppDispatch } from "../app/hooks";
 import useNotification from "../hooks/useNotification";
 
 interface Props {
@@ -13,7 +12,7 @@ interface Props {
 
 // Asks before putting the shop back to its starter data
 const ResetDemoDialog: React.FC<Props> = ({ isOpen, onClose }) => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const { showNotification } = useNotification();
 
   const handleReset = () => {
@@ -26,8 +25,9 @@ const ResetDemoDialog: React.FC<Props> = ({ isOpen, onClose }) => {
     <AppDialog isOpen={isOpen} onClose={onClose} title="Reset demo data">
       <Holder>
         <p className="text">
-          This brings back the five starter items and removes the items,
-          accounts, carts and orders added in this browser. It can't be undone.
+          This brings back the starter stores, products and accounts and
+          removes the items, accounts, carts and orders added in this browser.
+          It can't be undone.
         </p>
         <div className="buttons">
           <Button variant="outlined" onClick={onClose}>

@@ -1,13 +1,20 @@
 import styled from "@emotion/styled";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import useAuth from "../hooks/useAuth";
+import { Address } from "../features/types";
 import font from "../styles/font";
 import { color } from "../styles/tokens";
 
 interface Props {
-  onPick: (userName: string) => void;
+  onPick: (accountId: string) => void; // the account's id
   className?: string;
 }
+
+// "14 Nile Street, Cairo": the default address (a sign-up has no city yet)
+const shortAddress = (addresses: Address[]) => {
+  const address = addresses.find(({ isDefault }) => isDefault) ?? addresses[0];
+  return address ? [address.line1, address.city].filter(Boolean).join(", ") : "";
+};
 
 // One button per account; used by the login dialog and the sign-up page
 const AccountPicker: React.FC<Props> = ({ onPick, className }) => {
@@ -15,19 +22,19 @@ const AccountPicker: React.FC<Props> = ({ onPick, className }) => {
 
   return (
     <Holder className={className} aria-label="Accounts">
-      {accounts.map(({ userName, address }) => (
-        <li key={userName}>
+      {accounts.map(({ id, name, addresses }) => (
+        <li key={id}>
           <button
             type="button"
             className="account"
-            onClick={() => onPick(userName)}
+            onClick={() => onPick(id)}
           >
             <span className="avatar" aria-hidden="true">
-              {userName.charAt(0).toUpperCase()}
+              {name.charAt(0).toUpperCase()}
             </span>
             <span className="text">
-              <span className="name">Log in as {userName}</span>
-              <span className="address">{address}</span>
+              <span className="name">Log in as {name}</span>
+              <span className="address">{shortAddress(addresses)}</span>
             </span>
             <ArrowForwardIcon className="arrow" aria-hidden="true" />
           </button>

@@ -4,7 +4,7 @@ import { keyframes } from "@emotion/react";
 import { Button } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import CheckIcon from "@mui/icons-material/Check";
-import { Item } from "../../features/itemSlice";
+import { Item } from "../../features/types";
 import ProductCard from "../../components/ProductCard";
 import CartStepper from "../../components/CartStepper";
 import { color } from "../../styles/tokens";
@@ -21,9 +21,9 @@ const ADDED_MS = 1200;
 
 interface CardProps {
   item: Item;
-  inCartNum: number;
+  quantity: number;
   onAdd: (item: Item) => void;
-  onChangeNum: (item: Item, inCartNum: number) => void;
+  onChangeNum: (item: Item, quantity: number) => void;
   isPriority: boolean;
 }
 
@@ -31,7 +31,7 @@ interface CardProps {
 // which fades into − n + and a clear button. Back at 0: "Add to cart".
 const BuyCard: React.FC<CardProps> = ({
   item,
-  inCartNum,
+  quantity,
   onAdd,
   onChangeNum,
   isPriority,
@@ -41,7 +41,7 @@ const BuyCard: React.FC<CardProps> = ({
   const plusRef = useRef<HTMLButtonElement>(null);
   // where keyboard focus goes after the button and the stepper swap
   const focusNext = useRef<"plus" | "add" | null>(null);
-  const showStepper = inCartNum > 0 && !isJustAdded;
+  const showStepper = quantity > 0 && !isJustAdded;
 
   useEffect(() => {
     if (!isJustAdded) return;
@@ -76,7 +76,7 @@ const BuyCard: React.FC<CardProps> = ({
           ref={plusRef}
           className="stepper-in"
           itemName={item.name}
-          value={inCartNum}
+          value={quantity}
           max={item.stockNum}
           onChange={handleChangeNum}
         />
@@ -103,22 +103,20 @@ const BuyCard: React.FC<CardProps> = ({
 // JSX
 // -----------------
 const BuyHome = () => {
-  const { items, addItemToUserCart, setCartItemNum, users, activeUserIndex } =
-    useBuy();
+  const { items, cart, addItemToCart, setCartQuantity } = useBuy();
   const [announcement, setAnnouncement] = useState("");
   useDocumentTitle("Shop");
-  const cart = users[activeUserIndex].cart;
-  const inCartNum = (id: string) =>
-    cart.find(({ itemId }) => itemId === id)?.inCartNum ?? 0;
+  const quantityOf = (id: string) =>
+    cart.find(({ itemId }) => itemId === id)?.quantity ?? 0;
 
   const handleAdd = (item: Item) => {
-    addItemToUserCart(item);
+    addItemToCart(item);
     // screen readers hear what the button shows
     setAnnouncement(`${item.name} added to cart`);
   };
 
   const handleChangeNum = (item: Item, next: number) => {
-    setCartItemNum(item.id, next);
+    setCartQuantity(item.id, next);
     setAnnouncement(
       next > 0
         ? `${next} ${item.name} in cart`
@@ -144,7 +142,7 @@ const BuyHome = () => {
             <m.div className="cell" key={item.id} {...listItem()}>
               <BuyCard
                 item={item}
-                inCartNum={inCartNum(item.id)}
+                quantity={quantityOf(item.id)}
                 onAdd={handleAdd}
                 onChangeNum={handleChangeNum}
                 isPriority={index < PRIORITY_CARDS}

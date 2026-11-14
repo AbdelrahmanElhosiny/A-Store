@@ -2,7 +2,7 @@ import { Button } from "@mui/material";
 import styled from "@emotion/styled";
 import { Formik, Form, FormikConfig } from "formik";
 import useSell, { ItemFormFields, toFormFields } from "../useSell";
-import { Item } from "../../../features/itemSlice";
+import { Item } from "../../../features/types";
 import AppDialog from "../../../components/AppDialog";
 import ItemFields from "./ItemFields";
 import getItemSchema from "../itemSchema";
@@ -20,7 +20,7 @@ const UpdateItemModal: React.FC<Props> = ({ item, isOpen, closeDialog }) => {
 
   if (!item) return null; // Quick exit
   const handleSubmit = (values: ItemFormFields) => {
-    updateItem(item.id, values);
+    updateItem(item, values);
     closeDialog();
   };
   const FormProps: FormikConfig<ItemFormFields> = {

@@ -1,15 +1,15 @@
-import { useDispatch, useSelector } from "react-redux";
-import findIndex from "lodash/findIndex";
-import sumBy from "lodash/sumBy";
-import uniqBy from "lodash/uniqBy";
+import { v4 as uuid } from "uuid";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { addBuyer } from "../features/accountsSlice";
+import { logInAs } from "../features/cartActions";
+import { logOut } from "../features/sessionSlice";
 import {
-  User,
-  addNewUser,
-  setLoggedInUser as setLoggedInUserAction,
-  setLoggedOutUser as setLoggedOutUserAction,
-} from "../features/userSlice";
-import { Item } from "../features/itemSlice";
-import { AppDispatch, RootState } from "../app/store";
+  selectActiveBuyer,
+  selectBuyerAccounts,
+  selectCartCount,
+} from "../features/selectors";
+import { BuyerAccount } from "../features/types";
+import { color } from "../styles/tokens";
 import useNotification from "./useNotification";
 
 // what the sign-up form asks for
@@ -21,89 +21,89 @@ interface SignUpFields {
   phoneNum: string;
 }
 
-// Shared login state, used by the NavBar on both the Sell and Buy sides.
+// the signed-out shopper; nobody can sign up with this name
+const GUEST_NAME = "Guest";
+
+// Shared buyer login state, used by the NavBar on both the Sell and Buy sides.
 const useAuth = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const users = useSelector<RootState>((store) => store.users) as User[];
-  const items = useSelector<RootState>((store) => store.items) as Item[];
+  const dispatch = useAppDispatch();
+  const activeBuyer = useAppSelector(selectActiveBuyer);
+  // everyone who can log in
+  const accounts = useAppSelector(selectBuyerAccounts);
+  const cartCount = useAppSelector(selectCartCount);
   const { showNotification } = useNotification();
 
   //------------------
   // definers
   //------------------
-  const activeUserIndex = findIndex(users, { isLoggedIn: true });
-  const activeUserName = users[activeUserIndex].userName;
-  const isGuest = activeUserIndex === 0;
-  // everyone who can log in (the guest is only the logged-out state)
-  const accounts = users.slice(1);
-  // what moves to an account on login
-  const guestCartNum = sumBy(users[0].cart, "inCartNum");
-  const guestOrderNum = uniqBy(users[0].orderedItems, "orderId").length;
-  // e.g. "Your cart (3 items) and 1 order come with you."
-  const carryText = (() => {
-    if (!isGuest) return null;
-    const cart =
-      guestCartNum > 0 &&
-      `cart (${guestCartNum} ${guestCartNum === 1 ? "item" : "items"})`;
-    const orders =
-      guestOrderNum > 0 &&
-      `${guestOrderNum} ${guestOrderNum === 1 ? "order" : "orders"}`;
-    if (cart && orders) return `Your ${cart} and ${orders} come with you.`;
-    if (cart) return `Your ${cart} comes with you.`;
-    if (orders)
-      return `Your ${orders} ${guestOrderNum === 1 ? "comes" : "come"} with you.`;
-    return null;
-  })();
+  const isGuest = activeBuyer === null;
+  const activeUserName = activeBuyer?.name ?? GUEST_NAME;
+  // what moves to an account on login, e.g. "Your cart (3 items) comes with you."
+  const carryText =
+    isGuest && cartCount > 0
+      ? `Your cart (${cartCount} ${cartCount === 1 ? "item" : "items"}) comes with you.`
+      : null;
 
   //------------------
   // Handlers
   //------------------
-  const logIn = (userName: string) => {
-    const stockById = Object.fromEntries(
-      items.map(({ id, stockNum }) => [id, stockNum]),
-    );
-    dispatch(setLoggedInUserAction({ userName, stockById }));
-  };
-  const setLoggedInUser = (userName: string) => {
-    logIn(userName);
-    showNotification({ message: `Logged in as ${userName}` });
+  const setLoggedInUser = (accountId: string) => {
+    const account = accounts.find(({ id }) => id === accountId);
+    if (!account || !dispatch(logInAs("buyer", accountId))) return;
+    showNotification({ message: `Logged in as ${account.name}` });
   };
   const setLoggedOutUser = () => {
-    dispatch(setLoggedOutUserAction());
+    dispatch(logOut({ role: "buyer" }));
     showNotification({ message: "Logged out", type: "info" });
   };
   // adds the account and logs straight into it
   const signUp = (fields: SignUpFields) => {
-    const userName = fields.userName.trim();
-    dispatch(
-      addNewUser({
-        userName,
-        address: fields.address.trim(),
-        optAddress: fields.optAddress.trim(),
-        zipCode: fields.zipCode.trim(),
-        phoneNum: fields.phoneNum.trim(),
-        isLoggedIn: false,
-        userType: "buyer",
-        cart: [],
-        orderedItems: [],
-        pillingInfo: [],
-      }),
-    );
-    logIn(userName);
+    const name = fields.userName.trim();
+    const now = Date.now();
+    const optAddress = fields.optAddress.trim();
+    const account: BuyerAccount = {
+      id: `acc-${uuid()}`,
+      role: "buyer",
+      name,
+      avatarColor: color.buy,
+      createdAt: now,
+      notificationsSeenAt: now,
+      addresses: [
+        {
+          id: uuid(),
+          label: "Home",
+          name,
+          line1: fields.address.trim(),
+          ...(optAddress && { line2: optAddress }),
+          // the form has no city field; the address book fills it in later
+          city: "",
+          zipCode: fields.zipCode.trim(),
+          phoneNum: fields.phoneNum.trim(),
+          isDefault: true,
+        },
+      ],
+      paymentMethods: [{ id: "cod", kind: "cod", isDefault: true }],
+      cart: [],
+      wishlist: [],
+      recentlyViewed: [],
+    };
+    dispatch(addBuyer(account));
+    dispatch(logInAs("buyer", account.id));
     showNotification({
-      message: `Welcome, ${userName}! Your account is ready.`,
+      message: `Welcome, ${name}! Your account is ready.`,
     });
   };
-  // names are unique, ignoring case and spaces at the ends
-  const isNameTaken = (userName: string) =>
-    users.some(
-      (user) => user.userName.toLowerCase() === userName.trim().toLowerCase(),
+  // buyer names are unique, ignoring case and spaces at the ends
+  const isNameTaken = (userName: string) => {
+    const name = userName.trim().toLowerCase();
+    return (
+      name === GUEST_NAME.toLowerCase() ||
+      accounts.some((account) => account.name.toLowerCase() === name)
     );
+  };
 
   return {
-    users,
     accounts,
-    activeUserIndex,
     activeUserName,
     isGuest,
     carryText,

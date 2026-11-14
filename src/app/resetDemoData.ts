@@ -1,7 +1,10 @@
 import { createAction } from "@reduxjs/toolkit";
 
-// Puts the shop back to its starter items, accounts and empty carts.
-// Both the items and the users slices listen for it.
-const resetDemoData = createAction("app/resetDemoData");
+// Puts the shop back to its starter stores, products, accounts and empty
+// carts. Every saved slice listens for it and rebuilds the seed from `now`.
+const resetDemoData = createAction(
+  "app/resetDemoData",
+  (now: number = Date.now()) => ({ payload: { now } }),
+);
 
 export default resetDemoData;
