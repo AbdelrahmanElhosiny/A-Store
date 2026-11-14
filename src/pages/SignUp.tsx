@@ -77,7 +77,7 @@ const SignUp = () => {
     logIn,
     logOut,
   } = useAuth();
-  const { side, homePath, signUpPath } = useSide();
+  const { homePath, signUpPath } = useSide();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -110,7 +110,7 @@ const SignUp = () => {
           text="Log out first if you want to create another account."
         >
           <Button variant="contained" component={Link} to={homePath}>
-            {side === "buy" ? "Browse the shop" : "Go to your items"}
+            Browse the shop
           </Button>
           <Button variant="outlined" onClick={logOut}>
             Log out

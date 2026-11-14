@@ -42,6 +42,8 @@ describe("mode layouts", () => {
     const title = await screen.findByRole("heading", { name: "Page not found" });
     expect(title.closest(".buy")).not.toBeNull();
     expect(within(screen.getByRole("main")).getByRole("link", { name: "Go to the shop" })).toHaveAttribute("href", ROUTES.home);
+    expect(within(screen.getByRole("main")).getAllByRole("link")).toHaveLength(1);
+    expect(screen.queryByRole("link", { name: "Home page" })).not.toBeInTheDocument();
   });
 
   it("guards an unknown seller URL while signed out", async () => {
@@ -58,10 +60,16 @@ describe("mode layouts", () => {
     });
     const title = await screen.findByRole("heading", { name: "Page not found" });
     expect(title.closest(".sell")).not.toBeNull();
-    expect(within(screen.getByRole("main")).getByRole("link", { name: "Go to your items" })).toHaveAttribute("href", ROUTES.seller);
+    expect(within(screen.getByRole("main")).getByRole("link", { name: "Go to the seller centre" })).toHaveAttribute("href", ROUTES.seller);
+    expect(within(screen.getByRole("main")).getAllByRole("link")).toHaveLength(1);
+    expect(screen.queryByRole("link", { name: "Home page" })).not.toBeInTheDocument();
   });
 
-  it.each([ROUTES.sellerSignUp, `${ROUTES.sellerSignUp}/`])("keeps %s available while signed out", async (route) => {
+  it.each([
+    ROUTES.sellerSignUp,
+    `${ROUTES.sellerSignUp}/`,
+    ROUTES.sellerSignUp.replace("seller", "Seller").replace("sign-up", "Sign-Up"),
+  ])("keeps %s available while signed out", async (route) => {
     renderWithStore(app, { route });
     expect(await screen.findByRole("heading", { name: "Create a store" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: "Store name" })).toBeInTheDocument();
@@ -151,7 +159,9 @@ describe("mode sessions across navigation", () => {
       preloadedState: { ...seed, session: { ...seed.session, guestCart: cart } },
     });
     await user.click(await screen.findByRole("button", { name: "Hearth Lane" }));
-    await screen.findByRole("heading", { name: "Orders", level: 2 });
+    const heading = await screen.findByRole("heading", { name: "Orders", level: 2 });
+    expect(await screen.findByText("Logged in to Hearth Lane")).toBeVisible();
+    await waitFor(() => expect(heading).toHaveFocus());
     expect(store.getState().session).toMatchObject({ buyerId: null, sellerId: "acc-laila", guestCart: cart });
     expect(screen.getByRole("link", { name: "A-Store home" })).toHaveAttribute("href", ROUTES.seller);
     await user.click(screen.getByRole("link", { name: "Switch to shopping" }));

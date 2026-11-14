@@ -50,5 +50,7 @@ export const LEGACY_REDIRECTS: Record<string, string> = {
   "/sell/sign-up": ROUTES.sellerSignUp,
 };
 
-export const isSellerPath = (pathname: string): boolean =>
-  pathname === ROUTES.seller || pathname.startsWith(`${ROUTES.seller}/`);
+export const isSellerPath = (pathname: string): boolean => {
+  const path = pathname.toLowerCase();
+  return path === ROUTES.seller || path.startsWith(`${ROUTES.seller}/`);
+};

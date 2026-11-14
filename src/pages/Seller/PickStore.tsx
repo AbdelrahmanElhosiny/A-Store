@@ -1,15 +1,15 @@
 import styled from "@emotion/styled";
 import { Button } from "@mui/material";
 import { Link } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { useAppSelector } from "../../app/hooks";
 import { ROUTES } from "../../constant/routes";
-import { logInAs } from "../../features/cartActions";
+import useAuth from "../../hooks/useAuth";
 import useDocumentTitle from "../../hooks/useDocumentTitle";
 import { color } from "../../styles/tokens";
 
 const PickStore = () => {
   useDocumentTitle("Pick your store");
-  const dispatch = useAppDispatch();
+  const { logIn } = useAuth();
   const stores = useAppSelector((state) => state.stores);
   const items = useAppSelector((state) => state.items);
 
@@ -21,11 +21,17 @@ const PickStore = () => {
         {stores.map((store) => {
           const count = items.filter(({ storeId }) => storeId === store.id).length;
           return (
-            <button key={store.id} type="button" aria-label={store.name} onClick={() => dispatch(logInAs("seller", store.ownerId))}>
+            <button
+              key={store.id}
+              type="button"
+              aria-labelledby={`${store.id}-name`}
+              aria-describedby={`${store.id}-tagline ${store.id}-count`}
+              onClick={() => logIn(store.ownerId)}
+            >
               <span className="logo" style={{ backgroundColor: store.logoColor }} aria-hidden="true">{store.logoLetter}</span>
-              <strong>{store.name}</strong>
-              <span>{store.tagline}</span>
-              <span>{count} {count === 1 ? "product" : "products"}</span>
+              <strong id={`${store.id}-name`}>{store.name}</strong>
+              <span id={`${store.id}-tagline`}>{store.tagline}</span>
+              <span id={`${store.id}-count`}>{count} {count === 1 ? "product" : "products"}</span>
             </button>
           );
         })}

@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { LEGACY_REDIRECTS, ROUTES, ROUTE_PATTERNS } from "../constant/routes";
 import useRouteFocus from "../hooks/useRouteFocus";
 import whenIdle from "../utils/whenIdle";
+import LegacyRedirect from "../pages/LegacyRedirect";
 
 // Load each page and layout only when opened or prefetched.
 const load = {
@@ -18,7 +19,6 @@ const load = {
   sellerSignUp: () => import("../pages/Seller/SellerSignUp"),
   comingSoon: () => import("../pages/ComingSoon"),
   error404: () => import("../pages/Error404"),
-  legacyRedirect: () => import("../pages/LegacyRedirect"),
 };
 
 const BuyerLayout = lazy(load.buyerLayout);
@@ -33,7 +33,6 @@ const SignUp = lazy(load.signUp);
 const SellerSignUp = lazy(load.sellerSignUp);
 const ComingSoon = lazy(load.comingSoon);
 const Error404 = lazy(load.error404);
-const LegacyRedirect = lazy(load.legacyRedirect);
 
 // A failed prefetch is fine: the page loads (or fails visibly) when opened.
 const prefetch = (loaders: (() => Promise<unknown>)[]) =>

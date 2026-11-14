@@ -20,10 +20,20 @@ it("shows required errors for an empty submit", async () => {
 });
 it("slug collision is a taken name", async () => {
   const user = userEvent.setup();
-  renderPage();
+  const { store } = renderPage();
+  const before = store.getState();
+  await user.type(screen.getByRole("textbox", { name: "Name" }), "Sara");
   await user.type(screen.getByRole("textbox", { name: "Store name" }), "tick & tock!");
+  await user.click(screen.getByRole("combobox", { name: "Category" }));
+  await user.click(screen.getByRole("option", { name: "Accessories" }));
   await user.click(screen.getByRole("button", { name: "Create a store" }));
   expect(await screen.findByText("That store name is taken")).toBeInTheDocument();
+  const after = store.getState();
+  expect(after.stores).toHaveLength(before.stores.length);
+  expect(after.accounts.filter(({ role }) => role === "seller")).toHaveLength(
+    before.accounts.filter(({ role }) => role === "seller").length,
+  );
+  expect(after.session.sellerId).toBe(before.session.sellerId);
 });
 it("creates, signs in and opens the seller home with the required defaults", async () => {
   const user = userEvent.setup();

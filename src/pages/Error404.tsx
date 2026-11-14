@@ -3,7 +3,6 @@ import styled from "@emotion/styled";
 import { Button } from "@mui/material";
 import useSide from "../hooks/useSide";
 import useDocumentTitle from "../hooks/useDocumentTitle";
-import { ROUTES } from "../constant/routes";
 import { color } from "../styles/tokens";
 import font from "../styles/font";
 
@@ -24,10 +23,7 @@ const Error404 = () => {
       </p>
       <div className="buttons">
         <Button variant="contained" component={Link} to={homePath}>
-          {side === "buy" ? "Go to the shop" : "Go to your items"}
-        </Button>
-        <Button variant="outlined" component={Link} to={ROUTES.home}>
-          Home page
+          {side === "buy" ? "Go to the shop" : "Go to the seller centre"}
         </Button>
       </div>
     </Holder>

@@ -11,6 +11,8 @@ describe("marketplace routes", () => {
   it.each([
     ["/seller", true],
     ["/seller/orders/1", true],
+    ["/Seller/orders", true],
+    ["/SELLERS", false],
     ["/sellers", false],
     ["/sell", false],
     ["/", false],

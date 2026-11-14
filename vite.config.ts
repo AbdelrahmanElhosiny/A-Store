@@ -5,7 +5,7 @@ import { ROUTES } from "./src/constant/routes";
 import type { OutputBundle, OutputChunk } from "rollup";
 
 // The code each route needs, as source files (mirrors START_CODE in
-// src/routes/Index.tsx). Every page and layout is lazy-loaded.
+// src/routes/Index.tsx). Destination pages and layouts are lazy-loaded.
 const ROUTE_SOURCES: Record<string, string[]> = {
   [ROUTES.home]: ["layout/BuyerLayout.tsx", "pages/Buy/Home.tsx"],
   [ROUTES.cart]: ["layout/BuyerLayout.tsx", "pages/Buy/Cart.tsx"],
@@ -16,7 +16,8 @@ const ROUTE_SOURCES: Record<string, string[]> = {
   [ROUTES.sellerProductNew]: ["layout/SellerLayout.tsx", "pages/Sell/AddItem.tsx"],
   [ROUTES.sellerSignUp]: ["layout/SellerLayout.tsx", "pages/Seller/SellerSignUp.tsx"],
 };
-// The first product picture is the largest paint on the item grids.
+// The first product picture is the largest paint on the buyer home grid.
+// Seller products depend on the selected store, or show the signed-out picker.
 // Phase D's store home must update this regex if its first picture changes.
 const FIRST_PRODUCT_IMAGE = /^assets\/headphones-[\w-]+\.webp$/;
 
@@ -37,7 +38,7 @@ const withImports = (
 // and pictures after the main JavaScript has run. This adds a small script
 // to the built index.html that, for the page being opened, starts those
 // downloads straight away: the page's code and the first product picture
-// on the buyer home and seller product grid. Build only: file names have hashes.
+// on the buyer home only. Build only: file names have hashes.
 const preloadStartPage = (): Plugin => ({
   name: "preload-start-page",
   apply: "build",
@@ -84,7 +85,7 @@ const preloadStartPage = (): Plugin => ({
   (${JSON.stringify(routeCode)}[path] || []).forEach(function (file) {
     add({ rel: "modulepreload", href: file, crossorigin: "" });
   });
-  if (${JSON.stringify(productImage ? `/${productImage}` : "")} && (path === ${JSON.stringify(ROUTES.home)} || path === ${JSON.stringify(ROUTES.sellerProducts)}))
+  if (${JSON.stringify(productImage ? `/${productImage}` : "")} && path === ${JSON.stringify(ROUTES.home)})
     add({ rel: "preload", as: "image", href: ${JSON.stringify(productImage ? `/${productImage}` : "")}, fetchpriority: "high" });
 })();`;
       // end of <head>: <meta charset> must come first; module scripts run later
